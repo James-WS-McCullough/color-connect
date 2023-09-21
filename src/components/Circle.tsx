@@ -8,8 +8,9 @@ type CircleProps = {
 const Circle: React.FC<CircleProps> = ({ color }) => {
   return (
     <Box
-      w="70%"
-      h="70%"
+      position="absolute"
+      w="60px"
+      h="60px"
       borderRadius="50%"
       backgroundColor={color}
       zIndex={2}

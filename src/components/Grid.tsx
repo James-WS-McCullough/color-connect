@@ -7,11 +7,6 @@ type GridProps = {
   puzzle: { color: string; x: number; y: number }[];
 };
 
-type Path = {
-  color: string;
-  cells: { x: number; y: number }[];
-};
-
 const Grid: React.FC<GridProps> = ({ size, puzzle }) => {
   return (
     <Box
@@ -19,7 +14,6 @@ const Grid: React.FC<GridProps> = ({ size, puzzle }) => {
       display="grid"
       gridTemplateColumns={`repeat(${size}, 1fr)`}
     >
-      x
       {Array.from({ length: size * size }, (_, index) => {
         const row = Math.floor(index / size);
         const col = index % size;
