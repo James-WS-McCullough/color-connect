@@ -3,4 +3,5 @@ export type GridBoxPath = {
   down: boolean;
   left: boolean;
   right: boolean;
+  color: string;
 };

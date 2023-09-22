@@ -7,9 +7,18 @@ type GridBoxProps = {
   x: number;
   y: number;
   path: GridBoxPath;
+  onMouseDown: () => void;
+  onMouseEnter: () => void;
 };
 
-const GridBox: React.FC<GridBoxProps> = ({ color, x, y, path }) => {
+const GridBox: React.FC<GridBoxProps> = ({
+  color,
+  x,
+  y,
+  path,
+  onMouseDown,
+  onMouseEnter,
+}) => {
   return (
     <Box
       w="80px"
@@ -18,6 +27,11 @@ const GridBox: React.FC<GridBoxProps> = ({ color, x, y, path }) => {
       display="flex"
       justifyContent="center"
       alignItems="center"
+      onMouseDown={(e) => {
+        e.preventDefault();
+        onMouseDown();
+      }}
+      onMouseEnter={onMouseEnter}
     >
       {color && <Circle color={color} />}
 
@@ -25,34 +39,34 @@ const GridBox: React.FC<GridBoxProps> = ({ color, x, y, path }) => {
         <Box
           w="20%"
           h="40%"
-          backgroundColor={color}
+          backgroundColor={path.color || "tomato"}
           opacity={path.up ? 1 : 0}
         />
         <HStack spacing="0" height="20%" width="100%">
           <Box
             w="40%"
             h="100%"
-            backgroundColor="red"
+            backgroundColor={path.color || "tomato"}
             opacity={path.left ? 1 : 0}
           />
 
           <Box
             w="20%"
             h="100%"
-            backgroundColor="red"
+            backgroundColor={path.color || "tomato"}
             opacity={path.left || path.right || path.up || path.down ? 1 : 0}
           />
           <Box
             w="40%"
             h="100%"
-            backgroundColor="red"
+            backgroundColor={path.color || "tomato"}
             opacity={path.right ? 1 : 0}
           />
         </HStack>
         <Box
           w="20%"
           h="40%"
-          backgroundColor="red"
+          backgroundColor={path.color || "tomato"}
           opacity={path.down ? 1 : 0}
         />
       </VStack>

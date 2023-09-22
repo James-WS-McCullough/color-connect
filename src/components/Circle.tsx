@@ -13,7 +13,6 @@ const Circle: React.FC<CircleProps> = ({ color }) => {
       h="60px"
       borderRadius="50%"
       backgroundColor={color}
-      zIndex={2}
     />
   );
 };
