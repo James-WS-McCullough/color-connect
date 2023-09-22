@@ -31,7 +31,7 @@ const CongratulationsModal: React.FC<CongratulationsModalProps> = ({
 
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={onReplay}>
-            Replay
+            Next
           </Button>
           <Button variant="ghost" onClick={onClose}>
             Close

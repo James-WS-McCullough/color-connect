@@ -10,6 +10,9 @@ type GridProps = {
   setCompletedPaths: React.Dispatch<
     React.SetStateAction<{ [key: string]: boolean }>
   >;
+  path: { [key: string]: GridBoxPath };
+  setPath: React.Dispatch<React.SetStateAction<{ [key: string]: GridBoxPath }>>;
+  wallTiles: { x: number; y: number }[];
 };
 
 const Grid: React.FC<GridProps> = ({
@@ -17,12 +20,13 @@ const Grid: React.FC<GridProps> = ({
   puzzle,
   completedPaths,
   setCompletedPaths,
+  path,
+  setPath,
+  wallTiles,
 }) => {
-  const [path, setPath] = useState<{ [key: string]: GridBoxPath }>({});
   const [drawing, setDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState<string | null>(null);
   const [prevBox, setPrevBox] = useState<{ x: number; y: number } | null>(null);
-
   // console log drawing updates
   useEffect(() => {
     console.log("drawing", drawing);
@@ -53,6 +57,18 @@ const Grid: React.FC<GridProps> = ({
             !path[key].left &&
             path[key].right)))
     ) {
+      // If on a circle, clear all paths of that color
+      if (circleData) {
+        setPath((prevPath) => {
+          const newPath = { ...prevPath };
+          Object.keys(newPath).forEach((key) => {
+            if (newPath[key].color === circleData?.color) {
+              delete newPath[key];
+            }
+          });
+          return newPath;
+        });
+      }
       setDrawing(true);
       setCurrentColor(circleData?.color || path[key]?.color);
       setPrevBox({ x, y });
@@ -94,8 +110,12 @@ const Grid: React.FC<GridProps> = ({
       (p) => p.x === parseInt(x) && p.y === parseInt(y)
     );
 
-    console.log("circleData", circleData);
     if (circleData && circleData.color !== currentColor) {
+      return true;
+    }
+
+    // If the current path contains a wall, return true
+    if (wallTiles.some((w) => w.x === parseInt(x) && w.y === parseInt(y))) {
       return true;
     }
 
@@ -158,6 +178,8 @@ const Grid: React.FC<GridProps> = ({
     }
 
     console.log("Set path is updated");
+
+    const backtracking = path[key] && path[key].color === currentColor;
 
     setPath((prevPath) => {
       const newPath = { ...prevPath };
@@ -245,13 +267,15 @@ const Grid: React.FC<GridProps> = ({
       return newPath;
     });
     // If the key is a circle, stop drawing
-    const circleData = puzzle.find((p) => p.x === x && p.y === y);
-    if (circleData) {
-      setCompletedPaths((prevCompletedPaths) => ({
-        ...prevCompletedPaths,
-        [currentColor || "tomato"]: true,
-      }));
-      stopDrawing();
+    if (!backtracking) {
+      const circleData = puzzle.find((p) => p.x === x && p.y === y);
+      if (circleData) {
+        setCompletedPaths((prevCompletedPaths) => ({
+          ...prevCompletedPaths,
+          [currentColor || "tomato"]: true,
+        }));
+        stopDrawing();
+      }
     }
     setPrevBox({ x, y });
   };
@@ -271,6 +295,8 @@ const Grid: React.FC<GridProps> = ({
   return (
     <Box
       position="relative"
+      height="70vh"
+      width="70vh"
       display="grid"
       gridTemplateColumns={`repeat(${size}, 1fr)`}
       onMouseLeave={stopDrawing}
@@ -295,6 +321,7 @@ const Grid: React.FC<GridProps> = ({
             }
             onMouseDown={() => startDrawing(col, row)}
             onMouseEnter={() => handleMouseEnter(col, row)}
+            isWallTile={wallTiles.some((w) => w.x === col && w.y === row)}
           />
         );
       })}
