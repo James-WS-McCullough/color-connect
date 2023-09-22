@@ -9,7 +9,38 @@ const directions: Point[] = [
   { x: -1, y: 0 }, // left
 ];
 
+const isValidPuzzle = (puzzle: ColourPoint[], gridSize: number) => {
+  // To be valid, the puzzle must:
+  // - have an even number of points
+  // - have no points on the same tile.
+  // Don't use set
+
+  if (puzzle.length % 2 !== 0) {
+    return false;
+  }
+
+  const points = puzzle.map(({ x, y }) => `${x},${y}`);
+  const uniquePoints = new Set(points);
+  if (uniquePoints.size !== points.length) {
+    return false;
+  }
+
+  return true;
+};
+
 export function generatePuzzle(
+  gridSize: number,
+  numColors: number
+): { puzzle: ColourPoint[]; wallTiles: Point[] } {
+  let puzzle, wallTiles;
+  do {
+    ({ puzzle, wallTiles } = generateOnePuzzle(gridSize, numColors));
+  } while (!isValidPuzzle(puzzle, gridSize));
+
+  return { puzzle, wallTiles };
+}
+
+function generateOnePuzzle(
   gridSize: number,
   numColors: number
 ): { puzzle: ColourPoint[]; wallTiles: Point[] } {

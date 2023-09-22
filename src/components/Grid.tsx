@@ -68,6 +68,10 @@ const Grid: React.FC<GridProps> = ({
           });
           return newPath;
         });
+        setCompletedPaths((prevCompletedPaths) => ({
+          ...prevCompletedPaths,
+          [circleData?.color || "tomato"]: false,
+        }));
       }
       setDrawing(true);
       setCurrentColor(circleData?.color || path[key]?.color);
