@@ -95,7 +95,7 @@ function App() {
     if (size < 4) {
       return colourCount < size - 1;
     }
-    return colourCount <= size;
+    return colourCount < size;
   };
 
   const onNewPuzzle = () => {
