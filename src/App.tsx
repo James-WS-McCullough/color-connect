@@ -33,6 +33,25 @@ function App() {
   const [level, setLevel] = useState(1);
   const [levelNumber, setLevelNumber] = useState(1);
   const [numberOfConnectedColors, setNumberOfConnectedColors] = useState(0);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupText, setPopupText] = useState("");
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (showPopup) {
+      timeoutId = setTimeout(() => {
+        setShowPopup(false);
+      }, 2000); // Hide the popup after 2 seconds
+    }
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [showPopup]);
+
+  const triggerPopup = (text: string) => {
+    setPopupText(text);
+    setShowPopup(true);
+  };
 
   // when all paths are completed, show a modal
   useEffect(() => {
@@ -66,6 +85,19 @@ function App() {
     setWallTiles(wallTiles);
   }, []);
 
+  const toAddNewColor = ({
+    colourCount,
+    size,
+  }: {
+    colourCount: number;
+    size: number;
+  }) => {
+    if (size <= 4) {
+      return colourCount < size - 1;
+    }
+    return colourCount <= size;
+  };
+
   const onNewPuzzle = () => {
     // play success sfx at volume 50
     const increaseDifficulty = level >= size;
@@ -89,10 +121,12 @@ function App() {
 
     if (increaseDifficulty) {
       setLevel(1);
-      if (colourCount < size - 1) {
+      if (toAddNewColor({ colourCount, size })) {
+        triggerPopup("New Colour!");
         newColourCount = colourCount + 1;
         setColourCount(newColourCount);
       } else {
+        triggerPopup("Bigger Board!");
         newSize = size + 1;
         setSize(newSize);
       }
@@ -137,6 +171,38 @@ function App() {
       >
         {levelNumber}
       </Text>
+      {showPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            padding: "20px",
+            backgroundColor: "rgba(0,0,0,0.7)",
+            color: "white",
+            borderRadius: "10px",
+            animation: "grow 1s ease-in-out",
+            fontFamily: "monospace",
+            fontSize: "4rem",
+          }}
+        >
+          {popupText}
+        </div>
+      )}
+
+      <style>
+        {`
+          @keyframes grow {
+            0% {
+              transform: translate(-50%, -50%) scale(0.5);
+            }
+            100% {
+              transform: translate(-50%, -50%) scale(1);
+            }
+          }
+        `}
+      </style>
     </VStack>
   );
 }

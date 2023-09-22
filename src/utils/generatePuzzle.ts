@@ -53,6 +53,17 @@ function generateOnePuzzle(
     "orange",
     "cyan",
     "magenta",
+    "lime",
+    "pink",
+    "teal",
+    "lavender",
+    "brown",
+    "beige",
+    "maroon",
+    "mint",
+    "olive",
+    "coral",
+    "navy",
     // Add more colors if needed
   ].slice(0, numColors);
 
