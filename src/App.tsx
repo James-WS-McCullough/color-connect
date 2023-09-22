@@ -92,7 +92,7 @@ function App() {
     colourCount: number;
     size: number;
   }) => {
-    if (size <= 4) {
+    if (size < 4) {
       return colourCount < size - 1;
     }
     return colourCount <= size;
