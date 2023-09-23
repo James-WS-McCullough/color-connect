@@ -22,25 +22,159 @@ import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
 
 // Icons fill the circle
 const colorToIconMap = {
-  red: <BuildIcon fontSize="large" />,
-  green: <AgricultureIcon fontSize="large" />,
-  blue: <BathtubIcon fontSize="large" />,
-  yellow: <LightbulbIcon fontSize="large" />,
-  purple: <AccessTimeIcon fontSize="large" />,
-  orange: <CallSplitIcon fontSize="large" />,
-  cyan: <EggAltIcon fontSize="large" />,
-  magenta: <BalanceIcon fontSize="large" />,
-  lime: <BakeryDiningIcon fontSize="large" />,
-  pink: <Brightness3Icon fontSize="large" />,
-  teal: <CakeIcon fontSize="large" />,
-  lavender: <CallIcon fontSize="large" />,
-  brown: <ElderlyIcon fontSize="large" />,
-  beige: <ChairIcon fontSize="large" />,
-  maroon: <CelebrationIcon fontSize="large" />,
-  mint: <Face4Icon fontSize="large" />,
-  olive: <FortIcon fontSize="large" />,
-  coral: <HotelIcon fontSize="large" />,
-  navy: <LocalGroceryStoreIcon fontSize="large" />,
+  // Set color to stand out over the background
+  red: (
+    <BuildIcon
+      fontSize="large"
+      sx={{
+        color: "white",
+      }}
+    />
+  ),
+  green: (
+    <AgricultureIcon
+      fontSize="large"
+      sx={{
+        color: "white",
+      }}
+    />
+  ),
+  blue: (
+    <BathtubIcon
+      fontSize="large"
+      sx={{
+        color: "white",
+      }}
+    />
+  ),
+  yellow: (
+    <LightbulbIcon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  purple: (
+    <AccessTimeIcon
+      fontSize="large"
+      sx={{
+        color: "white",
+      }}
+    />
+  ),
+  orange: (
+    <CallSplitIcon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  cyan: (
+    <EggAltIcon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  magenta: (
+    <BalanceIcon
+      fontSize="large"
+      sx={{
+        color: "white",
+      }}
+    />
+  ),
+  lime: (
+    <BakeryDiningIcon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  pink: (
+    <Brightness3Icon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  teal: (
+    <CakeIcon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  lavender: (
+    <CallIcon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  brown: (
+    <ElderlyIcon
+      fontSize="large"
+      sx={{
+        color: "white",
+      }}
+    />
+  ),
+  beige: (
+    <ChairIcon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  maroon: (
+    <CelebrationIcon
+      fontSize="large"
+      sx={{
+        color: "white",
+      }}
+    />
+  ),
+  mint: (
+    <Face4Icon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  olive: (
+    <FortIcon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  coral: (
+    <HotelIcon
+      fontSize="large"
+      sx={{
+        color: "black",
+      }}
+    />
+  ),
+  navy: (
+    <LocalGroceryStoreIcon
+      fontSize="large"
+      sx={{
+        color: "white",
+      }}
+    />
+  ),
 };
 
 type CircleProps = {

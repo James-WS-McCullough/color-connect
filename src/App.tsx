@@ -13,52 +13,66 @@ import {
 } from "@chakra-ui/react";
 import CongratulationsModal from "./components/CongratulationModal";
 import { generatePuzzle } from "./utils/generatePuzzle";
-import { GridBoxPath } from "./types";
+import { GridBoxPath, colors, iconColors } from "./types";
 
 function App() {
   const [completedPaths, setCompletedPaths] = useState<{
     [key: string]: boolean;
   }>({});
-  const [puzzle, setPuzzle] = useState<
-    {
+  const [puzzle, setPuzzle] = useState<{
+    circles: {
       color: string;
       x: number;
       y: number;
-    }[]
-  >([]);
+    }[];
+    size: number;
+    wallTiles: {
+      x: number;
+      y: number;
+    }[];
+    colorCount?: number;
+    backgroundColor?: string;
+  }>({
+    circles: [],
+    size: 0,
+    colorCount: -1,
+    wallTiles: [],
+    backgroundColor: "black",
+  });
   const [size, setSize] = useState(3);
   const [colourCount, setColourCount] = useState(1);
   const [path, setPath] = useState<{ [key: string]: GridBoxPath }>({});
-  const [wallTiles, setWallTiles] = useState<{ x: number; y: number }[]>([]);
   const [level, setLevel] = useState(1);
   const [levelNumber, setLevelNumber] = useState(1);
   const [numberOfConnectedColors, setNumberOfConnectedColors] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
+  const [popupColor, setPopupColor] = useState("rgba(0,0,0,0.7)");
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     if (showPopup) {
       timeoutId = setTimeout(() => {
         setShowPopup(false);
-      }, 2000); // Hide the popup after 2 seconds
+      }, 1500); // Hide the popup after 2 seconds
     }
     return () => {
       clearTimeout(timeoutId);
     };
   }, [showPopup]);
 
-  const triggerPopup = (text: string) => {
+  const triggerPopup = (text: string, color: string = "rgba(0,0,0,0.7)") => {
     setPopupText(text);
+    setPopupColor(color);
     setShowPopup(true);
   };
 
   // when all paths are completed, show a modal
   useEffect(() => {
-    // If every path is completed and true, show modal
+    // If every the number of completedPaths that are true equals the puzzle.colorCount, then show the modal
     if (
-      Object.keys(completedPaths).length === colourCount &&
-      Object.values(completedPaths).every((v) => v)
+      Object.values(completedPaths).filter((v) => v).length ===
+      puzzle.colorCount
     ) {
       onNewPuzzle();
     } else {
@@ -80,9 +94,14 @@ function App() {
 
   // when start the game, randomset the puzzle
   useEffect(() => {
-    const { puzzle, wallTiles } = generatePuzzle(size, colourCount);
-    setPuzzle(puzzle);
-    setWallTiles(wallTiles);
+    const { circles, wallTiles } = generatePuzzle(size, colourCount);
+    setPuzzle({
+      circles,
+      size,
+      wallTiles,
+      colorCount: colourCount,
+      backgroundColor: "black",
+    });
   }, []);
 
   const toAddNewColor = ({
@@ -98,16 +117,15 @@ function App() {
     return colourCount < size;
   };
 
-  const onNewPuzzle = () => {
-    // play success sfx at volume 50
-    const increaseDifficulty = level >= size;
-
-    const filename = !increaseDifficulty
-      ? "SFX/success1.wav"
-      : "SFX/success2.wav";
+  const playSFX = (filename: string) => {
     const success = new Audio(filename);
     success.volume = 0.5;
     success.play();
+  };
+
+  const onNewPuzzle = () => {
+    // play success sfx at volume 50
+    const increaseDifficulty = level >= size;
 
     // reset the puzzle
     setPath({});
@@ -119,10 +137,35 @@ function App() {
 
     // Random increase of colours or size
 
+    // If the level number is divisible by 5, and the size is 5 or more, give a breezy level
+    if ((levelNumber + 1) % 5 === 0) {
+      playSFX("SFX/breeze1.mp3");
+      if (levelNumber === 4) {
+        triggerPopup("Eazy Breezy!", "blue");
+      }
+      setLevelNumber(levelNumber + 1);
+      const breezySize = Math.max(Math.round(size / 2) + 1, 3);
+      const breezyColourCount = Math.max(Math.round(colourCount / 2), 2);
+      const { circles, wallTiles } = generatePuzzle(
+        breezySize,
+        breezyColourCount
+      );
+      setPuzzle({
+        circles,
+        size: breezySize,
+        wallTiles,
+        colorCount: breezyColourCount,
+        backgroundColor: "#006399",
+      });
+      return;
+    }
+
     if (increaseDifficulty) {
+      playSFX("SFX/success2.wav");
       setLevel(1);
       if (toAddNewColor({ colourCount, size })) {
-        triggerPopup("New Colour!");
+        const newColorColor = colors[colourCount];
+        triggerPopup("New Colour!", newColorColor);
         newColourCount = colourCount + 1;
         setColourCount(newColourCount);
       } else {
@@ -131,13 +174,19 @@ function App() {
         setSize(newSize);
       }
     } else {
+      playSFX("SFX/success1.wav");
       setLevel(level + 1);
     }
     setLevelNumber(levelNumber + 1);
 
-    const { puzzle, wallTiles } = generatePuzzle(newSize, newColourCount);
-    setPuzzle(puzzle);
-    setWallTiles(wallTiles);
+    const { circles, wallTiles } = generatePuzzle(newSize, newColourCount);
+    setPuzzle({
+      circles,
+      size: newSize,
+      wallTiles,
+      colorCount: newColourCount,
+      backgroundColor: "black",
+    });
   };
 
   return (
@@ -146,18 +195,18 @@ function App() {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        backgroundColor="black"
+        backgroundColor={puzzle.backgroundColor}
         h="100vh"
         w="100vw"
       >
         <Grid
-          size={size}
+          size={puzzle.size}
           completedPaths={completedPaths}
           setCompletedPaths={setCompletedPaths}
-          puzzle={puzzle}
+          circles={puzzle.circles}
           path={path}
           setPath={setPath}
-          wallTiles={wallTiles}
+          wallTiles={puzzle.wallTiles}
         />
       </Box>
       <Text
@@ -179,8 +228,8 @@ function App() {
             left: "50%",
             transform: "translate(-50%, -50%)",
             padding: "20px",
-            backgroundColor: "rgba(0,0,0,0.7)",
-            color: "white",
+            backgroundColor: popupColor,
+            color: iconColors[popupColor as keyof typeof iconColors] || "white",
             borderRadius: "10px",
             animation: "grow 1s ease-in-out",
             fontFamily: "monospace",

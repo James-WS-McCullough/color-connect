@@ -5,7 +5,7 @@ import { GridBoxPath } from "../types";
 
 type GridProps = {
   size: number;
-  puzzle: { color: string; x: number; y: number }[];
+  circles: { color: string; x: number; y: number }[];
   completedPaths: { [key: string]: boolean };
   setCompletedPaths: React.Dispatch<
     React.SetStateAction<{ [key: string]: boolean }>
@@ -17,7 +17,7 @@ type GridProps = {
 
 const Grid: React.FC<GridProps> = ({
   size,
-  puzzle,
+  circles,
   completedPaths,
   setCompletedPaths,
   path,
@@ -34,7 +34,7 @@ const Grid: React.FC<GridProps> = ({
 
   const startDrawing = (x: number, y: number) => {
     const key = `${x},${y}`;
-    const circleData = puzzle.find((p) => p.x === x && p.y === y);
+    const circleData = circles.find((p) => p.x === x && p.y === y);
 
     // If circleData, or if the path key has only 1 connection, start drawing
     if (
@@ -110,7 +110,7 @@ const Grid: React.FC<GridProps> = ({
 
     console.log("x, y", x, y);
 
-    const circleData = puzzle.find(
+    const circleData = circles.find(
       (p) => p.x === parseInt(x) && p.y === parseInt(y)
     );
 
@@ -272,7 +272,7 @@ const Grid: React.FC<GridProps> = ({
     });
     // If the key is a circle, stop drawing
     if (!backtracking) {
-      const circleData = puzzle.find((p) => p.x === x && p.y === y);
+      const circleData = circles.find((p) => p.x === x && p.y === y);
       if (circleData) {
         setCompletedPaths((prevCompletedPaths) => ({
           ...prevCompletedPaths,
@@ -308,7 +308,7 @@ const Grid: React.FC<GridProps> = ({
       {Array.from({ length: size * size }, (_, index) => {
         const row = Math.floor(index / size);
         const col = index % size;
-        const circleData = puzzle.find((p) => p.x === col && p.y === row);
+        const circleData = circles.find((p) => p.x === col && p.y === row);
         return (
           <GridBox
             key={index}

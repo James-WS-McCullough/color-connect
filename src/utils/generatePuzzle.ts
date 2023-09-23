@@ -1,3 +1,5 @@
+import { colors as allColors } from "../types";
+
 type Point = { x: number; y: number };
 type ColourPoint = Point & { color: string };
 type Grid = (string | null)[][];
@@ -31,41 +33,20 @@ const isValidPuzzle = (puzzle: ColourPoint[], gridSize: number) => {
 export function generatePuzzle(
   gridSize: number,
   numColors: number
-): { puzzle: ColourPoint[]; wallTiles: Point[] } {
-  let puzzle, wallTiles;
+): { circles: ColourPoint[]; wallTiles: Point[] } {
+  let circles, wallTiles;
   do {
-    ({ puzzle, wallTiles } = generateOnePuzzle(gridSize, numColors));
-  } while (!isValidPuzzle(puzzle, gridSize));
+    ({ circles, wallTiles } = generateOnePuzzle(gridSize, numColors));
+  } while (!isValidPuzzle(circles, gridSize));
 
-  return { puzzle, wallTiles };
+  return { circles, wallTiles };
 }
 
 function generateOnePuzzle(
   gridSize: number,
   numColors: number
-): { puzzle: ColourPoint[]; wallTiles: Point[] } {
-  const colors = [
-    "red",
-    "green",
-    "blue",
-    "yellow",
-    "purple",
-    "orange",
-    "cyan",
-    "magenta",
-    "lime",
-    "pink",
-    "teal",
-    "lavender",
-    "brown",
-    "beige",
-    "maroon",
-    "mint",
-    "olive",
-    "coral",
-    "navy",
-    // Add more colors if needed
-  ].slice(0, numColors);
+): { circles: ColourPoint[]; wallTiles: Point[] } {
+  const colors = allColors.slice(0, numColors);
 
   const grid: Grid = Array(gridSize)
     .fill(null)
@@ -162,7 +143,7 @@ function generateOnePuzzle(
 
   // Return:
   // The flattened the endpoints into a list of points
-  const puzzle = colors.flatMap((color) =>
+  const circles = colors.flatMap((color) =>
     endpoints[color].map((point) => ({ color, x: point.x, y: point.y }))
   );
   // All empty tiles in the grid
@@ -175,5 +156,5 @@ function generateOnePuzzle(
     });
   });
 
-  return { puzzle, wallTiles };
+  return { circles, wallTiles };
 }
