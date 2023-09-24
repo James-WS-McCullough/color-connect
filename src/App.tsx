@@ -14,6 +14,7 @@ import {
 import CongratulationsModal from "./components/CongratulationModal";
 import { generatePuzzle } from "./utils/generatePuzzle";
 import { GridBoxPath, colors, iconColors } from "./types";
+import IntroductionModal from "./components/IntroductionModal";
 
 function App() {
   const [completedPaths, setCompletedPaths] = useState<{
@@ -48,6 +49,11 @@ function App() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const [popupColor, setPopupColor] = useState("rgba(0,0,0,0.7)");
+  const {
+    isOpen: isIntroModalOpen,
+    onOpen: onIntroModalOpen,
+    onClose: onIntroModalClose,
+  } = useDisclosure();
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -102,6 +108,7 @@ function App() {
       colorCount: colourCount,
       backgroundColor: "black",
     });
+    onIntroModalOpen();
   }, []);
 
   const toAddNewColor = ({
@@ -252,6 +259,10 @@ function App() {
           }
         `}
       </style>
+      <IntroductionModal
+        isOpen={isIntroModalOpen}
+        onClose={onIntroModalClose}
+      />
     </VStack>
   );
 }
