@@ -139,7 +139,9 @@ const GridBox: React.FC<GridBoxProps> = ({
           w="20%"
           h="40%"
           backgroundColor={
-            stageEffects && stageEffects.includes("dark")
+            stageEffects &&
+            stageEffects.includes("dark") &&
+            path.color != "yellow"
               ? "gray"
               : path.color || "tomato"
           }
@@ -151,7 +153,9 @@ const GridBox: React.FC<GridBoxProps> = ({
             w="40%"
             h="100%"
             backgroundColor={
-              stageEffects && stageEffects.includes("dark")
+              stageEffects &&
+              stageEffects.includes("dark") &&
+              path.color != "yellow"
                 ? "gray"
                 : path.color || "tomato"
             }
@@ -163,7 +167,9 @@ const GridBox: React.FC<GridBoxProps> = ({
             w="20%"
             h="100%"
             backgroundColor={
-              stageEffects && stageEffects.includes("dark")
+              stageEffects &&
+              stageEffects.includes("dark") &&
+              path.color != "yellow"
                 ? "gray"
                 : path.color || "tomato"
             }
@@ -198,7 +204,9 @@ const GridBox: React.FC<GridBoxProps> = ({
             w="40%"
             h="100%"
             backgroundColor={
-              stageEffects && stageEffects.includes("dark")
+              stageEffects &&
+              stageEffects.includes("dark") &&
+              path.color != "yellow"
                 ? "gray"
                 : path.color || "tomato"
             }
@@ -210,7 +218,9 @@ const GridBox: React.FC<GridBoxProps> = ({
           w="20%"
           h="40%"
           backgroundColor={
-            stageEffects && stageEffects.includes("dark")
+            stageEffects &&
+            stageEffects.includes("dark") &&
+            path.color != "yellow"
               ? "gray"
               : path.color || "tomato"
           }
