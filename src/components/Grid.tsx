@@ -2,6 +2,7 @@ import { Box } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import GridBox from "./GridBox";
 import { GridBoxPath } from "../types";
+import { playSFX } from "../utils/playSFX";
 
 type GridProps = {
   size: number;
@@ -13,6 +14,8 @@ type GridProps = {
   path: { [key: string]: GridBoxPath };
   setPath: React.Dispatch<React.SetStateAction<{ [key: string]: GridBoxPath }>>;
   wallTiles: { x: number; y: number }[];
+  specialTiles: { x: number; y: number; tileType: string }[];
+  stageEffects: string[];
 };
 
 const Grid: React.FC<GridProps> = ({
@@ -23,6 +26,8 @@ const Grid: React.FC<GridProps> = ({
   path,
   setPath,
   wallTiles,
+  specialTiles,
+  stageEffects,
 }) => {
   const [drawing, setDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState<string | null>(null);
@@ -32,30 +37,45 @@ const Grid: React.FC<GridProps> = ({
     console.log("drawing", drawing);
   }, [drawing]);
 
+  const pathKeyHasOnly1Connection = (
+    path: { [key: string]: GridBoxPath },
+    key: string
+  ) => {
+    return (
+      (path[key].up &&
+        !path[key].down &&
+        !path[key].left &&
+        !path[key].right) ||
+      (!path[key].up &&
+        path[key].down &&
+        !path[key].left &&
+        !path[key].right) ||
+      (!path[key].up &&
+        !path[key].down &&
+        path[key].left &&
+        !path[key].right) ||
+      (!path[key].up && !path[key].down && !path[key].left && path[key].right)
+    );
+  };
+
   const startDrawing = (x: number, y: number) => {
     const key = `${x},${y}`;
     const circleData = circles.find((p) => p.x === x && p.y === y);
+    const specialTileData = specialTiles.find((s) => s.x === x && s.y === y);
 
-    // If circleData, or if the path key has only 1 connection, start drawing
+    // If circleData, or if the path key has only 1 or 0 connections, start drawing
     if (
-      circleData ||
-      (path[key] &&
-        ((path[key].up &&
-          !path[key].down &&
-          !path[key].left &&
-          !path[key].right) ||
-          (!path[key].up &&
-            path[key].down &&
-            !path[key].left &&
-            !path[key].right) ||
-          (!path[key].up &&
-            !path[key].down &&
-            path[key].left &&
-            !path[key].right) ||
-          (!path[key].up &&
-            !path[key].down &&
-            !path[key].left &&
-            path[key].right)))
+      (circleData &&
+        (circleData.color == "yellow" || !stageEffects.includes("dark"))) ||
+      (specialTileData?.tileType === "warp" &&
+        path[key] &&
+        !path[key].down &&
+        !path[key].up &&
+        !path[key].left &&
+        !path[key].up) ||
+      (!(specialTileData?.tileType === "warp") &&
+        path[key] &&
+        pathKeyHasOnly1Connection(path, key))
     ) {
       // If on a circle, clear all paths of that color
       if (circleData) {
@@ -72,6 +92,10 @@ const Grid: React.FC<GridProps> = ({
           ...prevCompletedPaths,
           [circleData?.color || "tomato"]: false,
         }));
+        if (stageEffects.includes("light") && circleData?.color == "yellow") {
+          playSFX("SFX/light1.wav");
+          stageEffects.splice(stageEffects.indexOf("light"), 1, "dark");
+        }
       }
       setDrawing(true);
       setCurrentColor(circleData?.color || path[key]?.color);
@@ -181,8 +205,6 @@ const Grid: React.FC<GridProps> = ({
       return;
     }
 
-    console.log("Set path is updated");
-
     const backtracking = path[key] && path[key].color === currentColor;
 
     setPath((prevPath) => {
@@ -270,8 +292,9 @@ const Grid: React.FC<GridProps> = ({
 
       return newPath;
     });
-    // If the key is a circle, stop drawing
+
     if (!backtracking) {
+      // If the key is a circle, stop drawing
       const circleData = circles.find((p) => p.x === x && p.y === y);
       if (circleData) {
         setCompletedPaths((prevCompletedPaths) => ({
@@ -279,6 +302,34 @@ const Grid: React.FC<GridProps> = ({
           [currentColor || "tomato"]: true,
         }));
         stopDrawing();
+        if (stageEffects.includes("dark") && currentColor == "yellow") {
+          playSFX("SFX/light2.wav");
+          stageEffects.splice(stageEffects.indexOf("dark"), 1, "light");
+        }
+      }
+
+      // If the key is a special tile, and it's a warp, set the location of the other warp to be this color
+      const specialTileData = specialTiles.find((s) => s.x === x && s.y === y);
+      if (specialTileData && specialTileData.tileType === "warp") {
+        console.log("warp");
+        const otherWarp = specialTiles.find(
+          (s) => (s.x !== x || s.y !== y) && s.tileType === "warp"
+        );
+        console.log("otherWarp", otherWarp);
+        if (otherWarp) {
+          setPath((prevPath) => ({
+            ...prevPath,
+            [`${otherWarp.x},${otherWarp.y}`]: {
+              up: false,
+              down: false,
+              left: false,
+              right: false,
+              color: currentColor || "tomato",
+            },
+          }));
+          stopDrawing();
+          playSFX("SFX/warp1.wav");
+        }
       }
     }
     setPrevBox({ x, y });
@@ -315,6 +366,7 @@ const Grid: React.FC<GridProps> = ({
             color={circleData?.color}
             x={col}
             y={row}
+            stageEffects={stageEffects}
             path={
               path[`${col},${row}`] || {
                 up: false,
@@ -326,6 +378,9 @@ const Grid: React.FC<GridProps> = ({
             onMouseDown={() => startDrawing(col, row)}
             onMouseEnter={() => handleMouseEnter(col, row)}
             isWallTile={wallTiles.some((w) => w.x === col && w.y === row)}
+            specialTileType={
+              specialTiles.find((s) => s.x === col && s.y === row)?.tileType
+            }
           />
         );
       })}

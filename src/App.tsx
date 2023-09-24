@@ -13,8 +13,9 @@ import {
 } from "@chakra-ui/react";
 import CongratulationsModal from "./components/CongratulationModal";
 import { generatePuzzle } from "./utils/generatePuzzle";
-import { GridBoxPath, colors, iconColors } from "./types";
+import { GridBoxPath, colors, iconColors, unlockableStageTypes } from "./types";
 import IntroductionModal from "./components/IntroductionModal";
+import { playSFX } from "./utils/playSFX";
 
 function App() {
   const [completedPaths, setCompletedPaths] = useState<{
@@ -31,6 +32,12 @@ function App() {
       x: number;
       y: number;
     }[];
+    specialTiles: {
+      x: number;
+      y: number;
+      tileType: string;
+    }[];
+    stageEffects: string[];
     colorCount?: number;
     backgroundColor?: string;
   }>({
@@ -38,7 +45,9 @@ function App() {
     size: 0,
     colorCount: -1,
     wallTiles: [],
+    specialTiles: [],
     backgroundColor: "black",
+    stageEffects: [],
   });
   const [size, setSize] = useState(3);
   const [colourCount, setColourCount] = useState(1);
@@ -48,6 +57,7 @@ function App() {
   const [numberOfConnectedColors, setNumberOfConnectedColors] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
+  const [unlockedStageTypes, setUnlockedStageTypes] = useState<string[]>([]);
   const [popupColor, setPopupColor] = useState("rgba(0,0,0,0.7)");
   const {
     isOpen: isIntroModalOpen,
@@ -71,6 +81,28 @@ function App() {
     setPopupText(text);
     setPopupColor(color);
     setShowPopup(true);
+  };
+
+  const unlockAStageType = (levelNumber: number) => {
+    // List all unlockableStageTypes with a level below the current level that isn't in unlockedStageEffects
+    // Randomly select one of them
+    // Add it to the unlockedStageEffects
+    const unlockableStageTypesBelowLevel = unlockableStageTypes.filter(
+      (stageType) =>
+        stageType.level <= levelNumber &&
+        !unlockedStageTypes.includes(stageType.effect)
+    );
+    if (unlockableStageTypesBelowLevel.length === 0) {
+      return;
+    }
+
+    const randomIndex = Math.floor(
+      Math.random() * unlockableStageTypesBelowLevel.length
+    );
+    const randomStageType = unlockableStageTypesBelowLevel[randomIndex];
+    setUnlockedStageTypes([...unlockedStageTypes, randomStageType.effect]);
+    triggerPopup(randomStageType.popupText, randomStageType.color);
+    return randomStageType.effect;
   };
 
   // when all paths are completed, show a modal
@@ -107,6 +139,8 @@ function App() {
       wallTiles,
       colorCount: colourCount,
       backgroundColor: "black",
+      specialTiles: [],
+      stageEffects: [],
     });
     onIntroModalOpen();
   }, []);
@@ -124,10 +158,19 @@ function App() {
     return colourCount < size;
   };
 
-  const playSFX = (filename: string) => {
-    const success = new Audio(filename);
-    success.volume = 0.5;
-    success.play();
+  const pickRandomStageType = () => {
+    if (unlockedStageTypes.length === 0) {
+      return [];
+    }
+    // For 2/3 of the time, return empty array.
+    // For 1/3 of the time, return a random unlocked stage type
+    const random = Math.random();
+    if (random < 0.66) {
+      return [];
+    }
+    const randomIndex = Math.floor(Math.random() * unlockedStageTypes.length);
+    const randomStageType = unlockedStageTypes[randomIndex];
+    return [randomStageType];
   };
 
   const onNewPuzzle = () => {
@@ -163,9 +206,13 @@ function App() {
         wallTiles,
         colorCount: breezyColourCount,
         backgroundColor: "#006399",
+        specialTiles: [],
+        stageEffects: [],
       });
       return;
     }
+
+    let stageType;
 
     if (increaseDifficulty) {
       playSFX("SFX/success2.wav");
@@ -183,16 +230,25 @@ function App() {
     } else {
       playSFX("SFX/success1.wav");
       setLevel(level + 1);
+      stageType = unlockAStageType(levelNumber + 1);
     }
     setLevelNumber(levelNumber + 1);
 
-    const { circles, wallTiles } = generatePuzzle(newSize, newColourCount);
+    const stageTypes = stageType ? [stageType] : pickRandomStageType();
+
+    const { circles, wallTiles, specialTiles, stageEffects } = generatePuzzle(
+      newSize,
+      newColourCount,
+      stageTypes
+    );
     setPuzzle({
       circles,
       size: newSize,
       wallTiles,
       colorCount: newColourCount,
       backgroundColor: "black",
+      specialTiles: specialTiles,
+      stageEffects: stageEffects,
     });
   };
 
@@ -214,6 +270,8 @@ function App() {
           path={path}
           setPath={setPath}
           wallTiles={puzzle.wallTiles}
+          specialTiles={puzzle.specialTiles}
+          stageEffects={puzzle.stageEffects}
         />
       </Box>
       <Text
@@ -241,6 +299,7 @@ function App() {
             animation: "grow 1s ease-in-out",
             fontFamily: "monospace",
             fontSize: "4rem",
+            zIndex: 100,
           }}
         >
           {popupText}

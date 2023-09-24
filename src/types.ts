@@ -49,3 +49,18 @@ export const iconColors = {
   coral: "black",
   navy: "white",
 };
+
+export const unlockableStageTypes = [
+  {
+    level: 10,
+    effect: "warp",
+    popupText: "Unlocked Warps!",
+    color: "pink",
+  },
+  {
+    level: 20,
+    effect: "dark",
+    popupText: "Unlocked Dark Mode!",
+    color: "yellow",
+  },
+];

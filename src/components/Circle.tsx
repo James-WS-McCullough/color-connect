@@ -192,6 +192,7 @@ const Circle: React.FC<CircleProps> = ({ color }) => {
       display="flex"
       justifyContent="center"
       alignItems="center"
+      zIndex="2"
     >
       {colorToIconMap[color as keyof typeof colorToIconMap]}
     </Box>

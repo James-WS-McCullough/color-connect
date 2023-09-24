@@ -1,4 +1,4 @@
-import { Box, HStack, VStack } from "@chakra-ui/react";
+import { Box, HStack, Image, VStack } from "@chakra-ui/react";
 import Circle from "./Circle";
 import { GridBoxPath } from "../types";
 
@@ -10,6 +10,8 @@ type GridBoxProps = {
   onMouseDown: () => void;
   onMouseEnter: () => void;
   isWallTile: boolean;
+  specialTileType?: string;
+  stageEffects?: string[];
 };
 
 const GridBox: React.FC<GridBoxProps> = ({
@@ -20,6 +22,8 @@ const GridBox: React.FC<GridBoxProps> = ({
   onMouseDown,
   onMouseEnter,
   isWallTile,
+  specialTileType,
+  stageEffects,
 }) => {
   return (
     <Box
@@ -37,14 +41,34 @@ const GridBox: React.FC<GridBoxProps> = ({
       }}
       onMouseEnter={onMouseEnter}
     >
-      {color && <Circle color={color} />}
-
+      {color && (
+        <Circle
+          color={
+            stageEffects && stageEffects.includes("dark") && color != "yellow"
+              ? "gray"
+              : color
+          }
+        />
+      )}
+      {specialTileType === "warp" && (
+        // The image is under the other coloured boxes
+        <Image
+          src="warpPoint.png"
+          w="70%"
+          h="70%"
+          position="absolute"
+          // The image is under the other coloured boxes
+          zIndex="0"
+          animation="spin 5s linear infinite"
+        />
+      )}
       <VStack spacing="0" width="100%" height="100%">
         <Box
           w="20%"
           h="40%"
           backgroundColor={path.color || "tomato"}
           opacity={path.up ? 1 : 0}
+          zIndex="1"
         />
         <HStack spacing="0" height="20%" width="100%">
           <Box
@@ -52,13 +76,14 @@ const GridBox: React.FC<GridBoxProps> = ({
             h="100%"
             backgroundColor={path.color || "tomato"}
             opacity={path.left ? 1 : 0}
+            zIndex="1"
           />
 
           <Box
             w="20%"
             h="100%"
             backgroundColor={path.color || "tomato"}
-            opacity={path.left || path.right || path.up || path.down ? 1 : 0}
+            opacity={path.color ? 1 : 0}
             // borderRadius is 50 only opposite sides are true
             // If just 1 true, then 2 corners are rounded
             // If 2 true, then 1 corner is rounded
@@ -79,14 +104,18 @@ const GridBox: React.FC<GridBoxProps> = ({
                 ? "0% 0% 0% 50%"
                 : path.left && !path.down && path.up && !path.right
                 ? "0% 0% 50% 0%"
-                : "0"
+                : !path.left && !path.down && !path.up && !path.right
+                ? "50%"
+                : "0%"
             }
+            zIndex="1"
           />
           <Box
             w="40%"
             h="100%"
             backgroundColor={path.color || "tomato"}
             opacity={path.right ? 1 : 0}
+            zIndex="1"
           />
         </HStack>
         <Box
@@ -94,6 +123,7 @@ const GridBox: React.FC<GridBoxProps> = ({
           h="40%"
           backgroundColor={path.color || "tomato"}
           opacity={path.down ? 1 : 0}
+          zIndex="1"
         />
       </VStack>
     </Box>
