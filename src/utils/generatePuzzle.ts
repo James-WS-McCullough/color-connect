@@ -305,14 +305,23 @@ function generateOnePuzzle(
         ) {
           // If the tiles above and below match the colour, or the tiles to the left and right match the colour, tileType is either "horizontal-only" or "vertical-only"
           if (
-            (y > 0 && y < gridSize - 1 && grid[y - 1][x] === grid[y + 1][x]) ||
-            (x > 0 && x < gridSize - 1 && grid[y][x - 1] === grid[y][x + 1])
+            (y > 0 &&
+              y < gridSize - 1 &&
+              grid[y][x] == grid[y - 1][x] &&
+              grid[y - 1][x] === grid[y + 1][x]) ||
+            (x > 0 &&
+              x < gridSize - 1 &&
+              grid[y][x] == grid[y][x - 1] &&
+              grid[y][x - 1] === grid[y][x + 1])
           ) {
             directionableTiles.push({
               x,
               y,
               tileType:
-                y > 0 && y < gridSize - 1 && grid[y - 1][x] === grid[y + 1][x]
+                y > 0 &&
+                y < gridSize - 1 &&
+                grid[y][x] == grid[y - 1][x] &&
+                grid[y - 1][x] === grid[y + 1][x]
                   ? "vertical-only"
                   : "horizontal-only",
             });
@@ -322,7 +331,7 @@ function generateOnePuzzle(
     }
     // Add random number between 1 and 3 direction-specific tiles, either horizontal or vertical
     const numTiles = Math.max(
-      Math.min(Math.floor(Math.random() * 3), directionableTiles.length),
+      Math.min(Math.floor(Math.random() * 4 + 1), directionableTiles.length),
       1
     );
     const directionTiles = [] as (Point & { tileType: string })[];
@@ -362,7 +371,10 @@ function generateOnePuzzle(
 
   const stageEffects = [] as string[];
   if (stageTypes && stageTypes.includes("dark")) {
-    stageEffects.push("dark");
+    // If there are yellow endpoints, add "dark" to stageEffects
+    if (Object.keys(endpoints).some((color) => color === "yellow")) {
+      stageEffects.push("dark");
+    }
   }
 
   return { circles, wallTiles, specialTiles, stageEffects };

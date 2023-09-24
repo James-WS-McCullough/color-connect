@@ -4,6 +4,7 @@ import "./App.css";
 import Grid from "./components/Grid";
 import {
   Box,
+  IconButton,
   Modal,
   ModalContent,
   ModalOverlay,
@@ -11,7 +12,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import CongratulationsModal from "./components/CongratulationModal";
+import HelpCenterIcon from "@mui/icons-material/HelpCenter";
 import { generatePuzzle } from "./utils/generatePuzzle";
 import {
   ColourPoint,
@@ -24,6 +25,7 @@ import {
 } from "./types";
 import IntroductionModal from "./components/IntroductionModal";
 import { playSFX } from "./utils/playSFX";
+import HelpModal from "./components/HelpModal";
 
 function App() {
   const [completedPaths, setCompletedPaths] = useState<{
@@ -60,6 +62,11 @@ function App() {
     isOpen: isIntroModalOpen,
     onOpen: onIntroModalOpen,
     onClose: onIntroModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isHelpModalOpen,
+    onOpen: onHelpModalOpen,
+    onClose: onHelpModalClose,
   } = useDisclosure();
 
   useEffect(() => {
@@ -170,7 +177,7 @@ function App() {
       const randomIndex = Math.floor(Math.random() * unlockedStageTypes.length);
       const randomStageType = unlockedStageTypes[randomIndex];
       return [randomStageType];
-    } else {
+    } else if (levelNumber < 100) {
       const random1 = Math.random();
       if (random1 < 0.2) {
         return [];
@@ -197,6 +204,22 @@ function App() {
       }
       return [randomStageType1, randomStageType2];
     }
+    // Return 3 different random stage types
+    const randomIndex1 = Math.floor(Math.random() * unlockedStageTypes.length);
+    const randomIndex2 = Math.floor(Math.random() * unlockedStageTypes.length);
+    const randomIndex3 = Math.floor(Math.random() * unlockedStageTypes.length);
+    const randomStageType1 = unlockedStageTypes[randomIndex1];
+    const randomStageType2 = unlockedStageTypes[randomIndex2];
+    const randomStageType3 = unlockedStageTypes[randomIndex3];
+    const randomStageTypes = [
+      randomStageType1,
+      randomStageType2,
+      randomStageType3,
+    ];
+    const uniqueRandomStageTypes = randomStageTypes.filter(
+      (stageType, index) => randomStageTypes.indexOf(stageType) === index
+    );
+    return uniqueRandomStageTypes;
   };
 
   const onNewPuzzle = () => {
@@ -220,8 +243,11 @@ function App() {
         triggerPopup("Eazy Breezy!", "blue");
       }
       setLevelNumber(levelNumber + 1);
-      const breezySize = Math.max(Math.round(size / 2) + 1, 3);
-      const breezyColourCount = Math.max(Math.round(colourCount / 2), 2);
+      const breezySize = Math.min(Math.max(Math.round(size / 2) + 1, 3), 5);
+      const breezyColourCount = Math.min(
+        Math.max(Math.round(colourCount / 2), 2),
+        4
+      );
       const { circles, wallTiles } = generatePuzzle(
         breezySize,
         breezyColourCount
@@ -240,7 +266,7 @@ function App() {
 
     let stageType;
 
-    if (increaseDifficulty) {
+    if (increaseDifficulty && levelNumber < 100) {
       playSFX("SFX/success2.wav");
       setLevel(1);
       if (toAddNewColor({ colourCount, size })) {
@@ -262,6 +288,15 @@ function App() {
       setLevel(level + 1);
       stageType = unlockAStageType(levelNumber + 1);
     }
+
+    if (levelNumber == 100) {
+      triggerPopup("Endless Mode Activated!", "green");
+    }
+    if (levelNumber >= 100) {
+      newSize = Math.floor(Math.random() * 4) + 5;
+      newColourCount = Math.floor(Math.random() * (newSize - 1)) + 2;
+    }
+
     setLevelNumber(levelNumber + 1);
 
     const stageTypes = stageType ? [stageType] : pickRandomStageType();
@@ -336,7 +371,6 @@ function App() {
           {popupText}
         </div>
       )}
-
       <style>
         {`
           @keyframes grow {
@@ -352,6 +386,21 @@ function App() {
       <IntroductionModal
         isOpen={isIntroModalOpen}
         onClose={onIntroModalClose}
+      />
+      <HelpModal
+        isOpen={isHelpModalOpen}
+        onClose={onHelpModalClose}
+        unlockedStageTypes={unlockedStageTypes}
+        levelNumber={levelNumber}
+      />
+      <IconButton
+        aria-label="Help"
+        colorScheme="blue"
+        icon={<HelpCenterIcon />}
+        position="absolute" //Bottom right
+        bottom="3%"
+        right="3%"
+        onClick={onHelpModalOpen}
       />
     </VStack>
   );
