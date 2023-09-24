@@ -1,6 +1,6 @@
 import { Box, HStack, Image, VStack } from "@chakra-ui/react";
 import Circle from "./Circle";
-import { GridBoxPath } from "../types";
+import { GridBoxPath, SpecialTile } from "../types";
 
 type GridBoxProps = {
   color?: string;
@@ -10,7 +10,7 @@ type GridBoxProps = {
   onMouseDown: () => void;
   onMouseEnter: () => void;
   isWallTile: boolean;
-  specialTileType?: string;
+  specialTile?: SpecialTile;
   stageEffects?: string[];
 };
 
@@ -22,7 +22,7 @@ const GridBox: React.FC<GridBoxProps> = ({
   onMouseDown,
   onMouseEnter,
   isWallTile,
-  specialTileType,
+  specialTile,
   stageEffects,
 }) => {
   return (
@@ -50,7 +50,7 @@ const GridBox: React.FC<GridBoxProps> = ({
           }
         />
       )}
-      {specialTileType === "warp" && (
+      {specialTile?.tileType === "warp" && (
         // The image is under the other coloured boxes
         <Image
           src="warpPoint.png"
@@ -62,7 +62,7 @@ const GridBox: React.FC<GridBoxProps> = ({
           animation="spin 5s linear infinite"
         />
       )}
-      {specialTileType === "lock" && (
+      {specialTile?.tileType === "lock" && (
         <Image
           src="lockbox.png"
           w="100%"
@@ -70,6 +70,68 @@ const GridBox: React.FC<GridBoxProps> = ({
           position="absolute"
           zIndex="0"
         />
+      )}
+      {specialTile?.tileType === "colour-specific" && (
+        // A diamond inside the grid box with the colour of the specialTile.color
+        <Box
+          position="absolute"
+          w="40%"
+          h="40%"
+          transform="rotate(45deg)"
+          backgroundColor={specialTile?.color || "tomato"}
+          zIndex="1"
+        />
+      )}
+      {specialTile?.tileType === "vertical-only" && (
+        // Gray walls either side of the grid box
+        <HStack
+          justifyContent="space-between"
+          height="100%"
+          width="100%"
+          position="absolute"
+          zIndex="0"
+        >
+          <Box
+            w="40%"
+            h="100%"
+            backgroundColor={"gray"}
+            opacity={1}
+            zIndex="1"
+          />
+          <Box
+            w="40%"
+            h="100%"
+            backgroundColor={"gray"}
+            opacity={1}
+            zIndex="1"
+          />
+        </HStack>
+      )}
+
+      {specialTile?.tileType === "horizontal-only" && (
+        // Gray walls either side of the grid box
+        <VStack
+          justifyContent="space-between"
+          height="100%"
+          width="100%"
+          position="absolute"
+          zIndex="0"
+        >
+          <Box
+            w="100%"
+            h="40%"
+            backgroundColor={"gray"}
+            opacity={1}
+            zIndex="1"
+          />
+          <Box
+            w="100%"
+            h="40%"
+            backgroundColor={"gray"}
+            opacity={1}
+            zIndex="1"
+          />
+        </VStack>
       )}
 
       <VStack spacing="0" width="100%" height="100%">

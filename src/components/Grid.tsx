@@ -1,26 +1,26 @@
 import { Box } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import GridBox from "./GridBox";
-import { GridBoxPath } from "../types";
+import { ColourPoint, GridBoxPath, Point, SpecialTile } from "../types";
 import { playSFX } from "../utils/playSFX";
 
 type GridProps = {
   size: number;
-  circles: { color: string; x: number; y: number }[];
+  circles: ColourPoint[];
   completedPaths: { [key: string]: boolean };
   setCompletedPaths: React.Dispatch<
     React.SetStateAction<{ [key: string]: boolean }>
   >;
   path: { [key: string]: GridBoxPath };
   setPath: React.Dispatch<React.SetStateAction<{ [key: string]: GridBoxPath }>>;
-  wallTiles: { x: number; y: number }[];
-  specialTiles: { x: number; y: number; tileType: string }[];
+  wallTiles: Point[];
+  specialTiles: SpecialTile[];
   setPuzzle: React.Dispatch<
     React.SetStateAction<{
-      circles: { color: string; x: number; y: number }[];
+      circles: ColourPoint[];
       size: number;
-      wallTiles: { x: number; y: number }[];
-      specialTiles: { x: number; y: number; tileType: string }[];
+      wallTiles: Point[];
+      specialTiles: SpecialTile[];
       stageEffects: string[];
       colorCount?: number;
       backgroundColor?: string;
@@ -164,6 +164,71 @@ const Grid: React.FC<GridProps> = ({
       specialTiles.some(
         (s) =>
           s.x === parseInt(x) && s.y === parseInt(y) && s.tileType === "lock"
+      )
+    ) {
+      return true;
+    }
+
+    // If the current path contains a colour-specific special tile of a different color, return true
+    if (
+      specialTiles.some(
+        (s) =>
+          s.x === parseInt(x) &&
+          s.y === parseInt(y) &&
+          s.tileType === "colour-specific" &&
+          s.color !== currentColor
+      )
+    ) {
+      return true;
+    }
+
+    // If traveling horizontally, and the current path contains a specialtile vertical-only path, return true
+    if (
+      diffX !== 0 &&
+      specialTiles.some(
+        (s) =>
+          s.x === parseInt(x) &&
+          s.y === parseInt(y) &&
+          s.tileType === "vertical-only"
+      )
+    ) {
+      return true;
+    }
+
+    // If traveling horizontally, and the previous path contains a specialtile vertical-only path, return true
+    if (
+      diffX !== 0 &&
+      specialTiles.some(
+        (s) =>
+          s.x === parseInt(prevKey.split(",")[0]) &&
+          s.y === parseInt(prevKey.split(",")[1]) &&
+          s.tileType === "vertical-only"
+      )
+    ) {
+      return true;
+    }
+
+    // If traveling vertically, and the current path contains a specialtile horizontal-only path, return true
+    if (
+      diffY !== 0 &&
+      specialTiles.some(
+        (s) =>
+          s.x === parseInt(x) &&
+          s.y === parseInt(y) &&
+          s.tileType === "horizontal-only"
+      )
+    ) {
+      return true;
+    }
+
+    // If traveling vertically, and the previous path contains a specialtile horizontal-only path, return true
+    if (
+      diffY !== 0 &&
+      specialTiles.some(
+        (s) =>
+          s.x === parseInt(prevKey.split(",")[0]) &&
+          s.y === parseInt(prevKey.split(",")[1]) &&
+          s.tileType === "horizontal-only"
       )
     ) {
       return true;
@@ -416,9 +481,7 @@ const Grid: React.FC<GridProps> = ({
             onMouseDown={() => startDrawing(col, row)}
             onMouseEnter={() => handleMouseEnter(col, row)}
             isWallTile={wallTiles.some((w) => w.x === col && w.y === row)}
-            specialTileType={
-              specialTiles.find((s) => s.x === col && s.y === row)?.tileType
-            }
+            specialTile={specialTiles.find((s) => s.x === col && s.y === row)}
           />
         );
       })}

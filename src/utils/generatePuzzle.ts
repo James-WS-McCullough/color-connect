@@ -222,24 +222,24 @@ function generateOnePuzzle(
 
   // If the stageTypes includes "lock", add them to specialTiles
   if (stageTypes && stageTypes.includes("lock")) {
-    // Create random lockboxes on non-endpoint coloured tiles that aren't green or yellow
-    const lockableColors = colors.filter(
-      (color) => color !== "green" && color !== "yellow"
-    );
+    // Create random lockboxes on non-endpoint coloured tiles that aren't green or yellow, and don't have a special tile on them
     const lockableTiles = [] as Point[];
     for (let y = 0; y < gridSize; y++) {
       for (let x = 0; x < gridSize; x++) {
         if (
           grid[y][x] !== null &&
           grid[y][x] !== "green" &&
-          grid[y][x] !== "yellow"
+          grid[y][x] !== "yellow" &&
+          !specialTiles.some(
+            (specialTile) => specialTile.x === x && specialTile.y === y
+          )
         ) {
           lockableTiles.push({ x, y });
         }
       }
     }
     const numLocks = Math.max(
-      Math.min(Math.floor(Math.random() * lockableTiles.length), 3),
+      Math.min(Math.floor(Math.random() * 3), lockableTiles.length),
       1
     );
     const lockTiles = [] as Point[];
@@ -250,6 +250,96 @@ function generateOnePuzzle(
     }
     specialTiles.push(
       ...lockTiles.map(({ x, y }) => ({ x, y, tileType: "lock" }))
+    );
+  }
+
+  // If the stageTypes includes "colour-spesific-tiles", add some to specialTiles
+  if (stageTypes && stageTypes.includes("colour-spesific-tiles")) {
+    // possible tiles are all tiles that are not null, and don't have a special tile on them
+    const colourableTiles = [] as Point[];
+    for (let y = 0; y < gridSize; y++) {
+      for (let x = 0; x < gridSize; x++) {
+        if (
+          grid[y][x] !== null &&
+          !specialTiles.some(
+            (specialTile) => specialTile.x === x && specialTile.y === y
+          )
+        ) {
+          colourableTiles.push({ x, y });
+        }
+      }
+    }
+    // Add random number between 1 and 3 colour-specific tiles, of the colour tile they are on
+    const numTiles = Math.max(
+      Math.min(Math.floor(Math.random() * 5), colourableTiles.length),
+      1
+    );
+
+    const colourTiles = [] as Point[];
+    for (let i = 0; i < numTiles; i++) {
+      const index = Math.floor(Math.random() * colourableTiles.length);
+      colourTiles.push(colourableTiles[index]);
+      colourableTiles.splice(index, 1);
+    }
+    specialTiles.push(
+      ...colourTiles.map(({ x, y }) => ({
+        x,
+        y,
+        tileType: "colour-specific",
+        color: grid[y][x] || "tomato",
+      }))
+    );
+  }
+
+  // If the stageTypes includes "direction-spesific-tiles", add them to specialTiles
+  if (stageTypes && stageTypes.includes("direction-spesific-tiles")) {
+    // List all random tiles that are not null, don't have a special tile on them, and have a tile of the same colour on either side of them (horizontally or vertically)
+    const directionableTiles = [] as (Point & { tileType: string })[];
+    for (let y = 0; y < gridSize; y++) {
+      for (let x = 0; x < gridSize; x++) {
+        if (
+          grid[y][x] !== null &&
+          !specialTiles.some(
+            (specialTile) => specialTile.x === x && specialTile.y === y
+          )
+        ) {
+          // If the tiles above and below match the colour, or the tiles to the left and right match the colour, tileType is either "horizontal-only" or "vertical-only"
+          if (
+            (y > 0 && y < gridSize - 1 && grid[y - 1][x] === grid[y + 1][x]) ||
+            (x > 0 && x < gridSize - 1 && grid[y][x - 1] === grid[y][x + 1])
+          ) {
+            directionableTiles.push({
+              x,
+              y,
+              tileType:
+                y > 0 && y < gridSize - 1 && grid[y - 1][x] === grid[y + 1][x]
+                  ? "vertical-only"
+                  : "horizontal-only",
+            });
+          }
+        }
+      }
+    }
+    // Add random number between 1 and 3 direction-specific tiles, either horizontal or vertical
+    const numTiles = Math.max(
+      Math.min(Math.floor(Math.random() * 3), directionableTiles.length),
+      1
+    );
+    const directionTiles = [] as (Point & { tileType: string })[];
+    for (let i = 0; i < numTiles; i++) {
+      const index = Math.floor(Math.random() * directionableTiles.length);
+      directionTiles.push(directionableTiles[index]);
+      directionableTiles.splice(index, 1);
+    }
+    // Tile type to horizontal or vertical depending on the direction
+
+    specialTiles.push(
+      ...directionTiles.map(({ x, y, tileType }) => ({
+        x,
+        y,
+        tileType,
+        color: grid[y][x] || "tomato",
+      }))
     );
   }
 

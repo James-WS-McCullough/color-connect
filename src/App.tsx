@@ -14,7 +14,9 @@ import {
 import CongratulationsModal from "./components/CongratulationModal";
 import { generatePuzzle } from "./utils/generatePuzzle";
 import {
+  ColourPoint,
   GridBoxPath,
+  Point,
   SpecialTile,
   colors,
   iconColors,
@@ -28,21 +30,10 @@ function App() {
     [key: string]: boolean;
   }>({});
   const [puzzle, setPuzzle] = useState<{
-    circles: {
-      color: string;
-      x: number;
-      y: number;
-    }[];
+    circles: ColourPoint[];
     size: number;
-    wallTiles: {
-      x: number;
-      y: number;
-    }[];
-    specialTiles: {
-      x: number;
-      y: number;
-      tileType: string;
-    }[];
+    wallTiles: Point[];
+    specialTiles: SpecialTile[];
     stageEffects: string[];
     colorCount?: number;
     backgroundColor?: string;
@@ -161,6 +152,9 @@ function App() {
     if (size < 4) {
       return colourCount < size - 1;
     }
+    if (size >= 8) {
+      return true;
+    }
     return colourCount < size;
   };
 
@@ -250,14 +244,18 @@ function App() {
       playSFX("SFX/success2.wav");
       setLevel(1);
       if (toAddNewColor({ colourCount, size })) {
-        const newColorColor = colors[colourCount];
-        triggerPopup("New Colour!", newColorColor);
-        newColourCount = colourCount + 1;
-        setColourCount(newColourCount);
+        if (colourCount < 19) {
+          const newColorColor = colors[colourCount];
+          triggerPopup("New Colour!", newColorColor);
+          newColourCount = colourCount + 1;
+          setColourCount(newColourCount);
+        }
       } else {
-        triggerPopup("Bigger Board!");
-        newSize = size + 1;
-        setSize(newSize);
+        if (size < 8) {
+          triggerPopup("Bigger Board!");
+          newSize = size + 1;
+          setSize(newSize);
+        }
       }
     } else {
       playSFX("SFX/success1.wav");
