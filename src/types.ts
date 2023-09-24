@@ -6,6 +6,11 @@ export type GridBoxPath = {
   color: string;
 };
 
+export type Point = { x: number; y: number };
+export type ColourPoint = Point & { color: string };
+export type SpecialTile = Point & { tileType: string };
+export type Grid = (string | null)[][];
+
 export const colors = [
   "red",
   "green",
@@ -52,6 +57,12 @@ export const iconColors = {
 
 export const unlockableStageTypes = [
   {
+    level: 5,
+    effect: "lock",
+    popupText: "Unlocked Locks!",
+    color: "yellow",
+  },
+  {
     level: 10,
     effect: "warp",
     popupText: "Unlocked Warps!",
@@ -61,6 +72,6 @@ export const unlockableStageTypes = [
     level: 20,
     effect: "dark",
     popupText: "Unlocked Dark Mode!",
-    color: "yellow",
+    color: "black",
   },
 ];

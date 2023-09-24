@@ -15,6 +15,17 @@ type GridProps = {
   setPath: React.Dispatch<React.SetStateAction<{ [key: string]: GridBoxPath }>>;
   wallTiles: { x: number; y: number }[];
   specialTiles: { x: number; y: number; tileType: string }[];
+  setPuzzle: React.Dispatch<
+    React.SetStateAction<{
+      circles: { color: string; x: number; y: number }[];
+      size: number;
+      wallTiles: { x: number; y: number }[];
+      specialTiles: { x: number; y: number; tileType: string }[];
+      stageEffects: string[];
+      colorCount?: number;
+      backgroundColor?: string;
+    }>
+  >;
   stageEffects: string[];
 };
 
@@ -27,6 +38,7 @@ const Grid: React.FC<GridProps> = ({
   setPath,
   wallTiles,
   specialTiles,
+  setPuzzle,
   stageEffects,
 }) => {
   const [drawing, setDrawing] = useState(false);
@@ -144,6 +156,16 @@ const Grid: React.FC<GridProps> = ({
 
     // If the current path contains a wall, return true
     if (wallTiles.some((w) => w.x === parseInt(x) && w.y === parseInt(y))) {
+      return true;
+    }
+
+    // If the current path contains a lock, return true
+    if (
+      specialTiles.some(
+        (s) =>
+          s.x === parseInt(x) && s.y === parseInt(y) && s.tileType === "lock"
+      )
+    ) {
       return true;
     }
 
@@ -305,6 +327,22 @@ const Grid: React.FC<GridProps> = ({
         if (stageEffects.includes("dark") && currentColor == "yellow") {
           playSFX("SFX/light2.wav");
           stageEffects.splice(stageEffects.indexOf("dark"), 1, "light");
+        }
+        // If any of the special tiles are lock, if the current color is green, remove all locks
+        if (
+          specialTiles.some(
+            (s) => s.tileType === "lock" && currentColor === "green"
+          )
+        ) {
+          // Remove all lock objects from specialTiles
+          setPuzzle((prevPuzzle) => ({
+            ...prevPuzzle,
+            specialTiles: prevPuzzle.specialTiles.filter(
+              (s) => s.tileType !== "lock"
+            ),
+          }));
+
+          playSFX("SFX/lock1.wav");
         }
       }
 

@@ -13,7 +13,13 @@ import {
 } from "@chakra-ui/react";
 import CongratulationsModal from "./components/CongratulationModal";
 import { generatePuzzle } from "./utils/generatePuzzle";
-import { GridBoxPath, colors, iconColors, unlockableStageTypes } from "./types";
+import {
+  GridBoxPath,
+  SpecialTile,
+  colors,
+  iconColors,
+  unlockableStageTypes,
+} from "./types";
 import IntroductionModal from "./components/IntroductionModal";
 import { playSFX } from "./utils/playSFX";
 
@@ -162,15 +168,41 @@ function App() {
     if (unlockedStageTypes.length === 0) {
       return [];
     }
-    // For 2/3 of the time, return empty array.
-    // For 1/3 of the time, return a random unlocked stage type
-    const random = Math.random();
-    if (random < 0.66) {
-      return [];
+    if (levelNumber < 40) {
+      const random = Math.random();
+      if (random < 0.3) {
+        return [];
+      }
+      const randomIndex = Math.floor(Math.random() * unlockedStageTypes.length);
+      const randomStageType = unlockedStageTypes[randomIndex];
+      return [randomStageType];
+    } else {
+      const random1 = Math.random();
+      if (random1 < 0.2) {
+        return [];
+      }
+      const random = Math.random();
+      if (random < 0.5) {
+        const randomIndex = Math.floor(
+          Math.random() * unlockedStageTypes.length
+        );
+        const randomStageType = unlockedStageTypes[randomIndex];
+        return [randomStageType];
+      }
+      // Return 2 different random stage types
+      const randomIndex1 = Math.floor(
+        Math.random() * unlockedStageTypes.length
+      );
+      const randomIndex2 = Math.floor(
+        Math.random() * unlockedStageTypes.length
+      );
+      const randomStageType1 = unlockedStageTypes[randomIndex1];
+      const randomStageType2 = unlockedStageTypes[randomIndex2];
+      if (randomStageType1 === randomStageType2) {
+        return [randomStageType1];
+      }
+      return [randomStageType1, randomStageType2];
     }
-    const randomIndex = Math.floor(Math.random() * unlockedStageTypes.length);
-    const randomStageType = unlockedStageTypes[randomIndex];
-    return [randomStageType];
   };
 
   const onNewPuzzle = () => {
@@ -271,6 +303,7 @@ function App() {
           setPath={setPath}
           wallTiles={puzzle.wallTiles}
           specialTiles={puzzle.specialTiles}
+          setPuzzle={setPuzzle}
           stageEffects={puzzle.stageEffects}
         />
       </Box>

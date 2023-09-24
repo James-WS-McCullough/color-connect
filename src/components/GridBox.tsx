@@ -62,6 +62,16 @@ const GridBox: React.FC<GridBoxProps> = ({
           animation="spin 5s linear infinite"
         />
       )}
+      {specialTileType === "lock" && (
+        <Image
+          src="lockbox.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+        />
+      )}
+
       <VStack spacing="0" width="100%" height="100%">
         <Box
           w="20%"

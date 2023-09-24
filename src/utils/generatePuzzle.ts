@@ -1,9 +1,10 @@
-import { colors as allColors } from "../types";
-
-type Point = { x: number; y: number };
-type ColourPoint = Point & { color: string };
-type SpecialTile = Point & { tileType: string };
-type Grid = (string | null)[][];
+import {
+  ColourPoint,
+  Grid,
+  Point,
+  SpecialTile,
+  colors as allColors,
+} from "../types";
 
 const directions: Point[] = [
   { x: 0, y: -1 }, // up
@@ -110,10 +111,24 @@ function generateOnePuzzle(
     for (let y = 0; y < gridSize; y++) {
       for (let x = 0; x < gridSize; x++) {
         if (grid[y][x] === null) {
+          // If the tile is not an endpoint for the color, or not bordering an endpoint for the color
           if (endpoints[color][0].x !== x || endpoints[color][0].y !== y) {
-            if (endpoints[color][1].x !== x || endpoints[color][1].y !== y) {
-              possibleTiles.push({ x, y });
+            let isBordering = false;
+            for (const { x: dx, y: dy } of directions) {
+              const newX = x + dx;
+              const newY = y + dy;
+              if (
+                newX >= 0 &&
+                newX < gridSize &&
+                newY >= 0 &&
+                newY < gridSize &&
+                endpoints[color][0].x === newX &&
+                endpoints[color][0].y === newY
+              ) {
+                isBordering = true;
+              }
             }
+            if (!isBordering) possibleTiles.push({ x, y });
           }
         }
       }
@@ -203,6 +218,39 @@ function generateOnePuzzle(
 
     grid[newY][newX] = color;
     endpoints[color][endpointIndex] = { x: newX, y: newY };
+  }
+
+  // If the stageTypes includes "lock", add them to specialTiles
+  if (stageTypes && stageTypes.includes("lock")) {
+    // Create random lockboxes on non-endpoint coloured tiles that aren't green or yellow
+    const lockableColors = colors.filter(
+      (color) => color !== "green" && color !== "yellow"
+    );
+    const lockableTiles = [] as Point[];
+    for (let y = 0; y < gridSize; y++) {
+      for (let x = 0; x < gridSize; x++) {
+        if (
+          grid[y][x] !== null &&
+          grid[y][x] !== "green" &&
+          grid[y][x] !== "yellow"
+        ) {
+          lockableTiles.push({ x, y });
+        }
+      }
+    }
+    const numLocks = Math.max(
+      Math.min(Math.floor(Math.random() * lockableTiles.length), 3),
+      1
+    );
+    const lockTiles = [] as Point[];
+    for (let i = 0; i < numLocks; i++) {
+      const index = Math.floor(Math.random() * lockableTiles.length);
+      lockTiles.push(lockableTiles[index]);
+      lockableTiles.splice(index, 1);
+    }
+    specialTiles.push(
+      ...lockTiles.map(({ x, y }) => ({ x, y, tileType: "lock" }))
+    );
   }
 
   // Return:

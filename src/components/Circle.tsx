@@ -19,6 +19,7 @@ import Face4Icon from "@mui/icons-material/Face4";
 import FortIcon from "@mui/icons-material/Fort";
 import HotelIcon from "@mui/icons-material/Hotel";
 import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
+import KeyIcon from "@mui/icons-material/Key";
 
 // Icons fill the circle
 const colorToIconMap = {
@@ -32,7 +33,7 @@ const colorToIconMap = {
     />
   ),
   green: (
-    <AgricultureIcon
+    <KeyIcon
       fontSize="large"
       sx={{
         color: "white",
