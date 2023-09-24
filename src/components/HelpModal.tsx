@@ -12,7 +12,7 @@ import {
   Text,
   HStack,
 } from "@chakra-ui/react";
-import GridBox from "./GridBox";
+import WavesIcon from "@mui/icons-material/Waves";
 import MockGridBox from "./MockGridBox";
 
 type HelpModalProps = {
@@ -83,10 +83,13 @@ const HelpModal: React.FC<HelpModalProps> = ({
               </HStack>
             </VStack>
             {levelNumber >= 5 && (
-              <Text>
-                Every 5 levels is a easy breezy level. They're a bit easier, to
-                give you a break.
-              </Text>
+              <HStack>
+                <WavesIcon fontSize="large" />
+                <Text>
+                  Every 5 levels is an <i>easy breezy level</i>. They're a bit
+                  easier, to give you a break.
+                </Text>
+              </HStack>
             )}
             {unlockedStageTypes.includes("lock") && (
               <VStack>
