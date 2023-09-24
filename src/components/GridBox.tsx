@@ -138,7 +138,11 @@ const GridBox: React.FC<GridBoxProps> = ({
         <Box
           w="20%"
           h="40%"
-          backgroundColor={path.color || "tomato"}
+          backgroundColor={
+            stageEffects && stageEffects.includes("dark")
+              ? "gray"
+              : path.color || "tomato"
+          }
           opacity={path.up ? 1 : 0}
           zIndex="1"
         />
@@ -146,7 +150,11 @@ const GridBox: React.FC<GridBoxProps> = ({
           <Box
             w="40%"
             h="100%"
-            backgroundColor={path.color || "tomato"}
+            backgroundColor={
+              stageEffects && stageEffects.includes("dark")
+                ? "gray"
+                : path.color || "tomato"
+            }
             opacity={path.left ? 1 : 0}
             zIndex="1"
           />
@@ -154,7 +162,11 @@ const GridBox: React.FC<GridBoxProps> = ({
           <Box
             w="20%"
             h="100%"
-            backgroundColor={path.color || "tomato"}
+            backgroundColor={
+              stageEffects && stageEffects.includes("dark")
+                ? "gray"
+                : path.color || "tomato"
+            }
             opacity={path.color ? 1 : 0}
             // borderRadius is 50 only opposite sides are true
             // If just 1 true, then 2 corners are rounded
@@ -185,7 +197,11 @@ const GridBox: React.FC<GridBoxProps> = ({
           <Box
             w="40%"
             h="100%"
-            backgroundColor={path.color || "tomato"}
+            backgroundColor={
+              stageEffects && stageEffects.includes("dark")
+                ? "gray"
+                : path.color || "tomato"
+            }
             opacity={path.right ? 1 : 0}
             zIndex="1"
           />
@@ -193,7 +209,11 @@ const GridBox: React.FC<GridBoxProps> = ({
         <Box
           w="20%"
           h="40%"
-          backgroundColor={path.color || "tomato"}
+          backgroundColor={
+            stageEffects && stageEffects.includes("dark")
+              ? "gray"
+              : path.color || "tomato"
+          }
           opacity={path.down ? 1 : 0}
           zIndex="1"
         />
