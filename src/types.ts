@@ -70,26 +70,26 @@ export const unlockableStageTypes = [
   },
   {
     level: 15,
-    effect: "warp",
-    popupText: "It's Warp Time!",
-    color: "pink",
-  },
-  {
-    level: 20,
-    effect: "dark",
-    popupText: "Lights Out!",
-    color: "black",
-  },
-  {
-    level: 25,
     effect: "direction-spesific-tiles",
     popupText: "Tunnels are Here!",
     color: "blue",
   },
   {
-    level: 30,
+    level: 20,
+    effect: "warp",
+    popupText: "It's Warp Time!",
+    color: "pink",
+  },
+  {
+    level: 25,
     effect: "arrow-tiles",
     popupText: "Arrow Tiles Arrive!",
     color: "green",
+  },
+  {
+    level: 30,
+    effect: "dark",
+    popupText: "Lights Out!",
+    color: "black",
   },
 ];

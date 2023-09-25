@@ -198,6 +198,63 @@ const HelpModal: React.FC<HelpModalProps> = ({
                 </HStack>
               </VStack>
             )}
+            {unlockedStageTypes.includes("direction-spesific-tiles") && (
+              <VStack>
+                <Text>
+                  Directional tiles can only be passed through from the correct
+                  direction.
+                </Text>
+                <HStack height="100px" width="400px" spacing="0">
+                  <MockGridBox
+                    color="red"
+                    path={{
+                      color: "red",
+                      left: false,
+                      right: true,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                  <MockGridBox
+                    path={{
+                      color: "red",
+                      left: true,
+                      right: true,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                  <MockGridBox
+                    specialTile={{
+                      tileType: "horizontal-only",
+                      x: 0,
+                      y: 0,
+                    }}
+                    path={{
+                      color: "red",
+                      left: true,
+                      right: false,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                  <MockGridBox
+                    specialTile={{
+                      tileType: "vertical-only",
+                      x: 0,
+                      y: 0,
+                    }}
+                    path={{
+                      color: "",
+                      left: false,
+                      right: false,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                </HStack>
+              </VStack>
+            )}
             {unlockedStageTypes.includes("warp") && (
               <VStack>
                 <Text>
@@ -256,112 +313,6 @@ const HelpModal: React.FC<HelpModalProps> = ({
                 </HStack>
               </VStack>
             )}
-            {unlockedStageTypes.includes("dark") && (
-              <VStack>
-                <Text>
-                  If a stage is dark, connect the yellow light circles to light
-                  the stage up.
-                </Text>
-                <HStack height="100px" width="400px" spacing="0">
-                  <MockGridBox
-                    color="yellow"
-                    path={{
-                      color: "yellow",
-                      left: false,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    path={{
-                      color: "yellow",
-                      left: true,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    color="yellow"
-                    path={{
-                      color: "",
-                      left: false,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    color="gray"
-                    path={{
-                      color: "",
-                      left: false,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                </HStack>
-              </VStack>
-            )}
-            {unlockedStageTypes.includes("direction-spesific-tiles") && (
-              <VStack>
-                <Text>
-                  Directional tiles can only be passed through from the correct
-                  direction.
-                </Text>
-                <HStack height="100px" width="400px" spacing="0">
-                  <MockGridBox
-                    color="red"
-                    path={{
-                      color: "red",
-                      left: false,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    specialTile={{
-                      tileType: "horizontal-only",
-                      x: 0,
-                      y: 0,
-                    }}
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    specialTile={{
-                      tileType: "vertical-only",
-                      x: 0,
-                      y: 0,
-                    }}
-                    path={{
-                      color: "",
-                      left: false,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                </HStack>
-              </VStack>
-            )}
             {unlockedStageTypes.includes("arrow-tiles") && (
               <VStack>
                 <Text>
@@ -408,6 +359,55 @@ const HelpModal: React.FC<HelpModalProps> = ({
                       x: 0,
                       y: 0,
                     }}
+                    path={{
+                      color: "",
+                      left: false,
+                      right: false,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                </HStack>
+              </VStack>
+            )}
+            {unlockedStageTypes.includes("dark") && (
+              <VStack>
+                <Text>
+                  If a stage is dark, connect the yellow light circles to light
+                  the stage up.
+                </Text>
+                <HStack height="100px" width="400px" spacing="0">
+                  <MockGridBox
+                    color="yellow"
+                    path={{
+                      color: "yellow",
+                      left: false,
+                      right: true,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                  <MockGridBox
+                    path={{
+                      color: "yellow",
+                      left: true,
+                      right: false,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                  <MockGridBox
+                    color="yellow"
+                    path={{
+                      color: "",
+                      left: false,
+                      right: false,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                  <MockGridBox
+                    color="gray"
                     path={{
                       color: "",
                       left: false,
