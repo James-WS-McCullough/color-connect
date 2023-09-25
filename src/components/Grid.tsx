@@ -80,7 +80,7 @@ const Grid: React.FC<GridProps> = ({
       onTouchCancel={() => {
         stopDrawing({ setDrawing });
       }}
-      // Mobile onTouchMove to call onMouseEnter with the coordinates of the cell the user is touching
+      // Mobile onTouchMove to call onMouseEnter with the gridbox that the user is touching, if they contact a new gridbox. You can use prevBox to check if the user has moved to a new gridbox.
       onTouchMove={(e) => {
         e.preventDefault();
         const touch = e.touches[0];
@@ -88,7 +88,12 @@ const Grid: React.FC<GridProps> = ({
         const y = Math.floor(touch.clientY / (window.innerWidth / size));
         const box = document.getElementById(`${x},${y}`);
         if (box) {
-          box.dispatchEvent(new MouseEvent("mouseenter"));
+          const event = new MouseEvent("mouseenter", {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+          });
+          box.dispatchEvent(event);
         }
       }}
     >
