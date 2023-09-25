@@ -59,9 +59,11 @@ const Grid: React.FC<GridProps> = ({
     };
 
     window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchend", handleMouseUp);
 
     return () => {
       window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchend", handleMouseUp);
     };
   }, [stopDrawing]);
 

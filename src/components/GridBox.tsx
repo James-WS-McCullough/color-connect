@@ -39,7 +39,12 @@ const GridBox: React.FC<GridBoxProps> = ({
         e.preventDefault();
         onMouseDown();
       }}
+      onTouchStart={(e) => {
+        e.preventDefault();
+        onMouseDown();
+      }}
       onMouseEnter={onMouseEnter}
+      onTouchMove={onMouseEnter}
     >
       {color && (
         <Circle
