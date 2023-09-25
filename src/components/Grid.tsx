@@ -80,18 +80,15 @@ const Grid: React.FC<GridProps> = ({
       onTouchCancel={() => {
         stopDrawing({ setDrawing });
       }}
-      // Mobile onTouchMove to call onMouseEnter on the box the user is touching
+      // Mobile onTouchMove to call onMouseEnter with the coordinates of the cell the user is touching
       onTouchMove={(e) => {
         e.preventDefault();
         const touch = e.touches[0];
-        const element = document.elementFromPoint(touch.clientX, touch.clientY);
-        if (element) {
-          element.dispatchEvent(
-            new MouseEvent("mouseenter", {
-              bubbles: true,
-              cancelable: true,
-            })
-          );
+        const x = Math.floor(touch.clientX / (window.innerWidth / size));
+        const y = Math.floor(touch.clientY / (window.innerWidth / size));
+        const box = document.getElementById(`${x},${y}`);
+        if (box) {
+          box.dispatchEvent(new MouseEvent("mouseenter"));
         }
       }}
     >
