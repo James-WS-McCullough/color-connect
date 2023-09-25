@@ -71,7 +71,7 @@ const Grid: React.FC<GridProps> = ({
 
   useEffect(() => {
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isHelpModalOpen) e.preventDefault();
+      if (drawing) e.preventDefault();
     };
     // Add non-passive event listener
     document.addEventListener("touchmove", handleTouchMove, { passive: false });
@@ -85,8 +85,9 @@ const Grid: React.FC<GridProps> = ({
   return (
     <Box
       position="relative"
-      height="70vh"
-      width="70vh"
+      // Always square, max at 70vh or 90vw
+      width="min(70vh, 90vw)"
+      height="min(70vh, 90vw)"
       display="grid"
       gridTemplateColumns={`repeat(${size}, 1fr)`}
       onMouseLeave={() => {
