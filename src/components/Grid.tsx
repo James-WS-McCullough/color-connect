@@ -71,7 +71,7 @@ const Grid: React.FC<GridProps> = ({
 
   useEffect(() => {
     const handleTouchMove = (e: TouchEvent) => {
-      if (drawing) e.preventDefault();
+      e.preventDefault();
     };
     // Add non-passive event listener
     document.addEventListener("touchmove", handleTouchMove, { passive: false });
