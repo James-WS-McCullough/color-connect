@@ -70,46 +70,6 @@ const Grid: React.FC<GridProps> = ({
   useEffect(() => {
     const handleTouchMove = (e: TouchEvent) => {
       e.preventDefault();
-
-      // Touch coordinates
-      const touchX = e.touches[0].clientX;
-      const touchY = e.touches[0].clientY;
-
-      // Grid bounding box
-      if (!e.currentTarget) return;
-      const currentTarget = e.currentTarget as HTMLElement;
-
-      const boundingBox = currentTarget.getBoundingClientRect();
-
-      // Calculate cell width and height
-      const cellWidth = boundingBox.width / size;
-      const cellHeight = boundingBox.height / size;
-
-      // Calculate touched cell's x and y
-      const col = Math.floor((touchX - boundingBox.left) / cellWidth);
-      const row = Math.floor((touchY - boundingBox.top) / cellHeight);
-
-      // Check if the calculated indices are within the grid boundaries
-      if (col >= 0 && col < size && row >= 0 && row < size) {
-        // Call the handleMouseEnter function for the touched cell
-        handleMouseEnter({
-          x: col,
-          y: row,
-          drawing,
-          prevBox,
-          circles,
-          currentColor,
-          wallTiles,
-          specialTiles,
-          path,
-          setDrawing,
-          setPath,
-          setCompletedPaths,
-          stageEffects,
-          setPuzzle,
-          setPrevBox,
-        });
-      }
     };
     // Add non-passive event listener
     document.addEventListener("touchmove", handleTouchMove, { passive: false });
@@ -132,6 +92,46 @@ const Grid: React.FC<GridProps> = ({
       }}
       onTouchCancel={() => {
         stopDrawing({ setDrawing });
+      }}
+      onTouchMove={(e) => {
+        e.preventDefault();
+
+        // Touch coordinates
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+
+        // Grid bounding box
+        const boundingBox = e.currentTarget.getBoundingClientRect();
+
+        // Calculate cell width and height
+        const cellWidth = boundingBox.width / size;
+        const cellHeight = boundingBox.height / size;
+
+        // Calculate touched cell's x and y
+        const col = Math.floor((touchX - boundingBox.left) / cellWidth);
+        const row = Math.floor((touchY - boundingBox.top) / cellHeight);
+
+        // Check if the calculated indices are within the grid boundaries
+        if (col >= 0 && col < size && row >= 0 && row < size) {
+          // Call the handleMouseEnter function for the touched cell
+          handleMouseEnter({
+            x: col,
+            y: row,
+            drawing,
+            prevBox,
+            circles,
+            currentColor,
+            wallTiles,
+            specialTiles,
+            path,
+            setDrawing,
+            setPath,
+            setCompletedPaths,
+            stageEffects,
+            setPuzzle,
+            setPrevBox,
+          });
+        }
       }}
     >
       {Array.from({ length: size * size }, (_, index) => {
