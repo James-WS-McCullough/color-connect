@@ -77,6 +77,23 @@ const Grid: React.FC<GridProps> = ({
       onMouseLeave={() => {
         stopDrawing({ setDrawing });
       }}
+      onTouchCancel={() => {
+        stopDrawing({ setDrawing });
+      }}
+      // Mobile onTouchMove to call onMouseEnter on the box the user is touching
+      onTouchMove={(e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (element) {
+          element.dispatchEvent(
+            new MouseEvent("mouseenter", {
+              bubbles: true,
+              cancelable: true,
+            })
+          );
+        }
+      }}
     >
       {Array.from({ length: size * size }, (_, index) => {
         const row = Math.floor(index / size);
