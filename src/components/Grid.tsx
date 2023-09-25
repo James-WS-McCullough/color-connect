@@ -80,27 +80,30 @@ const Grid: React.FC<GridProps> = ({
       onTouchCancel={() => {
         stopDrawing({ setDrawing });
       }}
-      // Mobile onTouchMove to call onMouseEnter with the gridbox that the user is touching, if they contact a new gridbox. You can use prevBox to check if the user has moved to a new gridbox.
       onTouchMove={(e) => {
         e.preventDefault();
-        const touch = e.touches[0];
-        const grid = document.getElementById("grid");
-        if (!grid) return;
-        const rect = grid.getBoundingClientRect();
-        const x = Math.floor((touch.clientX - rect.left) / (rect.width / size));
-        const y = Math.floor((touch.clientY - rect.top) / (rect.height / size));
-        const box = document.getElementById(`${x},${y}`);
-        if (!box) return;
-        const boxRect = box.getBoundingClientRect();
-        const boxX = boxRect.left + boxRect.width / 2;
-        const boxY = boxRect.top + boxRect.height / 2;
-        const distance = Math.sqrt(
-          Math.pow(touch.clientX - boxX, 2) + Math.pow(touch.clientY - boxY, 2)
-        );
-        if (distance < boxRect.width / 2) {
+
+        // Touch coordinates
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+
+        // Grid bounding box
+        const boundingBox = e.currentTarget.getBoundingClientRect();
+
+        // Calculate cell width and height
+        const cellWidth = boundingBox.width / size;
+        const cellHeight = boundingBox.height / size;
+
+        // Calculate touched cell's x and y
+        const col = Math.floor((touchX - boundingBox.left) / cellWidth);
+        const row = Math.floor((touchY - boundingBox.top) / cellHeight);
+
+        // Check if the calculated indices are within the grid boundaries
+        if (col >= 0 && col < size && row >= 0 && row < size) {
+          // Call the handleMouseEnter function for the touched cell
           handleMouseEnter({
-            x,
-            y,
+            x: col,
+            y: row,
             drawing,
             prevBox,
             circles,
