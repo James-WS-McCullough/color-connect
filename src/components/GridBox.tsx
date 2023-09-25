@@ -46,7 +46,7 @@ const GridBox: React.FC<GridBoxProps> = ({
       onMouseEnter={onMouseEnter}
       onTouchMove={(e) => {
         e.preventDefault();
-        onMouseEnter;
+        onMouseEnter();
       }}
     >
       {color && (
