@@ -399,19 +399,22 @@ function generateOnePuzzle(
       1
     );
     const arrowTiles = [] as (Point & { tileType: string })[];
+    const arrowTileColors = [] as string[];
     for (let i = 0; i < numTiles; i++) {
       const index = Math.floor(Math.random() * arrowableTiles.length);
-      // If there is not an arrow-tile on any tile of this colour, add it to arrowTiles
-      const color = grid[arrowableTiles[index].y][arrowableTiles[index].x];
+      const color =
+        grid[arrowableTiles[index].y][arrowableTiles[index].x] || "";
       if (
-        !arrowTiles.some(
-          (arrowTile) =>
-            arrowTile.tileType === `arrow-${arrowableTiles[index].tileType}` &&
-            grid[arrowTile.y][arrowTile.x] === color
+        !arrowTileColors.includes(color) &&
+        !specialTiles.some(
+          (specialTile) =>
+            specialTile.x === arrowableTiles[index].x &&
+            specialTile.y === arrowableTiles[index].y
         )
       ) {
         arrowTiles.push(arrowableTiles[index]);
         arrowableTiles.splice(index, 1);
+        arrowTileColors.push(color);
       }
     }
 
