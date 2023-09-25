@@ -84,16 +84,37 @@ const Grid: React.FC<GridProps> = ({
       onTouchMove={(e) => {
         e.preventDefault();
         const touch = e.touches[0];
-        const x = Math.floor(touch.clientX / (window.innerWidth / size));
-        const y = Math.floor(touch.clientY / (window.innerWidth / size));
+        const grid = document.getElementById("grid");
+        if (!grid) return;
+        const rect = grid.getBoundingClientRect();
+        const x = Math.floor((touch.clientX - rect.left) / (rect.width / size));
+        const y = Math.floor((touch.clientY - rect.top) / (rect.height / size));
         const box = document.getElementById(`${x},${y}`);
-        if (box) {
-          const event = new MouseEvent("mouseenter", {
-            view: window,
-            bubbles: true,
-            cancelable: true,
+        if (!box) return;
+        const boxRect = box.getBoundingClientRect();
+        const boxX = boxRect.left + boxRect.width / 2;
+        const boxY = boxRect.top + boxRect.height / 2;
+        const distance = Math.sqrt(
+          Math.pow(touch.clientX - boxX, 2) + Math.pow(touch.clientY - boxY, 2)
+        );
+        if (distance < boxRect.width / 2) {
+          handleMouseEnter({
+            x,
+            y,
+            drawing,
+            prevBox,
+            circles,
+            currentColor,
+            wallTiles,
+            specialTiles,
+            path,
+            setDrawing,
+            setPath,
+            setCompletedPaths,
+            stageEffects,
+            setPuzzle,
+            setPrevBox,
           });
-          box.dispatchEvent(event);
         }
       }}
     >
