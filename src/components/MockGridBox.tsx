@@ -121,6 +121,46 @@ const MockGridBox: React.FC<MockGridBoxProps> = ({
         </VStack>
       )}
 
+      {specialTile?.tileType === "arrow-up" && (
+        <Image
+          src="arrowTiles.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+        />
+      )}
+      {specialTile?.tileType === "arrow-down" && (
+        <Image
+          src="arrowTiles.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          transform="rotate(180deg)"
+          zIndex="0"
+        />
+      )}
+      {specialTile?.tileType === "arrow-left" && (
+        <Image
+          src="arrowTiles.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          transform="rotate(270deg)"
+          zIndex="0"
+        />
+      )}
+      {specialTile?.tileType === "arrow-right" && (
+        <Image
+          src="arrowTiles.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          transform="rotate(90deg)"
+          zIndex="0"
+        />
+      )}
+
       <VStack spacing="0" width="100%" height="100%">
         <Box
           w="20%"

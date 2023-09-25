@@ -71,6 +71,45 @@ const GridBox: React.FC<GridBoxProps> = ({
           zIndex="0"
         />
       )}
+      {specialTile?.tileType === "arrow-up" && (
+        <Image
+          src="arrowTiles.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+        />
+      )}
+      {specialTile?.tileType === "arrow-down" && (
+        <Image
+          src="arrowTiles.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          transform="rotate(180deg)"
+          zIndex="0"
+        />
+      )}
+      {specialTile?.tileType === "arrow-left" && (
+        <Image
+          src="arrowTiles.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          transform="rotate(270deg)"
+          zIndex="0"
+        />
+      )}
+      {specialTile?.tileType === "arrow-right" && (
+        <Image
+          src="arrowTiles.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          transform="rotate(90deg)"
+          zIndex="0"
+        />
+      )}
       {specialTile?.tileType === "colour-specific" && (
         // A diamond inside the grid box with the colour of the specialTile.color
         <Box

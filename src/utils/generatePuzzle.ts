@@ -352,6 +352,73 @@ function generateOnePuzzle(
     );
   }
 
+  // If the stageTypes includes "arrow-tiles", add them to specialTiles
+  if (stageTypes && stageTypes.includes("arrow-tiles")) {
+    // List all tiles that have at least 1 neighbor of the same colour, and save their direction.
+    const arrowableTiles = [] as (Point & { tileType: string })[];
+    for (let y = 0; y < gridSize; y++) {
+      for (let x = 0; x < gridSize; x++) {
+        if (
+          grid[y][x] !== null &&
+          !specialTiles.some(
+            (specialTile) => specialTile.x === x && specialTile.y === y
+          )
+        ) {
+          for (const { x: dx, y: dy } of directions) {
+            const newX = x + dx;
+            const newY = y + dy;
+            if (
+              newX >= 0 &&
+              newX < gridSize &&
+              newY >= 0 &&
+              newY < gridSize &&
+              grid[y][x] === grid[newY][newX]
+            ) {
+              arrowableTiles.push({
+                x,
+                y,
+                tileType: `arrow-${
+                  dx === 0
+                    ? dy === -1
+                      ? "up"
+                      : "down"
+                    : dx === -1
+                    ? "left"
+                    : "right"
+                }`,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // Add random number between 1 and 3 arrow tiles,
+    const numTiles = Math.max(
+      Math.min(Math.floor(Math.random() * 3), arrowableTiles.length),
+      1
+    );
+    const arrowTiles = [] as (Point & { tileType: string })[];
+    for (let i = 0; i < numTiles; i++) {
+      const index = Math.floor(Math.random() * arrowableTiles.length);
+      // If there is not an arrow-tile on any tile of this colour, add it to arrowTiles
+      const color = grid[arrowableTiles[index].y][arrowableTiles[index].x];
+      if (
+        !arrowTiles.some(
+          (arrowTile) =>
+            arrowTile.tileType === `arrow-${arrowableTiles[index].tileType}` &&
+            grid[arrowTile.y][arrowTile.x] === color
+        )
+      ) {
+        arrowTiles.push(arrowableTiles[index]);
+        arrowableTiles.splice(index, 1);
+      }
+    }
+
+    specialTiles.push(
+      ...arrowTiles.map(({ x, y, tileType }) => ({ x, y, tileType }))
+    );
+  }
   // Return:
   // The flattened the endpoints into a list of points
   const circles = colors.flatMap((color) =>

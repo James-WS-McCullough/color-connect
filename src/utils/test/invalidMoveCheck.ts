@@ -116,6 +116,108 @@ export const invalidMoveCheck = ({
     return true;
   }
 
+  // If the previous path contains an 'arrow-up' special tile, and the current path is not traveling up, return true
+  if (
+    specialTiles.some(
+      (s) =>
+        s.x === parseInt(prevKey.split(",")[0]) &&
+        s.y === parseInt(prevKey.split(",")[1]) &&
+        s.tileType === "arrow-up"
+    ) &&
+    diffY !== -1
+  ) {
+    return true;
+  }
+
+  // If the previous path contains an 'arrow-down' special tile, and the current path is not traveling down, return true
+  if (
+    specialTiles.some(
+      (s) =>
+        s.x === parseInt(prevKey.split(",")[0]) &&
+        s.y === parseInt(prevKey.split(",")[1]) &&
+        s.tileType === "arrow-down"
+    ) &&
+    diffY !== 1
+  ) {
+    return true;
+  }
+
+  // If the previous path contains an 'arrow-left' special tile, and the current path is not traveling left, return true
+  if (
+    specialTiles.some(
+      (s) =>
+        s.x === parseInt(prevKey.split(",")[0]) &&
+        s.y === parseInt(prevKey.split(",")[1]) &&
+        s.tileType === "arrow-left"
+    ) &&
+    diffX !== -1
+  ) {
+    return true;
+  }
+
+  // If the previous path contains an 'arrow-right' special tile, and the current path is not traveling right, return true
+  if (
+    specialTiles.some(
+      (s) =>
+        s.x === parseInt(prevKey.split(",")[0]) &&
+        s.y === parseInt(prevKey.split(",")[1]) &&
+        s.tileType === "arrow-right"
+    ) &&
+    diffX !== 1
+  ) {
+    return true;
+  }
+
+  // If the current path contains an 'arrow-up' special tile, and the current path is traveling down, return true
+  if (
+    specialTiles.some(
+      (s) =>
+        s.x === parseInt(x) && s.y === parseInt(y) && s.tileType === "arrow-up"
+    ) &&
+    diffY === 1
+  ) {
+    return true;
+  }
+
+  // If the current path contains an 'arrow-down' special tile, and the current path is traveling up, return true
+  if (
+    specialTiles.some(
+      (s) =>
+        s.x === parseInt(x) &&
+        s.y === parseInt(y) &&
+        s.tileType === "arrow-down"
+    ) &&
+    diffY === -1
+  ) {
+    return true;
+  }
+
+  // If the current path contains an 'arrow-left' special tile, and the current path is traveling right, return true
+  if (
+    specialTiles.some(
+      (s) =>
+        s.x === parseInt(x) &&
+        s.y === parseInt(y) &&
+        s.tileType === "arrow-left"
+    ) &&
+    diffX === 1
+  ) {
+    return true;
+  }
+
+  // If the current path contains an 'arrow-right' special tile, and the current path is traveling left, return true
+  if (
+    specialTiles.some(
+      (s) =>
+        s.x === parseInt(x) &&
+        s.y === parseInt(y) &&
+        s.tileType === "arrow-right"
+    ) &&
+    diffX === -1
+  ) {
+    return true;
+  }
+
   if (!path[key]) return false;
   // If the current path[key] is empty, return false
   if (!path[key].up && !path[key].down && !path[key].left && !path[key].right) {

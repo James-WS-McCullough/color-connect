@@ -346,7 +346,68 @@ const HelpModal: React.FC<HelpModalProps> = ({
                     }}
                   />
                   <MockGridBox
+                    specialTile={{
+                      tileType: "vertical-only",
+                      x: 0,
+                      y: 0,
+                    }}
+                    path={{
+                      color: "",
+                      left: false,
+                      right: false,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                </HStack>
+              </VStack>
+            )}
+            {unlockedStageTypes.includes("arrow-tiles") && (
+              <VStack>
+                <Text>
+                  Arrow tiles can only be passed through from the direction of
+                  the arrow.
+                </Text>
+                <HStack height="100px" width="400px" spacing="0">
+                  <MockGridBox
                     color="red"
+                    path={{
+                      color: "red",
+                      left: false,
+                      right: true,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                  <MockGridBox
+                    specialTile={{
+                      tileType: "arrow-right",
+                      x: 0,
+                      y: 0,
+                    }}
+                    path={{
+                      color: "red",
+                      left: true,
+                      right: true,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                  <MockGridBox
+                    path={{
+                      color: "red",
+                      left: true,
+                      right: false,
+                      up: false,
+                      down: false,
+                    }}
+                  />
+                  <MockGridBox
+                    specialTile={{
+                      tileType: "arrow-left",
+                      x: 0,
+                      y: 0,
+                    }}
                     path={{
                       color: "",
                       left: false,

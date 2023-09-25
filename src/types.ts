@@ -83,7 +83,13 @@ export const unlockableStageTypes = [
   {
     level: 25,
     effect: "direction-spesific-tiles",
-    popupText: "Directional Tiles are Here!",
+    popupText: "Tunnels are Here!",
     color: "blue",
+  },
+  {
+    level: 30,
+    effect: "arrow-tiles",
+    popupText: "Arrow Tiles Arrive!",
+    color: "green",
   },
 ];
