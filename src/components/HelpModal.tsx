@@ -11,8 +11,11 @@ import {
   VStack,
   Text,
   HStack,
+  IconButton,
 } from "@chakra-ui/react";
 import WavesIcon from "@mui/icons-material/Waves";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import MockGridBox from "./MockGridBox";
 
 type HelpModalProps = {
@@ -28,6 +31,460 @@ const HelpModal: React.FC<HelpModalProps> = ({
   unlockedStageTypes,
   levelNumber,
 }) => {
+  const ModalElements = () => {
+    const elementsArray = [];
+
+    elementsArray.push(
+      <VStack>
+        <Text>
+          All you need to do is connect matching coloured circles together. Use
+          your mouse to draw a path between the circles.
+        </Text>
+        <HStack height="100px" width="400px" spacing="0">
+          <MockGridBox
+            color="red"
+            path={{
+              color: "red",
+              left: false,
+              right: true,
+              up: false,
+              down: false,
+            }}
+          />
+          <MockGridBox
+            path={{
+              color: "red",
+              left: true,
+              right: true,
+              up: false,
+              down: false,
+            }}
+          />
+          <MockGridBox
+            path={{
+              color: "red",
+              left: true,
+              right: true,
+              up: false,
+              down: false,
+            }}
+          />
+          <MockGridBox
+            color="red"
+            path={{
+              color: "red",
+              left: true,
+              right: false,
+              up: false,
+              down: false,
+            }}
+          />
+        </HStack>
+      </VStack>
+    );
+
+    if (levelNumber >= 5) {
+      elementsArray.push(
+        <HStack>
+          <WavesIcon fontSize="large" />
+          <Text>
+            Every 5 levels is an <i>easy breezy level</i>. They're a bit easier,
+            to give you a break.
+          </Text>
+        </HStack>
+      );
+    }
+
+    if (unlockedStageTypes.includes("lock")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            Some cells can be locked. You need to unlock them by connecting the
+            green key circles together.
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              color="green"
+              path={{
+                color: "green",
+                left: false,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              path={{
+                color: "green",
+                left: true,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              color="green"
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+              specialTile={{
+                tileType: "lock",
+                x: 0,
+                y: 0,
+              }}
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
+    if (unlockedStageTypes.includes("colour-spesific-tiles")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            Chroma-Set tiles can only be passed through by the matching color.
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              color="red"
+              path={{
+                color: "red",
+                left: false,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "colour-specific",
+                color: "red",
+                x: 0,
+                y: 0,
+              }}
+              path={{
+                color: "red",
+                left: true,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              path={{
+                color: "red",
+                left: true,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              color="red"
+              path={{
+                color: "red",
+                left: true,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
+    if (unlockedStageTypes.includes("direction-spesific-tiles")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            Directional tiles can only be passed through from the correct
+            direction.
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              color="red"
+              path={{
+                color: "red",
+                left: false,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              path={{
+                color: "red",
+                left: true,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "horizontal-only",
+                x: 0,
+                y: 0,
+              }}
+              path={{
+                color: "red",
+                left: true,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "vertical-only",
+                x: 0,
+                y: 0,
+              }}
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
+    if (unlockedStageTypes.includes("warp")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            Warp tiles teleport you to the other warp tile of the same color.
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              color="red"
+              path={{
+                color: "red",
+                left: false,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "warp",
+                x: 0,
+                y: 0,
+              }}
+              path={{
+                color: "red",
+                left: true,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "warp",
+                x: 0,
+                y: 0,
+              }}
+              path={{
+                color: "red",
+                left: false,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              color="red"
+              path={{
+                color: "red",
+                left: true,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
+    if (unlockedStageTypes.includes("arrow-tiles")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            Arrow tiles can only be passed through from the direction of the
+            arrow.
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              color="red"
+              path={{
+                color: "red",
+                left: false,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "arrow-right",
+                x: 0,
+                y: 0,
+              }}
+              path={{
+                color: "red",
+                left: true,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              path={{
+                color: "red",
+                left: true,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "arrow-left",
+                x: 0,
+                y: 0,
+              }}
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
+    if (unlockedStageTypes.includes("dark")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            If a stage is dark, connect the yellow light circles to light the
+            stage up.
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              color="yellow"
+              path={{
+                color: "yellow",
+                left: false,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              path={{
+                color: "yellow",
+                left: true,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              color="yellow"
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              color="gray"
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
+    elementsArray.push(<Text>How many levels can you beat? Have fun!</Text>);
+
+    return elementsArray;
+  };
+
+  const VerticalListModal = () => {
+    return <VStack spacing="50px">{ModalElements()}</VStack>;
+  };
+
+  const PerPageModal = () => {
+    const [currentPage, setCurrentPage] = React.useState(0);
+    const pages = ModalElements().length;
+    const page = ModalElements()[currentPage];
+
+    const handleNext = () => {
+      setCurrentPage((currentPage + 1) % pages);
+    };
+
+    const handlePrev = () => {
+      setCurrentPage((currentPage - 1 + pages) % pages);
+    };
+
+    return (
+      <VStack spacing="50px">
+        {page}
+        <HStack>
+          <IconButton
+            aria-label="Previous page"
+            isDisabled={currentPage === 0}
+            icon={<ArrowBackIcon />}
+            onClick={handlePrev}
+          />
+          <Text>
+            {currentPage + 1}/{pages}
+          </Text>
+          <IconButton
+            aria-label="Next page"
+            isDisabled={currentPage === pages - 1}
+            icon={<ArrowForwardIcon />}
+            onClick={handleNext}
+          />
+        </HStack>
+      </VStack>
+    );
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -35,392 +492,7 @@ const HelpModal: React.FC<HelpModalProps> = ({
         <ModalHeader>Help!</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <VStack spacing="50px">
-            <VStack>
-              <Text>
-                All you need to do is connect matching coloured circles
-                together. Use your mouse to draw a path between the circles.
-              </Text>
-              <HStack height="100px" width="400px" spacing="0">
-                <MockGridBox
-                  color="red"
-                  path={{
-                    color: "red",
-                    left: false,
-                    right: true,
-                    up: false,
-                    down: false,
-                  }}
-                />
-                <MockGridBox
-                  path={{
-                    color: "red",
-                    left: true,
-                    right: true,
-                    up: false,
-                    down: false,
-                  }}
-                />
-                <MockGridBox
-                  path={{
-                    color: "red",
-                    left: true,
-                    right: true,
-                    up: false,
-                    down: false,
-                  }}
-                />
-                <MockGridBox
-                  color="red"
-                  path={{
-                    color: "red",
-                    left: true,
-                    right: false,
-                    up: false,
-                    down: false,
-                  }}
-                />
-              </HStack>
-            </VStack>
-            {levelNumber >= 5 && (
-              <HStack>
-                <WavesIcon fontSize="large" />
-                <Text>
-                  Every 5 levels is an <i>easy breezy level</i>. They're a bit
-                  easier, to give you a break.
-                </Text>
-              </HStack>
-            )}
-            {unlockedStageTypes.includes("lock") && (
-              <VStack>
-                <Text>
-                  Some cells can be locked. You need to unlock them by
-                  connecting the green key circles together.
-                </Text>
-                <HStack height="100px" width="400px" spacing="0">
-                  <MockGridBox
-                    color="green"
-                    path={{
-                      color: "green",
-                      left: false,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    path={{
-                      color: "green",
-                      left: true,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    color="green"
-                    path={{
-                      color: "",
-                      left: false,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    path={{
-                      color: "",
-                      left: false,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                    specialTile={{
-                      tileType: "lock",
-                      x: 0,
-                      y: 0,
-                    }}
-                  />
-                </HStack>
-              </VStack>
-            )}
-            {unlockedStageTypes.includes("colour-spesific-tiles") && (
-              <VStack>
-                <Text>
-                  Chroma-Set tiles can only be passed through by the matching
-                  color.
-                </Text>
-                <HStack height="100px" width="400px" spacing="0">
-                  <MockGridBox
-                    color="red"
-                    path={{
-                      color: "red",
-                      left: false,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    specialTile={{
-                      tileType: "colour-specific",
-                      color: "red",
-                      x: 0,
-                      y: 0,
-                    }}
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    color="red"
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                </HStack>
-              </VStack>
-            )}
-            {unlockedStageTypes.includes("direction-spesific-tiles") && (
-              <VStack>
-                <Text>
-                  Directional tiles can only be passed through from the correct
-                  direction.
-                </Text>
-                <HStack height="100px" width="400px" spacing="0">
-                  <MockGridBox
-                    color="red"
-                    path={{
-                      color: "red",
-                      left: false,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    specialTile={{
-                      tileType: "horizontal-only",
-                      x: 0,
-                      y: 0,
-                    }}
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    specialTile={{
-                      tileType: "vertical-only",
-                      x: 0,
-                      y: 0,
-                    }}
-                    path={{
-                      color: "",
-                      left: false,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                </HStack>
-              </VStack>
-            )}
-            {unlockedStageTypes.includes("warp") && (
-              <VStack>
-                <Text>
-                  Warp tiles teleport you to the other warp tile of the same
-                  color.
-                </Text>
-                <HStack height="100px" width="400px" spacing="0">
-                  <MockGridBox
-                    color="red"
-                    path={{
-                      color: "red",
-                      left: false,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    specialTile={{
-                      tileType: "warp",
-                      x: 0,
-                      y: 0,
-                    }}
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    specialTile={{
-                      tileType: "warp",
-                      x: 0,
-                      y: 0,
-                    }}
-                    path={{
-                      color: "red",
-                      left: false,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    color="red"
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                </HStack>
-              </VStack>
-            )}
-            {unlockedStageTypes.includes("arrow-tiles") && (
-              <VStack>
-                <Text>
-                  Arrow tiles can only be passed through from the direction of
-                  the arrow.
-                </Text>
-                <HStack height="100px" width="400px" spacing="0">
-                  <MockGridBox
-                    color="red"
-                    path={{
-                      color: "red",
-                      left: false,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    specialTile={{
-                      tileType: "arrow-right",
-                      x: 0,
-                      y: 0,
-                    }}
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    path={{
-                      color: "red",
-                      left: true,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    specialTile={{
-                      tileType: "arrow-left",
-                      x: 0,
-                      y: 0,
-                    }}
-                    path={{
-                      color: "",
-                      left: false,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                </HStack>
-              </VStack>
-            )}
-            {unlockedStageTypes.includes("dark") && (
-              <VStack>
-                <Text>
-                  If a stage is dark, connect the yellow light circles to light
-                  the stage up.
-                </Text>
-                <HStack height="100px" width="400px" spacing="0">
-                  <MockGridBox
-                    color="yellow"
-                    path={{
-                      color: "yellow",
-                      left: false,
-                      right: true,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    path={{
-                      color: "yellow",
-                      left: true,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    color="yellow"
-                    path={{
-                      color: "",
-                      left: false,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                  <MockGridBox
-                    color="gray"
-                    path={{
-                      color: "",
-                      left: false,
-                      right: false,
-                      up: false,
-                      down: false,
-                    }}
-                  />
-                </HStack>
-              </VStack>
-            )}
-            <Text>How many levels can you beat? Have fun!</Text>
-          </VStack>
+          {window.innerWidth > 600 ? <VerticalListModal /> : <PerPageModal />}
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" onClick={onClose}>
