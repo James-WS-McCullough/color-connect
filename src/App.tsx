@@ -157,6 +157,7 @@ function App() {
           specialTiles={puzzle.specialTiles}
           setPuzzle={setPuzzle}
           stageEffects={puzzle.stageEffects}
+          isHelpModalOpen={isHelpModalOpen}
         />
       </Box>
       <Text

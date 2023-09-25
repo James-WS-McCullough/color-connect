@@ -31,6 +31,7 @@ type GridProps = {
     }>
   >;
   stageEffects: string[];
+  isHelpModalOpen?: boolean;
 };
 
 const Grid: React.FC<GridProps> = ({
@@ -44,6 +45,7 @@ const Grid: React.FC<GridProps> = ({
   specialTiles,
   setPuzzle,
   stageEffects,
+  isHelpModalOpen,
 }) => {
   const [drawing, setDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState<string | null>(null);
@@ -69,7 +71,7 @@ const Grid: React.FC<GridProps> = ({
 
   useEffect(() => {
     const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
+      if (!isHelpModalOpen) e.preventDefault();
     };
     // Add non-passive event listener
     document.addEventListener("touchmove", handleTouchMove, { passive: false });
