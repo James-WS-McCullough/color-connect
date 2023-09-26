@@ -3,7 +3,7 @@ import "./App.css";
 import Grid from "./components/Grid";
 import { Box, IconButton, Text, VStack, useDisclosure } from "@chakra-ui/react";
 import HelpCenterIcon from "@mui/icons-material/HelpCenter";
-import ReplayCircleFilledIcon from "@mui/icons-material/ReplayCircleFilled";
+import SkipNextIcon from "@mui/icons-material/SkipNext";
 import { generatePuzzle } from "./utils/generatePuzzle";
 import {
   ColourPoint,
@@ -256,33 +256,38 @@ function App() {
         right="3%"
         onClick={onHelpModalOpen}
       />
-      <IconButton
-        aria-label="Restart"
-        colorScheme="blue"
-        icon={<ReplayCircleFilledIcon />}
-        position="absolute" //Bottom left
-        bottom="3%"
-        left="3%"
-        onClick={() => {
-          onNewPuzzle({
-            setPath,
-            setCompletedPaths,
-            setNumberOfConnectedColors,
-            level,
-            size,
-            colourCount,
-            setLevel,
-            setSize,
-            setColourCount,
-            setPuzzle,
-            unlockedStageTypes,
-            setUnlockedStageTypes,
-            triggerPopup,
-            levelNumber,
-            setLevelNumber,
-          });
-        }}
-      />
+      {
+        // Only if on localhost, show the refresh button
+        window.location.hostname === "localhost" && (
+          <IconButton
+            aria-label="Skip"
+            colorScheme="blue"
+            icon={<SkipNextIcon />}
+            position="absolute" //Bottom left
+            bottom="3%"
+            left="3%"
+            onClick={() => {
+              onNewPuzzle({
+                setPath,
+                setCompletedPaths,
+                setNumberOfConnectedColors,
+                level,
+                size,
+                colourCount,
+                setLevel,
+                setSize,
+                setColourCount,
+                setPuzzle,
+                unlockedStageTypes,
+                setUnlockedStageTypes,
+                triggerPopup,
+                levelNumber,
+                setLevelNumber,
+              });
+            }}
+          />
+        )
+      }
     </VStack>
   );
 }
