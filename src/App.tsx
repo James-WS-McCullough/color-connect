@@ -3,6 +3,7 @@ import "./App.css";
 import Grid from "./components/Grid";
 import { Box, IconButton, Text, VStack, useDisclosure } from "@chakra-ui/react";
 import HelpCenterIcon from "@mui/icons-material/HelpCenter";
+import ReplayCircleFilledIcon from "@mui/icons-material/ReplayCircleFilled";
 import { generatePuzzle } from "./utils/generatePuzzle";
 import {
   ColourPoint,
@@ -163,7 +164,7 @@ function App() {
       unlockedStageTypes,
       setUnlockedStageTypes,
       triggerPopup,
-      levelNumber,
+      levelNumber: 100,
       setLevelNumber,
     });
   };
@@ -254,6 +255,33 @@ function App() {
         bottom="3%"
         right="3%"
         onClick={onHelpModalOpen}
+      />
+      <IconButton
+        aria-label="Restart"
+        colorScheme="blue"
+        icon={<ReplayCircleFilledIcon />}
+        position="absolute" //Bottom left
+        bottom="3%"
+        left="3%"
+        onClick={() => {
+          onNewPuzzle({
+            setPath,
+            setCompletedPaths,
+            setNumberOfConnectedColors,
+            level,
+            size,
+            colourCount,
+            setLevel,
+            setSize,
+            setColourCount,
+            setPuzzle,
+            unlockedStageTypes,
+            setUnlockedStageTypes,
+            triggerPopup,
+            levelNumber,
+            setLevelNumber,
+          });
+        }}
       />
     </VStack>
   );
