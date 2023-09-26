@@ -23,6 +23,7 @@ type HelpModalProps = {
   onClose: () => void;
   unlockedStageTypes: string[];
   levelNumber: number;
+  startEndlessMode: () => void;
 };
 
 const HelpModal: React.FC<HelpModalProps> = ({
@@ -30,6 +31,7 @@ const HelpModal: React.FC<HelpModalProps> = ({
   onClose,
   unlockedStageTypes,
   levelNumber,
+  startEndlessMode,
 }) => {
   const ModalElements = () => {
     const elementsArray = [];
@@ -498,6 +500,17 @@ const HelpModal: React.FC<HelpModalProps> = ({
           <Button colorScheme="blue" onClick={onClose}>
             Resume
           </Button>
+          {localStorage.getItem("unlockedEndlessMode") === "true" && (
+            <Button
+              colorScheme="green"
+              onClick={() => {
+                startEndlessMode();
+                onClose();
+              }}
+            >
+              Endless Mode
+            </Button>
+          )}
         </ModalFooter>
       </ModalContent>
     </Modal>

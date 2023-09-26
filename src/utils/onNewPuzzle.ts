@@ -113,6 +113,7 @@ export const onNewPuzzle = ({
 
   if (levelNumber == 100) {
     triggerPopup("Endless Mode Activated!", "green");
+    localStorage.setItem("unlockedEndlessMode", "true");
   }
   if (levelNumber >= 100) {
     newSize = Math.floor(Math.random() * 4) + 5;

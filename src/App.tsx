@@ -136,6 +136,38 @@ function App() {
     onIntroModalOpen();
   }, []);
 
+  const startEndlessMode = () => {
+    // Set level number to 100
+    setLevelNumber(100);
+    // Unlock all stage types
+    setUnlockedStageTypes([
+      "lock",
+      "colour-spesific-tiles",
+      "direction-spesific-tiles",
+      "warp",
+      "arrow-tiles",
+      "dark",
+    ]);
+    // trigger onnewpuzzle
+    onNewPuzzle({
+      setPath,
+      setCompletedPaths,
+      setNumberOfConnectedColors,
+      level,
+      size,
+      colourCount,
+      setLevel,
+      setSize,
+      setColourCount,
+      setPuzzle,
+      unlockedStageTypes,
+      setUnlockedStageTypes,
+      triggerPopup,
+      levelNumber,
+      setLevelNumber,
+    });
+  };
+
   return (
     <VStack>
       <Box
@@ -212,6 +244,7 @@ function App() {
         onClose={onHelpModalClose}
         unlockedStageTypes={unlockedStageTypes}
         levelNumber={levelNumber}
+        startEndlessMode={startEndlessMode}
       />
       <IconButton
         aria-label="Help"
