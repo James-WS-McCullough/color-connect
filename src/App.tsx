@@ -139,16 +139,7 @@ function App() {
 
   const startEndlessMode = () => {
     // Set level number to 100
-    setLevelNumber(100);
     // Unlock all stage types
-    setUnlockedStageTypes([
-      "lock",
-      "colour-spesific-tiles",
-      "direction-spesific-tiles",
-      "warp",
-      "arrow-tiles",
-      "dark",
-    ]);
     // trigger onnewpuzzle
     onNewPuzzle({
       setPath,
@@ -161,12 +152,28 @@ function App() {
       setSize,
       setColourCount,
       setPuzzle,
-      unlockedStageTypes,
+      unlockedStageTypes: [
+        "lock",
+        "colour-spesific-tiles",
+        "direction-spesific-tiles",
+        "warp",
+        "arrow-tiles",
+        "dark",
+      ],
       setUnlockedStageTypes,
       triggerPopup,
       levelNumber: 100,
       setLevelNumber,
     });
+
+    setUnlockedStageTypes([
+      "lock",
+      "colour-spesific-tiles",
+      "direction-spesific-tiles",
+      "warp",
+      "arrow-tiles",
+      "dark",
+    ]);
   };
 
   return (

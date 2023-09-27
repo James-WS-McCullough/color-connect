@@ -222,6 +222,9 @@ function generateOnePuzzle(
     endpoints[color][endpointIndex] = { x: newX, y: newY };
   }
 
+  console.log("stageTypes" + stageTypes);
+  console.log("Stage type lock");
+
   // If the stageTypes includes "lock", add them to specialTiles
   if (stageTypes && stageTypes.includes("lock")) {
     // Create random lockboxes on non-endpoint coloured tiles that aren't green or yellow, and don't have a special tile on them
@@ -250,12 +253,13 @@ function generateOnePuzzle(
       lockTiles.push(lockableTiles[index]);
       lockableTiles.splice(index, 1);
     }
-    if (lockTiles.length > 0)
+    if (lockTiles?.length > 0)
       specialTiles.push(
         ...lockTiles.map(({ x, y }) => ({ x, y, tileType: "lock" }))
       );
   }
 
+  console.log("Stage type colour-specific-tiles");
   // If the stageTypes includes "colour-spesific-tiles", add some to specialTiles
   if (stageTypes && stageTypes.includes("colour-spesific-tiles")) {
     // possible tiles are all tiles that are not null, and don't have a special tile on them
@@ -284,7 +288,7 @@ function generateOnePuzzle(
       colourTiles.push(colourableTiles[index]);
       colourableTiles.splice(index, 1);
     }
-    if (colourTiles.length > 0)
+    if (colourTiles?.length > 0)
       specialTiles.push(
         ...colourTiles.map(({ x, y }) => ({
           x,
@@ -294,6 +298,8 @@ function generateOnePuzzle(
         }))
       );
   }
+
+  console.log("Stage type direction-spesific-tiles");
 
   // If the stageTypes includes "direction-spesific-tiles", add them to specialTiles
   if (stageTypes && stageTypes.includes("direction-spesific-tiles")) {
@@ -311,23 +317,25 @@ function generateOnePuzzle(
           if (
             (y > 0 &&
               y < gridSize - 1 &&
-              grid[y][x] == grid[y - 1][x] &&
+              grid[y][x] === grid[y - 1][x] &&
               grid[y - 1][x] === grid[y + 1][x]) ||
             (x > 0 &&
               x < gridSize - 1 &&
-              grid[y][x] == grid[y][x - 1] &&
+              grid[y][x] === grid[y][x - 1] &&
               grid[y][x - 1] === grid[y][x + 1])
           ) {
+            const tileType =
+              y > 0 &&
+              y < gridSize - 1 &&
+              grid[y][x] == grid[y - 1][x] &&
+              grid[y - 1][x] === grid[y + 1][x]
+                ? "vertical-only"
+                : "horizontal-only";
+
             directionableTiles.push({
               x,
               y,
-              tileType:
-                y > 0 &&
-                y < gridSize - 1 &&
-                grid[y][x] == grid[y - 1][x] &&
-                grid[y - 1][x] === grid[y + 1][x]
-                  ? "vertical-only"
-                  : "horizontal-only",
+              tileType: tileType,
             });
           }
         }
@@ -339,26 +347,33 @@ function generateOnePuzzle(
       1
     );
 
-    const directionTiles = [] as (Point & { tileType: string })[];
-    for (let i = 0; i < numTiles; i++) {
-      const index = Math.floor(Math.random() * directionableTiles.length);
-      directionTiles.push(directionableTiles[index]);
-      directionableTiles.splice(index, 1);
+    console.log("numTiles" + numTiles);
+
+    if (directionableTiles && directionableTiles?.length > 0) {
+      const directionTiles = [] as (Point & { tileType: string })[];
+      for (let i = 0; i < numTiles; i++) {
+        const index = Math.floor(Math.random() * directionableTiles.length);
+        directionTiles.push(directionableTiles[index]);
+        directionableTiles.splice(index, 1);
+      }
+
+      console.log("directionableTiles:" + directionableTiles);
+      // Tile type to horizontal or vertical depending on the direction
+
+      console.log("directionTiles:" + directionTiles);
+      if (directionTiles && directionTiles?.length > 0)
+        specialTiles.push(
+          ...directionTiles.map(({ x, y, tileType }) => ({
+            x,
+            y,
+            tileType,
+            color: grid[y][x] || "tomato",
+          }))
+        );
     }
-
-    // Tile type to horizontal or vertical depending on the direction
-
-    if (directionTiles.length > 0)
-      specialTiles.push(
-        ...directionTiles.map(({ x, y, tileType }) => ({
-          x,
-          y,
-          tileType,
-          color: grid[y][x] || "tomato",
-        }))
-      );
   }
 
+  console.log("Stage type arrow-tiles");
   // If the stageTypes includes "arrow-tiles", add them to specialTiles
   if (stageTypes && stageTypes.includes("arrow-tiles")) {
     // List all tiles that have at least 1 neighbor of the same colour, and save their direction.
@@ -425,12 +440,13 @@ function generateOnePuzzle(
       }
     }
 
-    if (arrowTiles.length > 0)
+    if (arrowTiles?.length > 0)
       specialTiles.push(
         ...arrowTiles.map(({ x, y, tileType }) => ({ x, y, tileType }))
       );
   }
   // Return:
+  console.log("Stage type return");
   // The flattened the endpoints into a list of points
   const circles = colors.flatMap((color) =>
     endpoints[color].map((point) => ({ color, x: point.x, y: point.y }))
