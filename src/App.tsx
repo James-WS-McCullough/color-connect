@@ -7,9 +7,11 @@ import SkipNextIcon from "@mui/icons-material/SkipNext";
 import { generatePuzzle } from "./utils/generatePuzzle";
 import {
   ColourPoint,
+  GameMode,
   GridBoxPath,
   Point,
   SpecialTile,
+  allStageEffects,
   colors,
   iconColors,
 } from "./types";
@@ -52,6 +54,7 @@ function App() {
   const [popupText, setPopupText] = useState("");
   const [unlockedStageTypes, setUnlockedStageTypes] = useState<string[]>([]);
   const [popupColor, setPopupColor] = useState("rgba(0,0,0,0.7)");
+  const [gameMode, setGameMode] = useState<GameMode>(GameMode.standard);
   const {
     isOpen: isIntroModalOpen,
     onOpen: onIntroModalOpen,
@@ -104,6 +107,8 @@ function App() {
         triggerPopup,
         levelNumber,
         setLevelNumber,
+        gameMode,
+        setGameMode,
       });
     } else {
       // if the number of connected colors is less than the number of true values in completedPaths, play connect sfx
@@ -136,45 +141,6 @@ function App() {
     });
     onIntroModalOpen();
   }, []);
-
-  const startEndlessMode = () => {
-    // Set level number to 100
-    // Unlock all stage types
-    // trigger onnewpuzzle
-    onNewPuzzle({
-      setPath,
-      setCompletedPaths,
-      setNumberOfConnectedColors,
-      level,
-      size,
-      colourCount,
-      setLevel,
-      setSize,
-      setColourCount,
-      setPuzzle,
-      unlockedStageTypes: [
-        "lock",
-        "colour-spesific-tiles",
-        "direction-spesific-tiles",
-        "warp",
-        "arrow-tiles",
-        "dark",
-      ],
-      setUnlockedStageTypes,
-      triggerPopup,
-      levelNumber: 100,
-      setLevelNumber,
-    });
-
-    setUnlockedStageTypes([
-      "lock",
-      "colour-spesific-tiles",
-      "direction-spesific-tiles",
-      "warp",
-      "arrow-tiles",
-      "dark",
-    ]);
-  };
 
   return (
     <VStack>
@@ -246,13 +212,14 @@ function App() {
       <IntroductionModal
         isOpen={isIntroModalOpen}
         onClose={onIntroModalClose}
+        setGameMode={setGameMode}
+        setUnlockedStageTypes={setUnlockedStageTypes}
       />
       <HelpModal
         isOpen={isHelpModalOpen}
         onClose={onHelpModalClose}
         unlockedStageTypes={unlockedStageTypes}
         levelNumber={levelNumber}
-        startEndlessMode={startEndlessMode}
       />
       <IconButton
         aria-label="Help"
@@ -290,6 +257,8 @@ function App() {
                 triggerPopup,
                 levelNumber,
                 setLevelNumber,
+                gameMode,
+                setGameMode,
               });
             }}
           />

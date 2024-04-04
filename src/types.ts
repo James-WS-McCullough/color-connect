@@ -11,6 +11,21 @@ export type ColourPoint = Point & { color: string };
 export type SpecialTile = Point & { tileType: string; color?: string };
 export type Grid = (string | null)[][];
 
+export enum GameMode {
+  standard = "standard",
+  classic = "classic",
+  endless = "endless",
+}
+
+export const allStageEffects = [
+  "lock",
+  "colour-spesific-tiles",
+  "direction-spesific-tiles",
+  "warp",
+  "arrow-tiles",
+  "dark",
+];
+
 export const colors = [
   "red",
   "green",

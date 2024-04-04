@@ -1,4 +1,4 @@
-import { GridBoxPath, colors } from "../types";
+import { GameMode, GridBoxPath, colors } from "../types";
 import { generatePuzzle } from "./generatePuzzle";
 import { pickRandomStageType } from "./pickRandomStageType";
 import { playSFX } from "./playSFX";
@@ -21,6 +21,8 @@ type onNewPuzzleProps = {
   triggerPopup: (text: string, color?: string) => void;
   levelNumber: number;
   setLevelNumber: (levelNumber: number) => void;
+  gameMode: GameMode;
+  setGameMode: (gameMode: GameMode) => void;
 };
 
 export const onNewPuzzle = ({
@@ -39,6 +41,8 @@ export const onNewPuzzle = ({
   triggerPopup,
   levelNumber,
   setLevelNumber,
+  gameMode,
+  setGameMode,
 }: onNewPuzzleProps) => {
   // play success sfx at volume 50
   const increaseDifficulty = level >= size;
@@ -60,9 +64,14 @@ export const onNewPuzzle = ({
       triggerPopup("Eazy Breezy!", "blue");
     }
     setLevelNumber(levelNumber + 1);
-    const breezySize = Math.min(Math.max(Math.round(size / 2) + 1, 3), 5);
+    if (gameMode === GameMode.endless) {
+      newSize = Math.floor(Math.random() * 3) + 5;
+      newColourCount =
+        Math.floor(Math.random() * (newSize - 1)) + Math.max(2, newSize - 3);
+    }
+    const breezySize = Math.min(Math.max(Math.round(newSize / 2) + 1, 3), 5);
     const breezyColourCount = Math.min(
-      Math.max(Math.round(colourCount / 2), 2),
+      Math.max(Math.round(newColourCount / 2), 2),
       4
     );
     const { circles, wallTiles } = generatePuzzle(
@@ -82,8 +91,10 @@ export const onNewPuzzle = ({
   }
 
   let stageType;
-
-  if (increaseDifficulty && levelNumber < 100) {
+  if (
+    (gameMode === GameMode.standard || gameMode === GameMode.classic) &&
+    increaseDifficulty
+  ) {
     playSFX("SFX/success2.wav");
     setLevel(1);
     if (toAddNewColor({ colourCount, size })) {
@@ -94,7 +105,7 @@ export const onNewPuzzle = ({
         setColourCount(newColourCount);
       }
     } else {
-      if (size < 8) {
+      if (size < 7) {
         triggerPopup("Bigger Board!");
         newSize = size + 1;
         setSize(newSize);
@@ -103,31 +114,43 @@ export const onNewPuzzle = ({
   } else {
     playSFX("SFX/success1.wav");
     setLevel(level + 1);
-    stageType = unlockAStageType({
-      levelNumber: levelNumber + 1,
-      unlockedStageTypes: unlockedStageTypes,
-      setUnlockedStageTypes: setUnlockedStageTypes,
-      triggerPopup: triggerPopup,
-    });
+    if (gameMode === GameMode.standard) {
+      stageType = unlockAStageType({
+        levelNumber: levelNumber + 1,
+        unlockedStageTypes: unlockedStageTypes,
+        setUnlockedStageTypes: setUnlockedStageTypes,
+        triggerPopup: triggerPopup,
+      });
+    }
   }
 
   if (levelNumber == 100) {
     triggerPopup("Endless Mode Activated!", "green");
-    localStorage.setItem("unlockedEndlessMode", "true");
+    setGameMode(GameMode.endless);
+    if (gameMode === GameMode.standard) {
+      localStorage.setItem("unlockedEndlessMode", "true");
+    }
   }
-  if (levelNumber >= 100) {
-    newSize = Math.floor(Math.random() * 4) + 5;
-    newColourCount = Math.floor(Math.random() * (newSize - 1)) + 2;
+
+  if (gameMode === GameMode.endless) {
+    newSize = Math.floor(Math.random() * 3) + 5;
+    newColourCount =
+      Math.floor(Math.random() * (newSize - 1)) + Math.max(2, newSize - 3);
   }
 
   setLevelNumber(levelNumber + 1);
 
-  const stageTypes = stageType
-    ? [stageType]
-    : pickRandomStageType({
-        unlockedStageTypes: unlockedStageTypes,
-        levelNumber: levelNumber + 1,
-      });
+  let stageTypes = [] as string[];
+
+  if (stageType) {
+    stageTypes = [stageType];
+  } else {
+    stageTypes = pickRandomStageType({
+      unlockedStageTypes: unlockedStageTypes,
+      levelNumber: levelNumber + 1,
+      gameMode,
+    });
+  }
 
   const { circles, wallTiles, specialTiles, stageEffects } = generatePuzzle(
     newSize,
