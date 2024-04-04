@@ -32,6 +32,8 @@ type GridProps = {
   >;
   stageEffects: string[];
   isHelpModalOpen?: boolean;
+  bombTimer: number;
+  setBombTimer: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const Grid: React.FC<GridProps> = ({
@@ -46,14 +48,65 @@ const Grid: React.FC<GridProps> = ({
   setPuzzle,
   stageEffects,
   isHelpModalOpen,
+  bombTimer,
+  setBombTimer,
 }) => {
   const [drawing, setDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState<string | null>(null);
   const [prevBox, setPrevBox] = useState<{ x: number; y: number } | null>(null);
+
   // console log drawing updates
   useEffect(() => {
     console.log("drawing", drawing);
   }, [drawing]);
+
+  // use effect to countdown bomb timer every second when it's above 0
+  useEffect(() => {
+    if (bombTimer > 0) {
+      const interval = setInterval(() => {
+        setBombTimer((prev) => prev - 1);
+
+        if (bombTimer === 0) {
+          clearInterval(interval);
+        }
+
+        if (bombTimer === 1) {
+          playSFX("SFX/bomb-boom.wav");
+          // Get color of bomb
+          const bombTile = specialTiles.find((s) => s.tileType === "bomb");
+          console.log("bombTile", bombTile);
+          const bombColor = circles.find(
+            (c) => c.x === bombTile?.x && c.y === bombTile?.y
+          )?.color;
+          console.log("bombColor", bombColor);
+          // Clear the path with that color
+          setPath((prevPath) => {
+            const newPath = { ...prevPath };
+            Object.keys(newPath).forEach((key) => {
+              if (newPath[key].color === bombColor) {
+                delete newPath[key];
+              }
+            });
+            return newPath;
+          });
+          setCompletedPaths((prevCompletedPaths) => ({
+            ...prevCompletedPaths,
+            [bombColor || "tomato"]: false,
+          }));
+
+          // If the user is drawing in that color, stop drawing
+          if (currentColor === bombColor) {
+            setDrawing(false);
+            setCurrentColor(null);
+            setPrevBox(null);
+          }
+        } else {
+          playSFX("SFX/bomb-beep.wav");
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [bombTimer]);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -142,6 +195,7 @@ const Grid: React.FC<GridProps> = ({
         return (
           <GridBox
             key={index}
+            bombTimer={bombTimer}
             color={circleData?.color}
             x={col}
             y={row}
@@ -167,6 +221,7 @@ const Grid: React.FC<GridProps> = ({
                 setDrawing,
                 setCurrentColor,
                 setPrevBox,
+                setBombTimer,
               })
             }
             onMouseEnter={() =>

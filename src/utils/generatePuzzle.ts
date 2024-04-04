@@ -39,6 +39,14 @@ const isValidPuzzle = (
   const specialTileSet = new Set(specialTilePoints);
   for (const { color, x, y } of puzzle) {
     if (specialTileSet.has(`${x},${y}`)) {
+      // If it's a bomb, it's fine
+      if (
+        specialTiles.some(
+          (tile) => tile.x === x && tile.y === y && tile.tileType === "bomb"
+        )
+      ) {
+        continue;
+      }
       return false;
     }
   }
@@ -460,6 +468,18 @@ function generateOnePuzzle(
       }
     });
   });
+
+  // If the stageTypes includes "bomb", add them to specialTiles over both circles of a random colour
+  if (stageTypes && stageTypes.includes("bomb")) {
+    // Pick a random color not yellow
+    const color = colors.filter((color) => color !== "yellow")[
+      Math.floor(Math.random() * (colors.length - 1))
+    ];
+    console.log("Bomb color:" + color);
+    specialTiles.push(
+      ...endpoints[color].map(({ x, y }) => ({ x, y, tileType: "bomb" }))
+    );
+  }
 
   // If the stageTypes includes "dark, rainy, snow", add them to stageEffects
 

@@ -18,6 +18,7 @@ type startDrawingProps = {
   setPrevBox: React.Dispatch<
     React.SetStateAction<{ x: number; y: number } | null>
   >;
+  setBombTimer: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export const startDrawing = ({
@@ -32,6 +33,7 @@ export const startDrawing = ({
   setDrawing,
   setCurrentColor,
   setPrevBox,
+  setBombTimer,
 }: startDrawingProps) => {
   const key = `${x},${y}`;
   const circleData = circles.find((p) => p.x === x && p.y === y);
@@ -69,6 +71,10 @@ export const startDrawing = ({
       if (stageEffects.includes("light") && circleData?.color == "yellow") {
         playSFX("SFX/light1.wav");
         stageEffects.splice(stageEffects.indexOf("light"), 1, "dark");
+      }
+      if (specialTileData?.tileType === "bomb") {
+        setBombTimer(5);
+        playSFX("SFX/bomb-start.wav");
       }
     }
     setDrawing(true);

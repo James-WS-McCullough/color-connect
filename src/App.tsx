@@ -55,6 +55,7 @@ function App() {
   const [unlockedStageTypes, setUnlockedStageTypes] = useState<string[]>([]);
   const [popupColor, setPopupColor] = useState("rgba(0,0,0,0.7)");
   const [gameMode, setGameMode] = useState<GameMode>(GameMode.standard);
+  const [bombTimer, setBombTimer] = useState<number>(0);
   const {
     isOpen: isIntroModalOpen,
     onOpen: onIntroModalOpen,
@@ -109,6 +110,7 @@ function App() {
         setLevelNumber,
         gameMode,
         setGameMode,
+        setBombTimer,
       });
     } else {
       // if the number of connected colors is less than the number of true values in completedPaths, play connect sfx
@@ -164,6 +166,8 @@ function App() {
           setPuzzle={setPuzzle}
           stageEffects={puzzle.stageEffects}
           isHelpModalOpen={isHelpModalOpen}
+          bombTimer={bombTimer}
+          setBombTimer={setBombTimer}
         />
       </Box>
       <Text
@@ -259,6 +263,7 @@ function App() {
                 setLevelNumber,
                 gameMode,
                 setGameMode,
+                setBombTimer,
               });
             }}
           />

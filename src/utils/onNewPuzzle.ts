@@ -23,6 +23,7 @@ type onNewPuzzleProps = {
   setLevelNumber: (levelNumber: number) => void;
   gameMode: GameMode;
   setGameMode: (gameMode: GameMode) => void;
+  setBombTimer: (bombTimer: number) => void;
 };
 
 export const onNewPuzzle = ({
@@ -43,6 +44,7 @@ export const onNewPuzzle = ({
   setLevelNumber,
   gameMode,
   setGameMode,
+  setBombTimer,
 }: onNewPuzzleProps) => {
   // play success sfx at volume 50
   const increaseDifficulty = level >= size;
@@ -51,6 +53,7 @@ export const onNewPuzzle = ({
   setPath({});
   setCompletedPaths({});
   setNumberOfConnectedColors(0);
+  setBombTimer(0);
 
   let newSize = size;
   let newColourCount = colourCount;

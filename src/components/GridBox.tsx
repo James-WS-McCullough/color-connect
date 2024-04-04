@@ -12,6 +12,7 @@ type GridBoxProps = {
   isWallTile: boolean;
   specialTile?: SpecialTile;
   stageEffects?: string[];
+  bombTimer?: number;
 };
 
 const GridBox: React.FC<GridBoxProps> = ({
@@ -24,6 +25,7 @@ const GridBox: React.FC<GridBoxProps> = ({
   isWallTile,
   specialTile,
   stageEffects,
+  bombTimer,
 }) => {
   return (
     <Box
@@ -175,6 +177,39 @@ const GridBox: React.FC<GridBoxProps> = ({
             zIndex="1"
           />
         </VStack>
+      )}
+
+      {specialTile?.tileType === "bomb" && (
+        // A bomb image inside the grid box
+        <Box w="100%" h="100%" position="absolute" zIndex="2">
+          <Image
+            src="Bomb.png"
+            w="70%"
+            h="70%"
+            position="absolute"
+            zIndex="3"
+            top="50%"
+            left="50%"
+            transform="translateY(-50%) translateX(-50%)"
+          />
+          <Box
+            position="absolute"
+            w="70%"
+            h="70%"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            zIndex="4"
+            textColor="white"
+            fontWeight="bold"
+            top="55%"
+            left="50%"
+            transform="translateY(-50%) translateX(-50%)"
+          >
+            {bombTimer ? bombTimer : "-"}
+          </Box>
+        </Box>
+        // Text on the display of the bomb
       )}
 
       <VStack spacing="0" width="100%" height="100%">

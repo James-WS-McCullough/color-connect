@@ -24,6 +24,7 @@ export const allStageEffects = [
   "warp",
   "arrow-tiles",
   "dark",
+  "bomb",
 ];
 
 export const colors = [
@@ -106,5 +107,11 @@ export const unlockableStageTypes = [
     effect: "dark",
     popupText: "Lights Out!",
     color: "black",
+  },
+  {
+    level: 35,
+    effect: "bomb",
+    popupText: "Tick Tock!",
+    color: "red",
   },
 ];
