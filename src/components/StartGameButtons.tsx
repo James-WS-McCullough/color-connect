@@ -24,6 +24,7 @@ const StartGameButtons: React.FC<StartGameButtonsProps> = ({
           colorScheme="blue"
           onClick={() => {
             setGameMode(GameMode.standard);
+            setUnlockedStageTypes([]);
 
             beginNewPuzzle();
             onCloseModal();
@@ -35,6 +36,7 @@ const StartGameButtons: React.FC<StartGameButtonsProps> = ({
           colorScheme="green"
           onClick={() => {
             setGameMode(GameMode.classic);
+            setUnlockedStageTypes([]);
 
             beginNewPuzzle();
             onCloseModal();
@@ -63,6 +65,7 @@ const StartGameButtons: React.FC<StartGameButtonsProps> = ({
           onClick={() => {
             setLevelTimer(levelTimerStart);
             setGameMode(GameMode.standard);
+            setUnlockedStageTypes([]);
 
             beginNewPuzzle();
             onCloseModal();
@@ -75,6 +78,7 @@ const StartGameButtons: React.FC<StartGameButtonsProps> = ({
           onClick={() => {
             setLevelTimer(levelTimerStart);
             setGameMode(GameMode.classic);
+            setUnlockedStageTypes([]);
 
             beginNewPuzzle();
             onCloseModal();
