@@ -44,7 +44,8 @@ const isValidPuzzle = (
         specialTiles.some(
           (tile) => tile.x === x && tile.y === y && tile.tileType === "bomb"
         ) &&
-        puzzle.filter((point) => point.x === x && point.y === y).length === 1
+        specialTiles.filter((point) => point.x === x && point.y === y)
+          .length === 1
       ) {
         continue;
       }
@@ -472,14 +473,28 @@ function generateOnePuzzle(
 
   // If the stageTypes includes "bomb", add them to specialTiles over both circles of a random colour
   if (stageTypes && stageTypes.includes("bomb")) {
-    // Pick a random color not yellow
-    const color = colors.filter((color) => color !== "yellow")[
-      Math.floor(Math.random() * (colors.length - 1))
-    ];
-    console.log("Bomb color:" + color);
-    specialTiles.push(
-      ...endpoints[color].map(({ x, y }) => ({ x, y, tileType: "bomb" }))
+    // Random number between 1 and 2 / colour lenght bombs
+    const numBombs = Math.max(
+      Math.min(Math.floor(Math.random() * 3), colors.length),
+      1
     );
+
+    // Pick numBombs random colors not yellow
+    const bombColours = [] as string[];
+    for (let i = 0; i < numBombs; i++) {
+      let color = "";
+      do {
+        color = colors[Math.floor(Math.random() * colors.length)];
+      } while (color === "yellow" || bombColours.includes(color));
+      bombColours.push(color);
+    }
+
+    // Add bombs to specialTiles
+    bombColours.forEach((color) => {
+      specialTiles.push(
+        ...endpoints[color].map(({ x, y }) => ({ x, y, tileType: "bomb" }))
+      );
+    });
   }
 
   // If the stageTypes includes "dark, rainy, snow", add them to stageEffects

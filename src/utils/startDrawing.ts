@@ -18,6 +18,7 @@ type startDrawingProps = {
   setPrevBox: React.Dispatch<
     React.SetStateAction<{ x: number; y: number } | null>
   >;
+  bombTimer: number;
   setBombTimer: React.Dispatch<React.SetStateAction<number>>;
 };
 
@@ -33,6 +34,7 @@ export const startDrawing = ({
   setDrawing,
   setCurrentColor,
   setPrevBox,
+  bombTimer,
   setBombTimer,
 }: startDrawingProps) => {
   const key = `${x},${y}`;
@@ -72,7 +74,7 @@ export const startDrawing = ({
         playSFX("SFX/light1.wav");
         stageEffects.splice(stageEffects.indexOf("light"), 1, "dark");
       }
-      if (specialTileData?.tileType === "bomb") {
+      if (specialTileData?.tileType === "bomb" && bombTimer <= 0) {
         setBombTimer(5);
         playSFX("SFX/bomb-start.wav");
       }

@@ -72,30 +72,41 @@ const Grid: React.FC<GridProps> = ({
 
         if (bombTimer === 1) {
           playSFX("SFX/bomb-boom.wav");
-          // Get color of bomb
-          const bombTile = specialTiles.find((s) => s.tileType === "bomb");
-          console.log("bombTile", bombTile);
-          const bombColor = circles.find(
-            (c) => c.x === bombTile?.x && c.y === bombTile?.y
-          )?.color;
-          console.log("bombColor", bombColor);
-          // Clear the path with that color
+          // Get color list of bombs
+          const bombTiles = specialTiles.filter((s) => s.tileType === "bomb");
+
+          // Get tile color for each special tile location
+          let bombColors = bombTiles.map((b) => {
+            const color = circles.find((c) => c.x === b.x && c.y === b.y);
+            if (!color || !color.color)
+              return console.log("color not found", b.x, b.y, circles);
+            return color.color;
+          });
+
+          console.log("bombColors", bombColors);
+
+          // Clear the path with those colors
           setPath((prevPath) => {
             const newPath = { ...prevPath };
             Object.keys(newPath).forEach((key) => {
-              if (newPath[key].color === bombColor) {
+              if (bombColors.includes(newPath[key].color)) {
                 delete newPath[key];
               }
             });
             return newPath;
           });
-          setCompletedPaths((prevCompletedPaths) => ({
-            ...prevCompletedPaths,
-            [bombColor || "tomato"]: false,
-          }));
 
-          // If the user is drawing in that color, stop drawing
-          if (currentColor === bombColor) {
+          // Set completed paths for each bomb color to false
+          setCompletedPaths((prevCompletedPaths) => {
+            const updatedCompletedPaths = { ...prevCompletedPaths };
+            bombColors.forEach((color) => {
+              updatedCompletedPaths[color || "tomato"] = false;
+            });
+            return updatedCompletedPaths;
+          });
+
+          // If the user is drawing in any of the bomb colors, stop drawing
+          if (currentColor && bombColors.includes(currentColor)) {
             setDrawing(false);
             setCurrentColor(null);
             setPrevBox(null);
@@ -221,6 +232,7 @@ const Grid: React.FC<GridProps> = ({
                 setDrawing,
                 setCurrentColor,
                 setPrevBox,
+                bombTimer,
                 setBombTimer,
               })
             }

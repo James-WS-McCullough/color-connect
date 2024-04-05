@@ -205,6 +205,14 @@ const GridBox: React.FC<GridBoxProps> = ({
             top="55%"
             left="50%"
             transform="translateY(-50%) translateX(-50%)"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              onMouseDown();
+            }}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              onMouseDown();
+            }}
           >
             {bombTimer ? bombTimer : "-"}
           </Box>
