@@ -219,6 +219,19 @@ const GridBox: React.FC<GridBoxProps> = ({
         </Box>
       )}
 
+      {(specialTile?.tileType === "magic-box-up-left" ||
+        specialTile?.tileType === "magic-box-up-right" ||
+        specialTile?.tileType === "magic-box-up-down") && (
+        // A magic box image inside the grid box
+        <Image
+          src="MagicBox.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+        />
+      )}
+
       <VStack spacing="0" width="100%" height="100%">
         <Box
           w="20%"

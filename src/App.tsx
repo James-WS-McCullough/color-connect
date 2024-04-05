@@ -162,6 +162,9 @@ function App() {
   const beginNewPuzzle = () => {
     const { circles, wallTiles } = generatePuzzle(3, 1);
     setLevelNumber(1);
+    setLevel(1);
+    setSize(3);
+    setColourCount(1);
     setPuzzle({
       circles,
       size: 3,

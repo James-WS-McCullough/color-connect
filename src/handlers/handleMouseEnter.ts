@@ -55,10 +55,20 @@ export const handleMouseEnter = ({
 }: handleMouseEnterProps) => {
   if (!drawing) return;
 
-  const key = `${x},${y}`;
+  let key = `${x},${y}`;
   const prevKey = prevBox && `${prevBox.x},${prevBox.y}`;
 
   if (!prevKey) return;
+
+  // If on a magic box, calculate the new key
+  const onMagicBox = specialTiles.some(
+    (s) =>
+      s.x === x &&
+      s.y === y &&
+      (s.tileType === "magic-box-up-left" ||
+        s.tileType === "magic-box-up-right" ||
+        s.tileType === "magic-box-up-down")
+  );
 
   const prevX = prevBox?.x;
   const prevY = prevBox?.y;
@@ -68,6 +78,52 @@ export const handleMouseEnter = ({
 
   // Check if (x, y) is adjacent to (prevX, prevY)
   if (Math.abs(diffX) + Math.abs(diffY) !== 1) return;
+
+  if (onMagicBox) {
+    if (
+      specialTiles.some(
+        (s) => s.x === x && s.y === y && s.tileType === "magic-box-up-left"
+      )
+    ) {
+      if (diffY === -1) {
+        key = `${x + 1},${y}`;
+      } else if (diffX === -1) {
+        key = `${x},${y + 1}`;
+      } else if (diffY === 1) {
+        key = `${x - 1},${y}`;
+      } else if (diffX === 1) {
+        key = `${x},${y - 1}`;
+      }
+    } else if (
+      specialTiles.some(
+        (s) => s.x === x && s.y === y && s.tileType === "magic-box-up-right"
+      )
+    ) {
+      if (diffY === 1) {
+        key = `${x + 1},${y}`;
+      } else if (diffX === 1) {
+        key = `${x},${y + 1}`;
+      } else if (diffY === -1) {
+        key = `${x - 1},${y}`;
+      } else if (diffX === -1) {
+        key = `${x},${y - 1}`;
+      }
+    } else if (
+      specialTiles.some(
+        (s) => s.x === x && s.y === y && s.tileType === "magic-box-up-down"
+      )
+    ) {
+      if (diffY === -1) {
+        key = `${x},${y - 1}`;
+      } else if (diffX === -1) {
+        key = `${x - 1},${y}`;
+      } else if (diffY === 1) {
+        key = `${x},${y + 1}`;
+      } else if (diffX === 1) {
+        key = `${x + 1},${y}`;
+      }
+    }
+  }
 
   // Check if the move is valid
   if (
@@ -142,6 +198,151 @@ export const handleMouseEnter = ({
       }
     } else {
       // The user is extending the path, add the connection
+
+      if (
+        specialTiles.some(
+          (s) => s.x === x && s.y === y && s.tileType === "magic-box-up-left"
+        )
+      ) {
+        console.log("magic box up left");
+        // If the previous key is above, complete it down and add a new path to the left. Same for below and right
+        if (diffY === 1) {
+          newPath[prevKey].down = true;
+          newPath[key] = {
+            up: false,
+            down: false,
+            left: false,
+            right: true,
+            color: currentColor || "tomato",
+          };
+        } else if (diffX === 1) {
+          newPath[prevKey].right = true;
+          newPath[key] = {
+            up: false,
+            down: true,
+            left: false,
+            right: false,
+            color: currentColor || "tomato",
+          };
+        } else if (diffY === -1) {
+          newPath[prevKey].up = true;
+          newPath[key] = {
+            up: false,
+            down: false,
+            left: true,
+            right: false,
+            color: currentColor || "tomato",
+          };
+        } else if (diffX === -1) {
+          newPath[prevKey].left = true;
+          newPath[key] = {
+            up: true,
+            down: false,
+            left: false,
+            right: false,
+            color: currentColor || "tomato",
+          };
+        }
+
+        return newPath;
+      }
+
+      if (
+        specialTiles.some(
+          (s) => s.x === x && s.y === y && s.tileType === "magic-box-up-right"
+        )
+      ) {
+        console.log("magic box up right");
+        // If the previous key is above, complete it down and add a new path to the right. Same for below and left
+        if (diffY === 1) {
+          newPath[prevKey].down = true;
+          newPath[key] = {
+            up: false,
+            down: false,
+            left: true,
+            right: false,
+            color: currentColor || "tomato",
+          };
+        } else if (diffX === 1) {
+          newPath[prevKey].right = true;
+          newPath[key] = {
+            up: true,
+            down: false,
+            left: false,
+            right: false,
+            color: currentColor || "tomato",
+          };
+        } else if (diffY === -1) {
+          newPath[prevKey].up = true;
+          newPath[key] = {
+            up: false,
+            down: false,
+            left: false,
+            right: true,
+            color: currentColor || "tomato",
+          };
+        } else if (diffX === -1) {
+          newPath[prevKey].left = true;
+          newPath[key] = {
+            up: false,
+            down: true,
+            left: false,
+            right: false,
+            color: currentColor || "tomato",
+          };
+        }
+
+        return newPath;
+      }
+
+      if (
+        specialTiles.some(
+          (s) => s.x === x && s.y === y && s.tileType === "magic-box-up-down"
+        )
+      ) {
+        console.log("magic box up down");
+        // If the previous key is above, complete it down and add a new path above. Same for below
+        if (diffY === -1) {
+          newPath[prevKey].up = true;
+          newPath[key] = {
+            up: false,
+            down: true,
+            left: false,
+            right: false,
+            color: currentColor || "tomato",
+          };
+        } else if (diffX === -1) {
+          newPath[prevKey].left = true;
+          newPath[key] = {
+            up: false,
+            down: false,
+            left: false,
+            right: true,
+            color: currentColor || "tomato",
+          };
+        } else if (diffY === 1) {
+          newPath[prevKey].down = true;
+          newPath[key] = {
+            up: true,
+            down: false,
+            left: false,
+            right: false,
+            color: currentColor || "tomato",
+          };
+        } else if (diffX === 1) {
+          newPath[prevKey].right = true;
+          newPath[key] = {
+            up: false,
+            down: false,
+            left: true,
+            right: false,
+            color: currentColor || "tomato",
+          };
+        }
+
+        return newPath;
+      }
+
       newPath[key] = {
         up: false,
         down: false,
@@ -178,7 +379,9 @@ export const handleMouseEnter = ({
 
   if (!backtracking) {
     // If the key is a circle, stop drawing
-    const circleData = circles.find((p) => p.x === x && p.y === y);
+    const keyX = parseInt(key.split(",")[0]);
+    const keyY = parseInt(key.split(",")[1]);
+    const circleData = circles.find((p) => p.x === keyX && p.y === keyY);
     if (circleData) {
       setCompletedPaths((prevCompletedPaths) => ({
         ...prevCompletedPaths,
@@ -229,6 +432,11 @@ export const handleMouseEnter = ({
         stopDrawing({ setDrawing });
         playSFX("SFX/warp1.wav");
       }
+    }
+
+    if (onMagicBox) {
+      stopDrawing({ setDrawing });
+      playSFX("SFX/magic-box.wav");
     }
   }
   setPrevBox({ x, y });

@@ -6,6 +6,7 @@ import {
   SpecialTile,
   colors as allColors,
 } from "../types";
+import { json } from "stream/consumers";
 
 const directions: Point[] = [
   { x: 0, y: -1 }, // up
@@ -116,6 +117,8 @@ function generateOnePuzzle(
 
   let specialTiles = [] as SpecialTile[];
 
+  let warpColor = null as string | null;
+
   if (stageTypes && stageTypes.includes("warp")) {
     const color = colors[Math.floor(Math.random() * colors.length)];
     const possibleTiles = [] as Point[];
@@ -159,6 +162,115 @@ function generateOnePuzzle(
     });
     grid[tile.y][tile.x] = color;
     endpoints[color][0] = tile;
+    warpColor = color;
+  }
+
+  if (stageTypes && stageTypes.includes("magic-box")) {
+    // List all random tiles that aren't on the border of the grid, and that are empty, as well as surrounded by 4 empty tiles
+    const magicBoxableTiles = [] as Point[];
+    for (let y = 1; y < gridSize - 1; y++) {
+      for (let x = 1; x < gridSize - 1; x++) {
+        if (
+          grid[y][x] === null &&
+          grid[y - 1][x] === null &&
+          grid[y + 1][x] === null &&
+          grid[y][x - 1] === null &&
+          grid[y][x + 1] === null
+        ) {
+          magicBoxableTiles.push({ x, y });
+        }
+      }
+    }
+
+    if (magicBoxableTiles.length === 0) {
+      console.log("No magic boxable tiles");
+    } else {
+      const { x, y } =
+        magicBoxableTiles[Math.floor(Math.random() * magicBoxableTiles.length)];
+
+      // Choose 2 colours in the puzzle
+      let remainingColors = colors.filter((color) => color !== warpColor);
+      const color1 =
+        remainingColors[Math.floor(Math.random() * remainingColors.length)];
+      // Make sure the second colour is not the same as the first
+      remainingColors = remainingColors.filter((color) => color !== color1);
+      const color2 =
+        remainingColors[Math.floor(Math.random() * remainingColors.length)];
+
+      // Clear these colours endpoints
+      if (color1) grid[endpoints[color1][0].y][endpoints[color1][0].x] = null;
+      if (color2) grid[endpoints[color2][0].y][endpoints[color2][0].x] = null;
+
+      // Decide on the type of box, magic-box-up-left, magic-box-up-down or magic-box-up-right
+      const boxType = Math.floor(Math.random() * 3);
+      if (boxType === 0) {
+        // Magic-box-up-left
+        grid[y][x] = "N/A";
+        grid[y - 1][x] = color1;
+        grid[y][x - 1] = color1;
+        grid[y + 1][x] = color2;
+        grid[y][x + 1] = color2;
+
+        // Set the new endpoints to the 4 directions joining the chosen tile.
+        if (color1)
+          endpoints[color1] = [
+            { x: x - 1, y: y },
+            { x: x, y: y - 1 },
+          ];
+        if (color2)
+          endpoints[color2] = [
+            { x: x + 1, y },
+            { x: x, y: y + 1 },
+          ];
+
+        // Set the current tile to be a magic box up left
+        specialTiles.push({ x, y, tileType: "magic-box-up-left" });
+      } else if (boxType === 1) {
+        // Magic-box-up-down
+        grid[y][x] = "N/A";
+        grid[y - 1][x] = color1;
+        grid[y + 1][x] = color1;
+        grid[y][x - 1] = color2;
+        grid[y][x + 1] = color2;
+
+        // Set the new endpoints to the 4 directions joining the chosen tile.
+        if (color1)
+          endpoints[color1] = [
+            { x, y: y - 1 },
+            { x, y: y + 1 },
+          ];
+        if (color2)
+          endpoints[color2] = [
+            { x: x - 1, y },
+            { x: x + 1, y },
+          ];
+
+        // Set the current tile to be a magic box up down
+        specialTiles.push({ x, y, tileType: "magic-box-up-down" });
+      } else {
+        // Magic-box-up-right
+        grid[y][x] = "N/A";
+        grid[y - 1][x] = color1;
+        grid[y][x + 1] = color1;
+        grid[y + 1][x] = color2;
+        grid[y][x - 1] = color2;
+
+        // Set the new endpoints to the 4 directions joining the chosen tile.
+        if (color1)
+          endpoints[color1] = [
+            { x: x + 1, y },
+            { x: x, y: y - 1 },
+          ];
+        if (color2)
+          endpoints[color2] = [
+            { x: x - 1, y },
+            { x: x, y: y + 1 },
+          ];
+
+        // Set the current tile to be a magic box up right
+        specialTiles.push({ x, y, tileType: "magic-box-up-right" });
+      }
+    }
   }
 
   let failures = 0;

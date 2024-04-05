@@ -439,6 +439,207 @@ const HelpModal: React.FC<HelpModalProps> = ({
       );
     }
 
+    if (unlockedStageTypes.includes("bomb")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            If a stage has bombs, you'll need to connect those colours fast
+            before it explodes! Leaving these till last is usually best.
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              color="red"
+              path={{
+                color: "red",
+                left: false,
+                right: true,
+                up: false,
+                down: false,
+              }}
+              specialTile={
+                {
+                  tileType: "bomb",
+                  x: 0,
+                  y: 0,
+                } as any
+              }
+            />
+            <MockGridBox
+              path={{
+                color: "red",
+                left: true,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              color="red"
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+              specialTile={
+                {
+                  tileType: "bomb",
+                  x: 0,
+                  y: 0,
+                } as any
+              }
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
+    if (unlockedStageTypes.includes("magic-box")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            Magic boxes can be passed into, even by multiple colours, but you
+            won't know which direction you'll come out of!
+          </Text>
+          <VStack height="300px" width="400px" spacing="0">
+            <HStack height="100px" width="400px" spacing="0">
+              <MockGridBox
+                color="blue"
+                path={{
+                  color: "blue",
+                  left: false,
+                  right: true,
+                  up: false,
+                  down: false,
+                }}
+              />
+              <MockGridBox
+                path={{
+                  color: "blue",
+                  left: true,
+                  right: false,
+                  up: false,
+                  down: true,
+                }}
+              />
+              <MockGridBox
+                path={{
+                  color: "",
+                  left: false,
+                  right: false,
+                  up: false,
+                  down: false,
+                }}
+              />
+              <MockGridBox
+                path={{
+                  color: "",
+                  left: false,
+                  right: false,
+                  up: false,
+                  down: false,
+                }}
+              />
+            </HStack>
+            <HStack height="100px" width="400px" spacing="0">
+              <MockGridBox
+                color="red"
+                path={{
+                  color: "red",
+                  left: false,
+                  right: true,
+                  up: false,
+                  down: false,
+                }}
+              />
+              <MockGridBox
+                specialTile={{
+                  tileType: "magic-box",
+                  x: 0,
+                  y: 0,
+                }}
+                path={{
+                  color: "",
+                  left: false,
+                  right: false,
+                  up: false,
+                  down: false,
+                }}
+              />
+              <MockGridBox
+                path={{
+                  color: "red",
+                  left: true,
+                  right: false,
+                  up: false,
+                  down: false,
+                }}
+              />
+              <MockGridBox
+                color="red"
+                path={{
+                  color: "",
+                  left: false,
+                  right: false,
+                  up: false,
+                  down: false,
+                }}
+              />
+            </HStack>
+            <HStack height="100px" width="400px" spacing="0">
+              <MockGridBox
+                path={{
+                  color: "",
+                  left: false,
+                  right: false,
+                  up: false,
+                  down: false,
+                }}
+              />
+              <MockGridBox
+                path={{
+                  color: "blue",
+                  left: false,
+                  right: true,
+                  up: true,
+                  down: false,
+                }}
+              />
+              <MockGridBox
+                color="blue"
+                path={{
+                  color: "blue",
+                  left: true,
+                  right: false,
+                  up: false,
+                  down: false,
+                }}
+              />
+              <MockGridBox
+                path={{
+                  color: "",
+                  left: false,
+                  right: false,
+                  up: false,
+                  down: false,
+                }}
+              />
+            </HStack>
+          </VStack>
+        </VStack>
+      );
+    }
+
     elementsArray.push(<Text>How many levels can you beat? Have fun!</Text>);
 
     return elementsArray;

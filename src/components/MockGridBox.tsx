@@ -160,6 +160,48 @@ const MockGridBox: React.FC<MockGridBoxProps> = ({
           zIndex="0"
         />
       )}
+      {specialTile?.tileType === "bomb" && (
+        // A bomb image inside the grid box
+        <Box w="100%" h="100%" position="absolute" zIndex="2">
+          <Image
+            src="Bomb.png"
+            w="70%"
+            h="70%"
+            position="absolute"
+            zIndex="3"
+            top="50%"
+            left="50%"
+            transform="translateY(-50%) translateX(-50%)"
+          />
+          <Box
+            position="absolute"
+            w="70%"
+            h="70%"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            zIndex="4"
+            textColor="white"
+            fontWeight="bold"
+            top="55%"
+            left="50%"
+            transform="translateY(-50%) translateX(-50%)"
+          >
+            4
+          </Box>
+        </Box>
+      )}
+
+      {specialTile?.tileType === "magic-box" && (
+        // A magic box image inside the grid box
+        <Image
+          src="MagicBox.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+        />
+      )}
 
       <VStack spacing="0" width="100%" height="100%">
         <Box
