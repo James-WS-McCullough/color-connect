@@ -112,13 +112,13 @@ export const unlockableStageTypes = [
     color: "black",
   },
   {
-    level: 35,
+    level: 40,
     effect: "bomb",
     popupText: "Tick Tock!",
     color: "red",
   },
   {
-    level: 40,
+    level: 50,
     effect: "magic-box",
     popupText: "Magic Box!",
     color: "purple",
