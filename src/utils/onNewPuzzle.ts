@@ -89,7 +89,9 @@ export const onNewPuzzle = ({
   if ((levelNumber + 1) % 5 === 0) {
     playSFX("SFX/breeze1.mp3");
     if (levelNumber === 4) {
-      triggerPopup("Eazy Breezy!", "blue");
+      if (gameMode !== GameMode.adventure) {
+        triggerPopup("Eazy Breezy!", "blue");
+      }
     }
     setLevelNumber(levelNumber + 1);
     if (gameMode === GameMode.endless) {
@@ -125,7 +127,15 @@ export const onNewPuzzle = ({
       gameMode === GameMode.adventure) &&
     increaseDifficulty
   ) {
-    playSFX("SFX/success2.wav");
+    if (gameMode === GameMode.adventure) {
+      if (worldLevelNumber >= 20) {
+        playSFX("SFX/success2.wav");
+      } else {
+        playSFX("SFX/success1.wav");
+      }
+    } else {
+      playSFX("SFX/success2.wav");
+    }
     setLevel(1);
     if (toAddNewColor({ colourCount, size })) {
       if (colourCount < 19) {
@@ -146,7 +156,15 @@ export const onNewPuzzle = ({
       }
     }
   } else {
-    playSFX("SFX/success1.wav");
+    if (gameMode === GameMode.adventure) {
+      if (worldLevelNumber >= 20) {
+        playSFX("SFX/success2.wav");
+      } else {
+        playSFX("SFX/success1.wav");
+      }
+    } else {
+      playSFX("SFX/success1.wav");
+    }
     setLevel(level + 1);
     if (gameMode === GameMode.standard) {
       stageType = unlockAStageType({

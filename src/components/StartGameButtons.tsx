@@ -115,6 +115,19 @@ const StartGameButtons: React.FC<StartGameButtonsProps> = ({
         >
           ⚔️ Adventure
         </Button>
+        <Button
+          colorScheme="purple"
+          onClick={() => {
+            setLevelTimer(levelTimerStart);
+            setGameMode(GameMode.adventure);
+            setUnlockedStageTypes([]);
+
+            beginNewPuzzle();
+            onCloseModal();
+          }}
+        >
+          ⏱️ ⚔️ Adventure
+        </Button>
       </HStack>
     </VStack>
   );
