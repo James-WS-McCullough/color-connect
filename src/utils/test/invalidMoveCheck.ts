@@ -71,7 +71,8 @@ export const invalidMoveCheck = ({
       (s) =>
         s.x === parseInt(x) &&
         s.y === parseInt(y) &&
-        s.tileType === "vertical-only"
+        (s.tileType === "vertical-only" ||
+          s.tileType === "rotating-vertical-only")
     )
   ) {
     return true;
@@ -84,7 +85,8 @@ export const invalidMoveCheck = ({
       (s) =>
         s.x === parseInt(prevKey.split(",")[0]) &&
         s.y === parseInt(prevKey.split(",")[1]) &&
-        s.tileType === "vertical-only"
+        (s.tileType === "vertical-only" ||
+          s.tileType === "rotating-vertical-only")
     )
   ) {
     return true;
@@ -97,7 +99,8 @@ export const invalidMoveCheck = ({
       (s) =>
         s.x === parseInt(x) &&
         s.y === parseInt(y) &&
-        s.tileType === "horizontal-only"
+        (s.tileType === "horizontal-only" ||
+          s.tileType === "rotating-horizontal-only")
     )
   ) {
     return true;
@@ -110,7 +113,8 @@ export const invalidMoveCheck = ({
       (s) =>
         s.x === parseInt(prevKey.split(",")[0]) &&
         s.y === parseInt(prevKey.split(",")[1]) &&
-        s.tileType === "horizontal-only"
+        (s.tileType === "horizontal-only" ||
+          s.tileType === "rotating-horizontal-only")
     )
   ) {
     return true;

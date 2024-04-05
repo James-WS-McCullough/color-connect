@@ -357,6 +357,7 @@ function generateOnePuzzle(
           grid[y][x] !== null &&
           grid[y][x] !== "green" &&
           grid[y][x] !== "yellow" &&
+          grid[y][x] !== "orange" &&
           !specialTiles.some(
             (specialTile) => specialTile.x === x && specialTile.y === y
           )
@@ -423,8 +424,80 @@ function generateOnePuzzle(
 
   console.log("Stage type direction-spesific-tiles");
 
-  // If the stageTypes includes "direction-spesific-tiles", add them to specialTiles
-  if (stageTypes && stageTypes.includes("direction-spesific-tiles")) {
+  if (
+    stageTypes &&
+    stageTypes.includes("rotating-tiles") &&
+    colors.includes("orange")
+  ) {
+    // List all random tiles that are not null, don't have a special tile on them, and have a tile of the same colour on either side of them (horizontally or vertically)
+    const directionableTiles = [] as (Point & { tileType: string })[];
+    for (let y = 0; y < gridSize; y++) {
+      for (let x = 0; x < gridSize; x++) {
+        if (
+          grid[y][x] !== null &&
+          !specialTiles.some(
+            (specialTile) => specialTile.x === x && specialTile.y === y
+          )
+        ) {
+          // If the tiles above and below match the colour, or the tiles to the left and right match the colour, tileType is either "horizontal-only" or "vertical-only"
+          if (
+            ((y > 0 &&
+              y < gridSize - 1 &&
+              grid[y][x] === grid[y - 1][x] &&
+              grid[y - 1][x] === grid[y + 1][x]) ||
+              (x > 0 &&
+                x < gridSize - 1 &&
+                grid[y][x] === grid[y][x - 1] &&
+                grid[y][x - 1] === grid[y][x + 1])) &&
+            grid[y][x] !== "orange" &&
+            grid[y][x] !== "yellow"
+          ) {
+            // For rotating, type is random
+            const tileType =
+              Math.random() > 0.5
+                ? "rotating-vertical-only"
+                : "rotating-horizontal-only";
+
+            directionableTiles.push({
+              x,
+              y,
+              tileType: tileType,
+            });
+          }
+        }
+      }
+    }
+    // Add random number between 1 and 3 direction-specific tiles, either horizontal or vertical
+    const numTiles = Math.max(
+      Math.min(Math.floor(Math.random() * 4 + 1), directionableTiles.length),
+      1
+    );
+
+    console.log("numTiles" + numTiles);
+
+    if (directionableTiles && directionableTiles?.length > 0) {
+      const directionTiles = [] as (Point & { tileType: string })[];
+      for (let i = 0; i < numTiles; i++) {
+        const index = Math.floor(Math.random() * directionableTiles.length);
+        directionTiles.push(directionableTiles[index]);
+        directionableTiles.splice(index, 1);
+      }
+
+      console.log("directionableTiles:" + directionableTiles);
+      // Tile type to horizontal or vertical depending on the direction
+
+      console.log("directionTiles:" + directionTiles);
+      if (directionTiles && directionTiles?.length > 0)
+        specialTiles.push(
+          ...directionTiles.map(({ x, y, tileType }) => ({
+            x,
+            y,
+            tileType,
+            color: grid[y][x] || "tomato",
+          }))
+        );
+    }
+  } else if (stageTypes && stageTypes.includes("direction-spesific-tiles")) {
     // List all random tiles that are not null, don't have a special tile on them, and have a tile of the same colour on either side of them (horizontally or vertically)
     const directionableTiles = [] as (Point & { tileType: string })[];
     for (let y = 0; y < gridSize; y++) {

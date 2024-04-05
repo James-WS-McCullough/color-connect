@@ -1,6 +1,7 @@
 import { Box, HStack, Image, VStack } from "@chakra-ui/react";
 import Circle from "./Circle";
 import { GridBoxPath, SpecialTile } from "../types";
+import { useEffect, useState } from "react";
 
 type GridBoxProps = {
   color?: string;
@@ -27,6 +28,15 @@ const GridBox: React.FC<GridBoxProps> = ({
   stageEffects,
   bombTimer,
 }) => {
+  const [rotateClass, setRotateClass] = useState("");
+
+  useEffect(() => {
+    if (specialTile?.tileType === "rotating-vertical-only") {
+      setRotateClass("rotate-horizontal-to-vertical");
+    } else if (specialTile?.tileType === "rotating-horizontal-only") {
+      setRotateClass("rotate-vertical-to-horizontal");
+    }
+  }, [specialTile?.tileType]);
   return (
     <Box
       w="100%"
@@ -151,6 +161,18 @@ const GridBox: React.FC<GridBoxProps> = ({
             zIndex="1"
           />
         </HStack>
+      )}
+      {(specialTile?.tileType === "rotating-vertical-only" ||
+        specialTile?.tileType === "rotating-horizontal-only") && (
+        // rotating box image inside the grid box
+        <Image
+          className={`${rotateClass} active`} // Apply dynamic class
+          src="rotatingWall.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="1"
+        />
       )}
 
       {specialTile?.tileType === "horizontal-only" && (

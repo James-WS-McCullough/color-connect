@@ -203,6 +203,28 @@ const MockGridBox: React.FC<MockGridBoxProps> = ({
         />
       )}
 
+      {specialTile?.tileType === "rotating-vertical-only" && (
+        // rotating box image inside the grid box
+        <Image
+          src="rotatingWall.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+        />
+      )}
+      {specialTile?.tileType === "rotating-horizontal-only" && (
+        // rotating box image inside the grid box, rotated 90 degrees
+        <Image
+          src="rotatingWall.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+          transform="rotate(90deg)"
+        />
+      )}
+
       <VStack spacing="0" width="100%" height="100%">
         <Box
           w="20%"

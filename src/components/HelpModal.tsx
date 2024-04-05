@@ -640,6 +640,68 @@ const HelpModal: React.FC<HelpModalProps> = ({
       );
     }
 
+    if (unlockedStageTypes.includes("rotating-tiles")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            Rotating tiles rotate 90 degrees every time you connect the orange
+            path-switch nodes. Leaving a path on a rotating tile locks it in
+            place.
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              color="red"
+              path={{
+                color: "red",
+                left: false,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "rotating-horizontal-only",
+                x: 0,
+                y: 0,
+              }}
+              path={{
+                color: "red",
+                left: true,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "rotating-vertical-only",
+                x: 0,
+                y: 0,
+              }}
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              color="orange"
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
     elementsArray.push(<Text>How many levels can you beat? Have fun!</Text>);
 
     return elementsArray;

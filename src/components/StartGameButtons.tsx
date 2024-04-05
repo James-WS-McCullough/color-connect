@@ -61,7 +61,7 @@ const StartGameButtons: React.FC<StartGameButtonsProps> = ({
       </HStack>
       <HStack>
         <Button
-          colorScheme="purple"
+          colorScheme="blue"
           onClick={() => {
             setLevelTimer(levelTimerStart);
             setGameMode(GameMode.standard);
@@ -74,7 +74,7 @@ const StartGameButtons: React.FC<StartGameButtonsProps> = ({
           ⏱️ Standard
         </Button>
         <Button
-          colorScheme="orange"
+          colorScheme="green"
           onClick={() => {
             setLevelTimer(levelTimerStart);
             setGameMode(GameMode.classic);
@@ -88,7 +88,7 @@ const StartGameButtons: React.FC<StartGameButtonsProps> = ({
         </Button>
         {localStorage.getItem("unlockedEndlessMode") === "true" && (
           <Button
-            colorScheme="yellow"
+            colorScheme="red"
             onClick={() => {
               setLevelTimer(levelTimerStart);
               setGameMode(GameMode.endless);
@@ -104,7 +104,7 @@ const StartGameButtons: React.FC<StartGameButtonsProps> = ({
       </HStack>
       <HStack>
         <Button
-          colorScheme="teal"
+          colorScheme="purple"
           onClick={() => {
             setGameMode(GameMode.adventure);
             setUnlockedStageTypes([]);

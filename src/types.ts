@@ -35,6 +35,7 @@ export const allStageEffects = [
   "dark",
   "bomb",
   "magic-box",
+  "rotating-tiles",
 ];
 
 export const colors = [
@@ -130,6 +131,12 @@ export const unlockableStageTypes = [
     popupText: "Magic Box!",
     color: "purple",
   },
+  {
+    level: 60,
+    effect: "rotating-tiles",
+    popupText: "Rotating Tiles!",
+    color: "orange",
+  },
 ];
 
 export const worlds = [
@@ -146,7 +153,11 @@ export const worlds = [
     backgroundColour: "#1B780F",
   },
   {
-    effects: ["colour-spesific-tiles", "direction-spesific-tiles"],
+    effects: [
+      "colour-spesific-tiles",
+      "direction-spesific-tiles",
+      "rotating-tiles",
+    ],
     startingSize: 4,
     startingColors: 3,
     backgroundColour: "#C19245",
@@ -199,6 +210,7 @@ export const worlds = [
       "arrow-tiles",
       "direction-spesific-tiles",
       "colour-spesific-tiles",
+      "rotating-tiles",
     ],
     startingSize: 6,
     startingColors: 4,

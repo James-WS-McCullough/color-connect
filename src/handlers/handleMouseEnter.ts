@@ -392,6 +392,41 @@ export const handleMouseEnter = ({
         playSFX("SFX/light2.wav");
         stageEffects.splice(stageEffects.indexOf("dark"), 1, "light");
       }
+      if (currentColor == "orange") {
+        const rotatingTileExists = specialTiles.some(
+          (s) =>
+            (s.tileType === "rotating-horizontal-only" ||
+              s.tileType === "rotating-vertical-only") &&
+            !path[`${s.x},${s.y}`]
+        );
+
+        if (rotatingTileExists) {
+          console.log("rotating tiles");
+          playSFX("SFX/tile-rotate.wav");
+          // Iterate through all grid tiles, and rotate the tiles if they don't have a color path on that coordinate
+          setPuzzle((prevPuzzle) => {
+            const newSpecialTiles = prevPuzzle.specialTiles.map((s) => {
+              // If there is a color path on this coordinate, don't rotate
+              if (path[`${s.x},${s.y}`]) return s;
+
+              if (s.tileType === "rotating-horizontal-only") {
+                const newTile = { ...s };
+                newTile.tileType = "rotating-vertical-only";
+                return newTile;
+              } else if (s.tileType === "rotating-vertical-only") {
+                const newTile = { ...s };
+                newTile.tileType = "rotating-horizontal-only";
+                return newTile;
+              }
+              return s;
+            });
+            return {
+              ...prevPuzzle,
+              specialTiles: newSpecialTiles,
+            };
+          });
+        }
+      }
       // If any of the special tiles are lock, if the current color is green, remove all locks
       if (
         specialTiles.some(
