@@ -213,13 +213,13 @@ export const worlds = [
       "rotating-tiles",
     ],
     startingSize: 6,
-    startingColors: 4,
+    startingColors: 6,
     backgroundColour: "#2783D8",
   },
   {
     effects: ["warp", "magic-box", "arrow-tiles"],
     startingSize: 6,
-    startingColors: 4,
+    startingColors: 6,
     backgroundColour: "#9900C3",
   },
 ] as World[];
