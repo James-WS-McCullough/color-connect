@@ -78,13 +78,17 @@ const GridBox: React.FC<GridBoxProps> = ({
           animation="spin 5s linear infinite"
         />
       )}
-      {specialTile?.tileType === "lock" && (
+      {(specialTile?.tileType === "lock" ||
+        specialTile?.tileType === "unlocking") && (
         <Image
           src="lockbox.png"
           w="100%"
           h="100%"
           position="absolute"
           zIndex="0"
+          className={
+            specialTile?.tileType === "unlocking" ? "lock-disappear" : ""
+          }
         />
       )}
       {specialTile?.tileType === "arrow-up" && (
