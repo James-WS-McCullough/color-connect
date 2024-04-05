@@ -39,11 +39,12 @@ const isValidPuzzle = (
   const specialTileSet = new Set(specialTilePoints);
   for (const { color, x, y } of puzzle) {
     if (specialTileSet.has(`${x},${y}`)) {
-      // If it's a bomb, it's fine
+      // If it's a bomb, and there isn't any others on that tile, it's fine
       if (
         specialTiles.some(
           (tile) => tile.x === x && tile.y === y && tile.tileType === "bomb"
-        )
+        ) &&
+        puzzle.filter((point) => point.x === x && point.y === y).length === 1
       ) {
         continue;
       }

@@ -1,4 +1,4 @@
-import { GameMode, GridBoxPath, colors } from "../types";
+import { GameMode, GridBoxPath, colors, levelTimerStart } from "../types";
 import { generatePuzzle } from "./generatePuzzle";
 import { pickRandomStageType } from "./pickRandomStageType";
 import { playSFX } from "./playSFX";
@@ -24,6 +24,8 @@ type onNewPuzzleProps = {
   gameMode: GameMode;
   setGameMode: (gameMode: GameMode) => void;
   setBombTimer: (bombTimer: number) => void;
+  levelTimer: number;
+  setLevelTimer: (levelTimer: number) => void;
 };
 
 export const onNewPuzzle = ({
@@ -45,6 +47,8 @@ export const onNewPuzzle = ({
   gameMode,
   setGameMode,
   setBombTimer,
+  levelTimer,
+  setLevelTimer,
 }: onNewPuzzleProps) => {
   // play success sfx at volume 50
   const increaseDifficulty = level >= size;
@@ -54,6 +58,9 @@ export const onNewPuzzle = ({
   setCompletedPaths({});
   setNumberOfConnectedColors(0);
   setBombTimer(0);
+  if (levelTimer) {
+    setLevelTimer(levelTimerStart);
+  }
 
   let newSize = size;
   let newColourCount = colourCount;

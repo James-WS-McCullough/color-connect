@@ -17,6 +17,8 @@ export enum GameMode {
   endless = "endless",
 }
 
+export const levelTimerStart = 20;
+
 export const allStageEffects = [
   "lock",
   "colour-spesific-tiles",

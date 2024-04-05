@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Grid from "./components/Grid";
-import { Box, IconButton, Text, VStack, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  IconButton,
+  Image,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import HelpCenterIcon from "@mui/icons-material/HelpCenter";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import { generatePuzzle } from "./utils/generatePuzzle";
@@ -22,6 +29,7 @@ import { unlockAStageType } from "./utils/unlockAStageType";
 import { toAddNewColor } from "./utils/toAddNewColour";
 import { pickRandomStageType } from "./utils/pickRandomStageType";
 import { onNewPuzzle } from "./utils/onNewPuzzle";
+import OutOfTimeModal from "./components/OutOfTimeModal";
 
 function App() {
   const [completedPaths, setCompletedPaths] = useState<{
@@ -48,7 +56,7 @@ function App() {
   const [colourCount, setColourCount] = useState(1);
   const [path, setPath] = useState<{ [key: string]: GridBoxPath }>({});
   const [level, setLevel] = useState(1);
-  const [levelNumber, setLevelNumber] = useState(1);
+  const [levelNumber, setLevelNumber] = useState(0);
   const [numberOfConnectedColors, setNumberOfConnectedColors] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -56,6 +64,7 @@ function App() {
   const [popupColor, setPopupColor] = useState("rgba(0,0,0,0.7)");
   const [gameMode, setGameMode] = useState<GameMode>(GameMode.standard);
   const [bombTimer, setBombTimer] = useState<number>(0);
+  const [levelTimer, setLevelTimer] = useState<number>(0);
   const {
     isOpen: isIntroModalOpen,
     onOpen: onIntroModalOpen,
@@ -65,6 +74,11 @@ function App() {
     isOpen: isHelpModalOpen,
     onOpen: onHelpModalOpen,
     onClose: onHelpModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isOutOfTimeModalOpen,
+    onOpen: onOutOfTimeModalOpen,
+    onClose: onOutOfTimeModalClose,
   } = useDisclosure();
 
   useEffect(() => {
@@ -111,6 +125,8 @@ function App() {
         gameMode,
         setGameMode,
         setBombTimer,
+        levelTimer,
+        setLevelTimer,
       });
     } else {
       // if the number of connected colors is less than the number of true values in completedPaths, play connect sfx
@@ -131,11 +147,10 @@ function App() {
 
   // when start the game, randomset the puzzle
   useEffect(() => {
-    const { circles, wallTiles } = generatePuzzle(size, colourCount);
     setPuzzle({
-      circles,
-      size,
-      wallTiles,
+      circles: [],
+      size: 0,
+      wallTiles: [],
       colorCount: colourCount,
       backgroundColor: "black",
       specialTiles: [],
@@ -143,6 +158,51 @@ function App() {
     });
     onIntroModalOpen();
   }, []);
+
+  const beginNewPuzzle = () => {
+    const { circles, wallTiles } = generatePuzzle(3, 1);
+    setLevelNumber(1);
+    setPuzzle({
+      circles,
+      size: 3,
+      wallTiles: wallTiles,
+      colorCount: 1,
+      backgroundColor: "black",
+      specialTiles: [],
+      stageEffects: [],
+    });
+  };
+
+  // countdown the level timer each second
+  useEffect(() => {
+    if (levelTimer > 0) {
+      const interval = setInterval(() => {
+        setLevelTimer((prev) => prev - 1);
+
+        if (levelTimer === 1) {
+          playSFX("SFX/boom-big.wav");
+          setPath({});
+          setCompletedPaths({});
+          setPuzzle({
+            circles: [],
+            size: 0,
+            wallTiles: [],
+            specialTiles: [],
+            stageEffects: [],
+            colorCount: -1,
+            backgroundColor: "black",
+          });
+          onOutOfTimeModalOpen();
+          clearInterval(interval);
+        }
+
+        if (levelTimer === 0) {
+          clearInterval(interval);
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [levelTimer]);
 
   return (
     <VStack>
@@ -181,6 +241,47 @@ function App() {
       >
         {levelNumber}
       </Text>
+      {levelTimer && (
+        <Box
+          position="absolute"
+          bottom="0%"
+          left="50%"
+          transform="translateX(-50%)"
+          w="100px"
+          h="100px"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          color="tomato"
+        >
+          <Image
+            src="Bomb.png"
+            w="70%"
+            h="70%"
+            position="absolute"
+            zIndex="3"
+            top="50%"
+            left="50%"
+            transform="translateY(-50%) translateX(-50%)"
+          />
+          <Box
+            position="absolute"
+            w="70%"
+            h="70%"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            zIndex="4"
+            textColor="white"
+            fontWeight="bold"
+            top="55%"
+            left="50%"
+            transform="translateY(-50%) translateX(-50%)"
+          >
+            {levelTimer ? levelTimer : "-"}
+          </Box>
+        </Box>
+      )}
       {showPopup && (
         <div
           style={{
@@ -218,12 +319,23 @@ function App() {
         onClose={onIntroModalClose}
         setGameMode={setGameMode}
         setUnlockedStageTypes={setUnlockedStageTypes}
+        setLevelTimer={setLevelTimer}
+        beginNewPuzzle={beginNewPuzzle}
       />
       <HelpModal
         isOpen={isHelpModalOpen}
         onClose={onHelpModalClose}
         unlockedStageTypes={unlockedStageTypes}
         levelNumber={levelNumber}
+      />
+      <OutOfTimeModal
+        isOpen={isOutOfTimeModalOpen}
+        onClose={onOutOfTimeModalClose}
+        levelNumber={levelNumber}
+        setGameMode={setGameMode}
+        setUnlockedStageTypes={setUnlockedStageTypes}
+        setLevelTimer={setLevelTimer}
+        beginNewPuzzle={beginNewPuzzle}
       />
       <IconButton
         aria-label="Help"
@@ -264,6 +376,8 @@ function App() {
                 gameMode,
                 setGameMode,
                 setBombTimer,
+                levelTimer,
+                setLevelTimer,
               });
             }}
           />

@@ -209,7 +209,6 @@ const GridBox: React.FC<GridBoxProps> = ({
             {bombTimer ? bombTimer : "-"}
           </Box>
         </Box>
-        // Text on the display of the bomb
       )}
 
       <VStack spacing="0" width="100%" height="100%">

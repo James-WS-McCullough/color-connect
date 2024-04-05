@@ -14,18 +14,20 @@ import {
 import { GameMode, allStageEffects, levelTimerStart } from "../types";
 import StartGameButtons from "./StartGameButtons";
 
-type IntroductionModalProps = {
+type OutOfTimeModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  levelNumber: number;
   setGameMode: (gameMode: GameMode) => void;
   setUnlockedStageTypes: (unlockedStageTypes: string[]) => void;
   setLevelTimer: (levelTimer: number) => void;
   beginNewPuzzle: () => void;
 };
 
-const IntroductionModal: React.FC<IntroductionModalProps> = ({
+const OutOfTimeModal: React.FC<OutOfTimeModalProps> = ({
   isOpen,
   onClose,
+  levelNumber,
   setGameMode,
   setUnlockedStageTypes,
   setLevelTimer,
@@ -35,13 +37,17 @@ const IntroductionModal: React.FC<IntroductionModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Welcome!</ModalHeader>
+        <ModalHeader
+          color="red.500"
+          fontSize="5xl"
+          fontWeight="bold"
+          textAlign="center"
+        >
+          Boom!
+        </ModalHeader>
         <ModalBody>
-          It's a simple puzzle game! All you need to do is connect matching
-          coloured circles together. Use your mouse to draw a path between the
-          circles
+          You ran out of time! You were on level {levelNumber}. Try again?
         </ModalBody>
-        <ModalBody>We reccomend standard mode to start with.</ModalBody>
 
         <ModalFooter justifyContent="center">
           <StartGameButtons
@@ -57,4 +63,4 @@ const IntroductionModal: React.FC<IntroductionModalProps> = ({
   );
 };
 
-export default IntroductionModal;
+export default OutOfTimeModal;
