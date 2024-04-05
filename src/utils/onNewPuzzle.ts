@@ -1,4 +1,11 @@
-import { GameMode, GridBoxPath, colors, levelTimerStart } from "../types";
+import {
+  GameMode,
+  GridBoxPath,
+  allStageEffects,
+  colors,
+  levelTimerStart,
+  worlds,
+} from "../types";
 import { generatePuzzle } from "./generatePuzzle";
 import { pickRandomStageType } from "./pickRandomStageType";
 import { playSFX } from "./playSFX";
@@ -26,6 +33,10 @@ type onNewPuzzleProps = {
   setBombTimer: (bombTimer: number) => void;
   levelTimer: number;
   setLevelTimer: (levelTimer: number) => void;
+  worldNumber: number;
+  setWorldNumber: (worldNumber: number) => void;
+  worldLevelNumber: number;
+  setWorldLevelNumber: (worldLevelNumber: number) => void;
 };
 
 export const onNewPuzzle = ({
@@ -49,6 +60,10 @@ export const onNewPuzzle = ({
   setBombTimer,
   levelTimer,
   setLevelTimer,
+  worldNumber,
+  setWorldNumber,
+  worldLevelNumber,
+  setWorldLevelNumber,
 }: onNewPuzzleProps) => {
   // play success sfx at volume 50
   const increaseDifficulty = level >= size;
@@ -60,6 +75,9 @@ export const onNewPuzzle = ({
   setBombTimer(0);
   if (levelTimer) {
     setLevelTimer(levelTimerStart);
+  }
+  if (gameMode === GameMode.adventure) {
+    setWorldLevelNumber(worldLevelNumber + 1);
   }
 
   let newSize = size;
@@ -102,7 +120,9 @@ export const onNewPuzzle = ({
 
   let stageType;
   if (
-    (gameMode === GameMode.standard || gameMode === GameMode.classic) &&
+    (gameMode === GameMode.standard ||
+      gameMode === GameMode.classic ||
+      gameMode === GameMode.adventure) &&
     increaseDifficulty
   ) {
     playSFX("SFX/success2.wav");
@@ -110,13 +130,17 @@ export const onNewPuzzle = ({
     if (toAddNewColor({ colourCount, size })) {
       if (colourCount < 19) {
         const newColorColor = colors[colourCount];
-        triggerPopup("New Colour!", newColorColor);
+        if (gameMode !== GameMode.adventure) {
+          triggerPopup("New Colour!", newColorColor);
+        }
         newColourCount = colourCount + 1;
         setColourCount(newColourCount);
       }
     } else {
       if (size < 7) {
-        triggerPopup("Bigger Board!");
+        if (gameMode !== GameMode.adventure) {
+          triggerPopup("Bigger Board!");
+        }
         newSize = size + 1;
         setSize(newSize);
       }
@@ -131,6 +155,52 @@ export const onNewPuzzle = ({
         setUnlockedStageTypes: setUnlockedStageTypes,
         triggerPopup: triggerPopup,
       });
+    }
+  }
+
+  if (gameMode === GameMode.adventure) {
+    if (worldLevelNumber >= 20) {
+      setWorldNumber(worldNumber + 1);
+      setWorldLevelNumber(1);
+      const newWorld = worldNumber + 1;
+      const worldData = worlds[worldNumber];
+      if (!worldData) {
+        triggerPopup("You've completed all the worlds!", "green");
+        setGameMode(GameMode.endless);
+        setUnlockedStageTypes(allStageEffects);
+        const { circles, wallTiles, specialTiles, stageEffects } =
+          generatePuzzle(5, 3, []);
+        setPuzzle({
+          circles: circles,
+          size: 0,
+          wallTiles: wallTiles,
+          colorCount: 0,
+          specialTiles: specialTiles,
+          stageEffects: stageEffects,
+          backgroundColor: "black",
+        });
+        return;
+      }
+      triggerPopup(`World ${newWorld}!`, worldData.backgroundColour || "green");
+      setSize(worldData.startingSize);
+      setColourCount(worldData.startingColors);
+      setLevelNumber(levelNumber + 1);
+
+      const { circles, wallTiles, specialTiles, stageEffects } = generatePuzzle(
+        worldData.startingSize,
+        worldData.startingColors,
+        worldData.effects
+      );
+      setPuzzle({
+        circles,
+        size: worldData.startingSize,
+        wallTiles,
+        colorCount: worldData.startingColors,
+        specialTiles: specialTiles,
+        stageEffects: stageEffects,
+        backgroundColor: worldData.backgroundColour,
+      });
+      return;
     }
   }
 
@@ -151,9 +221,16 @@ export const onNewPuzzle = ({
   setLevelNumber(levelNumber + 1);
 
   let stageTypes = [] as string[];
+  let backgroundColor = "black";
+
+  if (gameMode === GameMode.adventure) {
+    backgroundColor = worlds[worldNumber - 1].backgroundColour || "black";
+  }
 
   if (stageType) {
     stageTypes = [stageType];
+  } else if (gameMode === GameMode.adventure) {
+    stageTypes = worlds[worldNumber - 1].effects;
   } else {
     stageTypes = pickRandomStageType({
       unlockedStageTypes: unlockedStageTypes,
@@ -172,7 +249,7 @@ export const onNewPuzzle = ({
     size: newSize,
     wallTiles,
     colorCount: newColourCount,
-    backgroundColor: "black",
+    backgroundColor: backgroundColor,
     specialTiles: specialTiles,
     stageEffects: stageEffects,
   });

@@ -10,11 +10,18 @@ export type Point = { x: number; y: number };
 export type ColourPoint = Point & { color: string };
 export type SpecialTile = Point & { tileType: string; color?: string };
 export type Grid = (string | null)[][];
+export type World = {
+  effects: string[];
+  startingSize: number;
+  startingColors: number;
+  backgroundColour?: string;
+};
 
 export enum GameMode {
   standard = "standard",
   classic = "classic",
   endless = "endless",
+  adventure = "adventure",
 }
 
 export const levelTimerStart = 20;
@@ -124,3 +131,83 @@ export const unlockableStageTypes = [
     color: "purple",
   },
 ];
+
+export const worlds = [
+  {
+    effects: [],
+    startingSize: 3,
+    startingColors: 1,
+    backgroundColour: "black",
+  },
+  {
+    effects: ["lock", "arrow-tiles"],
+    startingSize: 4,
+    startingColors: 2,
+    backgroundColour: "#1B780F",
+  },
+  {
+    effects: ["colour-spesific-tiles", "direction-spesific-tiles"],
+    startingSize: 4,
+    startingColors: 3,
+    backgroundColour: "#C19245",
+  },
+  {
+    effects: ["warp"],
+    startingSize: 4,
+    startingColors: 3,
+    backgroundColour: "#E043DD",
+  },
+  {
+    effects: ["dark", "colour-spesific-tiles"],
+    startingSize: 5,
+    startingColors: 4,
+    backgroundColour: "#343434",
+  },
+  {
+    effects: ["bomb"],
+    startingSize: 4,
+    startingColors: 2,
+    backgroundColour: "#980000",
+  },
+  {
+    effects: ["magic-box"],
+    startingSize: 4,
+    startingColors: 3,
+    backgroundColour: "#9900C3",
+  },
+  {
+    effects: ["warp", "direction-spesific-tiles"],
+    startingSize: 5,
+    startingColors: 4,
+    backgroundColour: "#8C4BEC",
+  },
+  {
+    effects: ["bomb", "magic-box", "arrow-tiles"],
+    startingSize: 5,
+    startingColors: 5,
+    backgroundColour: "#FFC841",
+  },
+  {
+    effects: ["dark", "lock", "arrow-tiles", "direction-spesific-tiles"],
+    startingSize: 5,
+    startingColors: 4,
+    backgroundColour: "#154511",
+  },
+  {
+    effects: [
+      "lock",
+      "arrow-tiles",
+      "direction-spesific-tiles",
+      "colour-spesific-tiles",
+    ],
+    startingSize: 6,
+    startingColors: 4,
+    backgroundColour: "#2783D8",
+  },
+  {
+    effects: ["warp", "magic-box", "arrow-tiles"],
+    startingSize: 6,
+    startingColors: 4,
+    backgroundColour: "#9900C3",
+  },
+] as World[];

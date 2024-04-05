@@ -56,7 +56,9 @@ function App() {
   const [colourCount, setColourCount] = useState(1);
   const [path, setPath] = useState<{ [key: string]: GridBoxPath }>({});
   const [level, setLevel] = useState(1);
-  const [levelNumber, setLevelNumber] = useState(0);
+  const [levelNumber, setLevelNumber] = useState(1);
+  const [worldNumber, setWorldNumber] = useState(1);
+  const [worldLevelNumber, setWorldLevelNumber] = useState(1);
   const [numberOfConnectedColors, setNumberOfConnectedColors] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -127,6 +129,10 @@ function App() {
         setBombTimer,
         levelTimer,
         setLevelTimer,
+        worldNumber,
+        setWorldNumber,
+        worldLevelNumber,
+        setWorldLevelNumber,
       });
     } else {
       // if the number of connected colors is less than the number of true values in completedPaths, play connect sfx
@@ -163,6 +169,8 @@ function App() {
     const { circles, wallTiles } = generatePuzzle(3, 1);
     setLevelNumber(1);
     setLevel(1);
+    setWorldLevelNumber(1);
+    setWorldNumber(1);
     setSize(3);
     setColourCount(1);
     setPuzzle({
@@ -381,6 +389,10 @@ function App() {
                 setBombTimer,
                 levelTimer,
                 setLevelTimer,
+                worldNumber,
+                setWorldNumber,
+                worldLevelNumber,
+                setWorldLevelNumber,
               });
             }}
           />
