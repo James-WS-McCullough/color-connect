@@ -161,12 +161,6 @@ export const worlds = [
     backgroundColour: "black",
   },
   {
-    effects: ["painter-box", "warp"],
-    startingSize: 4,
-    startingColors: 2,
-    backgroundColour: "#1B780F",
-  },
-  {
     effects: ["lock", "arrow-tiles"],
     startingSize: 4,
     startingColors: 2,
