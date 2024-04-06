@@ -78,12 +78,7 @@ const GridBox: React.FC<GridBoxProps> = ({
       }}
       onTouchStart={(e) => {
         e.preventDefault();
-        if (specialTile?.tileType === "summer-switch") {
-          onSpecialClick && onSpecialClick();
-          onMouseDown();
-        } else {
-          onMouseDown();
-        }
+        onMouseDown();
       }}
       onMouseEnter={onMouseEnter}
     >
