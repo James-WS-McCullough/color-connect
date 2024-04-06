@@ -575,6 +575,15 @@ function generateOnePuzzle(
             : "painter-box-vertical",
         color: TileTwo.color || "tomato",
       });
+
+      // Remove all colour-spesific-tiles on the same colour as the first painter box
+      specialTiles = specialTiles.filter(
+        (specialTile) =>
+          !(
+            specialTile.tileType === "colour-specific" &&
+            specialTile.color === TileOne.color
+          )
+      );
     }
   }
 
