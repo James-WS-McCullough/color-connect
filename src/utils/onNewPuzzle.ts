@@ -222,11 +222,13 @@ export const onNewPuzzle = ({
     }
   }
 
-  if (levelNumber == 100) {
-    triggerPopup("Endless Mode Activated!", "green");
-    setGameMode(GameMode.endless);
-    if (gameMode === GameMode.standard) {
-      localStorage.setItem("unlockedEndlessMode", "true");
+  if (gameMode !== GameMode.endless) {
+    if (levelNumber == 100) {
+      triggerPopup("Endless Mode Activated!", "green");
+      setGameMode(GameMode.endless);
+      if (gameMode === GameMode.standard) {
+        localStorage.setItem("unlockedEndlessMode", "true");
+      }
     }
   }
 

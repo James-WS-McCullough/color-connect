@@ -1,7 +1,8 @@
 import { Box, HStack, Image, VStack } from "@chakra-ui/react";
 import Circle from "./Circle";
-import { GridBoxPath, SpecialTile } from "../types";
+import { GridBoxPath, SpecialTile, colors } from "../types";
 import { useEffect, useState } from "react";
+import { escape } from "querystring";
 
 type GridBoxProps = {
   color?: string;
@@ -14,6 +15,7 @@ type GridBoxProps = {
   specialTile?: SpecialTile;
   stageEffects?: string[];
   bombTimer?: number;
+  onSpecialClick?: () => void;
 };
 
 const GridBox: React.FC<GridBoxProps> = ({
@@ -27,6 +29,7 @@ const GridBox: React.FC<GridBoxProps> = ({
   specialTile,
   stageEffects,
   bombTimer,
+  onSpecialClick,
 }) => {
   const [rotateClass, setRotateClass] = useState("");
 
@@ -37,23 +40,49 @@ const GridBox: React.FC<GridBoxProps> = ({
       setRotateClass("rotate-vertical-to-horizontal");
     }
   }, [specialTile?.tileType]);
+  let backgroundColor = "black";
+  if (isWallTile) {
+    backgroundColor = "gray";
+  } else if (stageEffects && stageEffects.includes("summer")) {
+    if (path.color) {
+      backgroundColor = "#145001";
+    } else {
+      backgroundColor = "#0F3B01";
+    }
+  } else if (stageEffects && stageEffects.includes("autumn")) {
+    if (path.color) {
+      backgroundColor = "#793600";
+    } else {
+      backgroundColor = "#682700";
+    }
+  } else if (path.color) {
+    backgroundColor = "#303030";
+  }
   return (
     <Box
       w="100%"
       h="100%"
       border="1px solid white"
-      backgroundColor={isWallTile ? "gray" : path.color ? "#303030" : "black"}
+      backgroundColor={backgroundColor}
       display="flex"
       justifyContent="center"
       alignItems="center"
       position="relative"
       onMouseDown={(e) => {
         e.preventDefault();
-        onMouseDown();
+        if (specialTile?.tileType === "summer-switch") {
+          onSpecialClick && onSpecialClick();
+        } else {
+          onMouseDown();
+        }
       }}
       onTouchStart={(e) => {
         e.preventDefault();
-        onMouseDown();
+        if (specialTile?.tileType === "summer-switch") {
+          onSpecialClick && onSpecialClick();
+        } else {
+          onMouseDown();
+        }
       }}
       onMouseEnter={onMouseEnter}
     >
@@ -178,7 +207,6 @@ const GridBox: React.FC<GridBoxProps> = ({
           zIndex="1"
         />
       )}
-
       {specialTile?.tileType === "horizontal-only" && (
         // Gray walls either side of the grid box
         <VStack
@@ -204,7 +232,6 @@ const GridBox: React.FC<GridBoxProps> = ({
           />
         </VStack>
       )}
-
       {specialTile?.tileType === "bomb" && (
         // A bomb image inside the grid box
         <Box w="100%" h="100%" position="absolute" zIndex="2">
@@ -244,7 +271,6 @@ const GridBox: React.FC<GridBoxProps> = ({
           </Box>
         </Box>
       )}
-
       {(specialTile?.tileType === "magic-box-up-left" ||
         specialTile?.tileType === "magic-box-up-right" ||
         specialTile?.tileType === "magic-box-up-down") && (
@@ -257,6 +283,44 @@ const GridBox: React.FC<GridBoxProps> = ({
           zIndex="0"
         />
       )}
+      {specialTile?.tileType === "summer-switch" && (
+        // A switch image inside the grid box
+        <Image
+          src="summmerSwitch.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+        />
+      )}
+
+      {stageEffects &&
+        stageEffects.includes("summer") &&
+        color &&
+        !!(colors.indexOf(color) % 2) && (
+          // the leafCoverSumer image inside the grid box
+          <Image
+            src="leafCoverSummer.png"
+            w="100%"
+            h="100%"
+            position="absolute"
+            zIndex="2"
+          />
+        )}
+
+      {stageEffects &&
+        stageEffects.includes("autumn") &&
+        color &&
+        !(colors.indexOf(color) % 2) && (
+          // the leafCoverSumer image inside the grid box
+          <Image
+            src="leafCoverAutumn.png"
+            w="100%"
+            h="100%"
+            position="absolute"
+            zIndex="2"
+          />
+        )}
 
       <VStack spacing="0" width="100%" height="100%">
         <Box

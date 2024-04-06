@@ -702,6 +702,65 @@ const HelpModal: React.FC<HelpModalProps> = ({
       );
     }
 
+    if (unlockedStageTypes.includes("summer")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            Summer stages have a switch that changes the stage between summer
+            and autumn. Leaves will block your sight in both, so toggle between
+            them to solve the level.
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+              specialTile={
+                {
+                  tileType: "summer-switch",
+                  x: 0,
+                  y: 0,
+                } as any
+              }
+            />
+            <MockGridBox
+              path={{
+                color: "red",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+              stageEffects={["summer"]}
+            />
+            <MockGridBox
+              path={{
+                color: "red",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+              stageEffects={["autumn"]}
+            />
+            <MockGridBox
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
     elementsArray.push(<Text>How many levels can you beat? Have fun!</Text>);
 
     return elementsArray;

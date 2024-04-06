@@ -146,6 +146,31 @@ const Grid: React.FC<GridProps> = ({
     };
   }, []);
 
+  // On special click to handle replace summer stage effect with autumn and autumn with summer
+  const handleSpecialClick = () => {
+    // If puzzle doesn't have summer or autumn stage effects, return
+    if (!stageEffects.includes("summer") && !stageEffects.includes("autumn")) {
+      return;
+    }
+
+    playSFX("SFX/leaves.wav");
+
+    setPuzzle((prevPuzzle) => {
+      return {
+        ...prevPuzzle,
+        stageEffects: prevPuzzle.stageEffects.map((effect) => {
+          if (effect === "summer") {
+            return "autumn";
+          } else if (effect === "autumn") {
+            return "summer";
+          } else {
+            return effect;
+          }
+        }),
+      };
+    });
+  };
+
   return (
     <Box
       position="relative"
@@ -257,6 +282,7 @@ const Grid: React.FC<GridProps> = ({
             }
             isWallTile={wallTiles.some((w) => w.x === col && w.y === row)}
             specialTile={specialTiles.find((s) => s.x === col && s.y === row)}
+            onSpecialClick={handleSpecialClick}
           />
         );
       })}

@@ -225,6 +225,39 @@ const MockGridBox: React.FC<MockGridBoxProps> = ({
         />
       )}
 
+      {specialTile?.tileType === "summer-switch" && (
+        // A switch image inside the grid box
+        <Image
+          src="summmerSwitch.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+        />
+      )}
+
+      {stageEffects && stageEffects.includes("summer") && (
+        // the leafCoverSumer image inside the grid box
+        <Image
+          src="leafCoverSummer.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="2"
+        />
+      )}
+
+      {stageEffects && stageEffects.includes("autumn") && (
+        // the leafCoverSumer image inside the grid box
+        <Image
+          src="leafCoverAutumn.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="2"
+        />
+      )}
+
       <VStack spacing="0" width="100%" height="100%">
         <Box
           w="20%"

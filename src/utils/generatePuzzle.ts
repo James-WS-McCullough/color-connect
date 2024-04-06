@@ -6,7 +6,6 @@ import {
   SpecialTile,
   colors as allColors,
 } from "../types";
-import { json } from "stream/consumers";
 
 const directions: Point[] = [
   { x: 0, y: -1 }, // up
@@ -35,21 +34,13 @@ const isValidPuzzle = (
     return false;
   }
 
-  // - Have no colour endpoints on the same tile as a special tile
-  const specialTilePoints = specialTiles.map(({ x, y }) => `${x},${y}`);
+  // - Have no colour endpoints on the same tile as a special tiles aside from bombs
+  const specialTilePoints = specialTiles
+    .filter((specialTile) => specialTile.tileType !== "bomb")
+    .map(({ x, y }) => `${x},${y}`);
   const specialTileSet = new Set(specialTilePoints);
-  for (const { color, x, y } of puzzle) {
+  for (const { x, y, color } of puzzle) {
     if (specialTileSet.has(`${x},${y}`)) {
-      // If it's a bomb, and there isn't any others on that tile, it's fine
-      if (
-        specialTiles.some(
-          (tile) => tile.x === x && tile.y === y && tile.tileType === "bomb"
-        ) &&
-        specialTiles.filter((point) => point.x === x && point.y === y)
-          .length === 1
-      ) {
-        continue;
-      }
       return false;
     }
   }
@@ -67,13 +58,19 @@ export function generatePuzzle(
   specialTiles: SpecialTile[];
   stageEffects: string[];
 } {
-  let circles, wallTiles, specialTiles, stageEffects;
+  let circles, wallTiles, specialTiles, stageEffects, generateCount;
+  generateCount = 0;
   do {
     ({ circles, wallTiles, specialTiles, stageEffects } = generateOnePuzzle(
       gridSize,
       numColors,
       stageTypes
     ));
+    generateCount++;
+    if (generateCount > 1000) {
+      console.log("Failed to generate a valid puzzle after 1000 attempts");
+      break;
+    }
   } while (!isValidPuzzle(circles, gridSize, specialTiles));
 
   return { circles, wallTiles, specialTiles, stageEffects };
@@ -167,7 +164,7 @@ function generateOnePuzzle(
 
   if (stageTypes && stageTypes.includes("magic-box")) {
     // List all random tiles that aren't on the border of the grid, and that are empty, as well as surrounded by 4 empty tiles
-    const magicBoxableTiles = [] as Point[];
+    let magicBoxableTiles = [] as Point[];
     for (let y = 1; y < gridSize - 1; y++) {
       for (let x = 1; x < gridSize - 1; x++) {
         if (
@@ -196,6 +193,8 @@ function generateOnePuzzle(
       remainingColors = remainingColors.filter((color) => color !== color1);
       const color2 =
         remainingColors[Math.floor(Math.random() * remainingColors.length)];
+
+      remainingColors = remainingColors.filter((color) => color !== color2);
 
       // Clear these colours endpoints
       if (color1) grid[endpoints[color1][0].y][endpoints[color1][0].x] = null;
@@ -690,6 +689,17 @@ function generateOnePuzzle(
     if (Object.keys(endpoints).some((color) => color === "yellow")) {
       stageEffects.push("dark");
     }
+  }
+
+  if (stageTypes && stageTypes.includes("summer")) {
+    // Find a random wall tile
+    const wallTile = wallTiles[Math.floor(Math.random() * wallTiles.length)];
+    specialTiles.push({
+      x: wallTile.x,
+      y: wallTile.y,
+      tileType: "summer-switch",
+    });
+    stageEffects.push("summer");
   }
 
   return { circles, wallTiles, specialTiles, stageEffects };

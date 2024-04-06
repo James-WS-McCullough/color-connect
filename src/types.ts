@@ -36,6 +36,7 @@ export const allStageEffects = [
   "bomb",
   "magic-box",
   "rotating-tiles",
+  "summer",
 ];
 
 export const colors = [
@@ -136,6 +137,12 @@ export const unlockableStageTypes = [
     effect: "rotating-tiles",
     popupText: "Rotating Tiles!",
     color: "orange",
+  },
+  {
+    level: 70,
+    effect: "summer",
+    popupText: "It's Summer!",
+    color: "lime",
   },
 ];
 
