@@ -318,6 +318,29 @@ const GridBox: React.FC<GridBoxProps> = ({
           />
         )}
 
+      {specialTile?.tileType === "painter-box-horizontal" && (
+        // A painter box image inside the grid box
+        <Image
+          src="painterBoxHorizontal.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+          backgroundColor={specialTile?.color || "tomato"}
+        />
+      )}
+      {specialTile?.tileType === "painter-box-vertical" && (
+        // A painter box image inside the grid box
+        <Image
+          src="painterBoxVertical.png"
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+          backgroundColor={specialTile?.color || "tomato"}
+        />
+      )}
+
       <VStack spacing="0" width="100%" height="100%">
         <Box
           w="20%"

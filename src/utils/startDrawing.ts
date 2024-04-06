@@ -57,11 +57,23 @@ export const startDrawing = ({
   ) {
     // If on a circle, clear all paths of that color
     if (circleData) {
+      const circleColorHasPaintbox = specialTiles.find(
+        (s) =>
+          (s.tileType === "painter-box-vertical" ||
+            s.tileType === "painter-box-horizontal") &&
+          s?.color === circleData?.color
+      );
+
       setPath((prevPath) => {
         const newPath = { ...prevPath };
         Object.keys(newPath).forEach((key) => {
           if (newPath[key].color === circleData?.color) {
             delete newPath[key];
+          }
+          if (circleColorHasPaintbox) {
+            if (newPath[key]?.color === "white") {
+              delete newPath[key];
+            }
           }
         });
         return newPath;

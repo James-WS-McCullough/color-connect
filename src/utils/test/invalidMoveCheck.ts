@@ -10,6 +10,7 @@ type invalidMoveCheckProps = {
   wallTiles: Point[];
   specialTiles: SpecialTile[];
   path: { [key: string]: any };
+  activeSpecialTile?: SpecialTile | null;
 };
 
 export const invalidMoveCheck = ({
@@ -22,6 +23,7 @@ export const invalidMoveCheck = ({
   wallTiles,
   specialTiles,
   path,
+  activeSpecialTile,
 }: invalidMoveCheckProps) => {
   // If the current path[key] contains a circle of a different color to currentColor, return true
   const x = key.split(",")[0];
@@ -33,7 +35,16 @@ export const invalidMoveCheck = ({
     (p) => p.x === parseInt(x) && p.y === parseInt(y)
   );
 
-  if (circleData && circleData.color !== currentColor) {
+  if (
+    circleData &&
+    circleData.color !== currentColor &&
+    !(
+      (activeSpecialTile?.tileType === "painter-box-vertical" ||
+        activeSpecialTile?.tileType === "painter-box-horizontal") &&
+      circleData.color === activeSpecialTile?.color &&
+      currentColor === "white"
+    )
+  ) {
     return true;
   }
 
@@ -72,7 +83,8 @@ export const invalidMoveCheck = ({
         s.x === parseInt(x) &&
         s.y === parseInt(y) &&
         (s.tileType === "vertical-only" ||
-          s.tileType === "rotating-vertical-only")
+          s.tileType === "rotating-vertical-only" ||
+          s.tileType === "painter-box-vertical")
     )
   ) {
     return true;
@@ -86,7 +98,8 @@ export const invalidMoveCheck = ({
         s.x === parseInt(prevKey.split(",")[0]) &&
         s.y === parseInt(prevKey.split(",")[1]) &&
         (s.tileType === "vertical-only" ||
-          s.tileType === "rotating-vertical-only")
+          s.tileType === "rotating-vertical-only" ||
+          s.tileType === "painter-box-vertical")
     )
   ) {
     return true;
@@ -100,7 +113,8 @@ export const invalidMoveCheck = ({
         s.x === parseInt(x) &&
         s.y === parseInt(y) &&
         (s.tileType === "horizontal-only" ||
-          s.tileType === "rotating-horizontal-only")
+          s.tileType === "rotating-horizontal-only" ||
+          s.tileType === "painter-box-horizontal")
     )
   ) {
     return true;
@@ -114,7 +128,8 @@ export const invalidMoveCheck = ({
         s.x === parseInt(prevKey.split(",")[0]) &&
         s.y === parseInt(prevKey.split(",")[1]) &&
         (s.tileType === "horizontal-only" ||
-          s.tileType === "rotating-horizontal-only")
+          s.tileType === "rotating-horizontal-only" ||
+          s.tileType === "painter-box-horizontal")
     )
   ) {
     return true;

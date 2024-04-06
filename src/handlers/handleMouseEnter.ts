@@ -125,6 +125,37 @@ export const handleMouseEnter = ({
     }
   }
 
+  // If on a painter box, generate the new key
+  if (
+    specialTiles.some(
+      (s) => s.x === x && s.y === y && s.tileType === "painter-box-horizontal"
+    )
+  ) {
+    if (diffX === -1) {
+      key = `${x - 1},${y}`;
+    } else if (diffX === 1) {
+      key = `${x + 1},${y}`;
+    } else {
+      return;
+    }
+  }
+
+  if (
+    specialTiles.some(
+      (s) => s.x === x && s.y === y && s.tileType === "painter-box-vertical"
+    )
+  ) {
+    if (diffY === -1) {
+      key = `${x},${y - 1}`;
+    } else if (diffY === 1) {
+      key = `${x},${y + 1}`;
+    } else {
+      return;
+    }
+  }
+
+  const activeSpecialTile = specialTiles.find((s) => s.x === x && s.y === y);
+
   // Check if the move is valid
   if (
     invalidMoveCheck({
@@ -137,6 +168,7 @@ export const handleMouseEnter = ({
       wallTiles,
       specialTiles,
       path,
+      activeSpecialTile,
     })
   ) {
     console.log("invalid move");
@@ -343,6 +375,61 @@ export const handleMouseEnter = ({
         return newPath;
       }
 
+      if (
+        specialTiles.some(
+          (s) =>
+            s.x === x &&
+            s.y === y &&
+            (s.tileType === "painter-box-horizontal" ||
+              s.tileType === "painter-box-vertical")
+        )
+      ) {
+        console.log("painter box - line 384");
+        // If the color is white, set the currentColor to the paint box special tile color
+        // Otherwise, set currentColor to white
+
+        const painterBox = specialTiles.find(
+          (s) =>
+            s.x === x &&
+            s.y === y &&
+            (s.tileType === "painter-box-horizontal" ||
+              s.tileType === "painter-box-vertical")
+        );
+
+        const newColor = currentColor === "white" ? painterBox?.color : "white";
+
+        newPath[key] = {
+          up: false,
+          down: false,
+          left: false,
+          right: false,
+          color: newColor || "tomato",
+        };
+        newPath[prevKey] = newPath[prevKey] || {
+          up: false,
+          down: false,
+          left: false,
+          right: false,
+          color: currentColor || "tomato",
+        };
+
+        if (diffX === 1) {
+          newPath[prevKey].right = true;
+          newPath[key].left = true;
+        } else if (diffX === -1) {
+          newPath[prevKey].left = true;
+          newPath[key].right = true;
+        } else if (diffY === 1) {
+          newPath[prevKey].down = true;
+          newPath[key].up = true;
+        } else if (diffY === -1) {
+          newPath[prevKey].up = true;
+          newPath[key].down = true;
+        }
+
+        return newPath;
+      }
+
       newPath[key] = {
         up: false,
         down: false,
@@ -385,7 +472,7 @@ export const handleMouseEnter = ({
     if (circleData) {
       setCompletedPaths((prevCompletedPaths) => ({
         ...prevCompletedPaths,
-        [currentColor || "tomato"]: true,
+        [circleData?.color || "tomato"]: true,
       }));
       stopDrawing({ setDrawing });
       if (stageEffects.includes("dark") && currentColor == "yellow") {
@@ -483,6 +570,15 @@ export const handleMouseEnter = ({
     if (onMagicBox) {
       stopDrawing({ setDrawing });
       playSFX("SFX/magic-box.wav");
+    }
+
+    if (
+      specialTileData &&
+      (specialTileData.tileType === "painter-box-horizontal" ||
+        specialTileData.tileType === "painter-box-vertical")
+    ) {
+      stopDrawing({ setDrawing });
+      playSFX("SFX/painter-box.wav");
     }
   }
   setPrevBox({ x, y });

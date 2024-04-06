@@ -761,6 +761,67 @@ const HelpModal: React.FC<HelpModalProps> = ({
       );
     }
 
+    if (unlockedStageTypes.includes("painter-box")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            Painter boxes change the color of the path passing through them.
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              color="red"
+              path={{
+                color: "red",
+                left: false,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "painter-box-horizontal",
+                x: 0,
+                y: 0,
+                color: "red",
+              }}
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              path={{
+                color: "white",
+                left: true,
+                right: true,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "painter-box-horizontal",
+                x: 0,
+                y: 0,
+                color: "red",
+              }}
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
     elementsArray.push(<Text>How many levels can you beat? Have fun!</Text>);
 
     return elementsArray;

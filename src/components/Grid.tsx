@@ -85,12 +85,24 @@ const Grid: React.FC<GridProps> = ({
 
           console.log("bombColors", bombColors);
 
+          const bombColorHasPaintbox = specialTiles.find(
+            (s) =>
+              (s.tileType === "painter-box-vertical" ||
+                s.tileType === "painter-box-horizontal") &&
+              bombColors.includes(s?.color)
+          );
+
           // Clear the path with those colors
           setPath((prevPath) => {
             const newPath = { ...prevPath };
             Object.keys(newPath).forEach((key) => {
               if (bombColors.includes(newPath[key].color)) {
                 delete newPath[key];
+              }
+              if (bombColorHasPaintbox) {
+                if (newPath[key]?.color === "white") {
+                  delete newPath[key];
+                }
               }
             });
             return newPath;
