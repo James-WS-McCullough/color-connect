@@ -170,9 +170,7 @@ function App() {
     setLevelNumber(1);
     setLevel(1);
     setWorldLevelNumber(1);
-    const worldNumber =
-      parseInt(localStorage.getItem("worldNumberReached") || "1") || 1;
-    setWorldNumber(worldNumber);
+    setWorldNumber(1);
     setSize(3);
     setColourCount(1);
     setPuzzle({
