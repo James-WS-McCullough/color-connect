@@ -206,7 +206,7 @@ export const worlds = [
     backgroundColour: "#FFC841",
   },
   {
-    effects: ["dark", "lock", "arrow-tiles", "direction-spesific-tiles"],
+    effects: ["summer", "lock", "arrow-tiles", "direction-spesific-tiles"],
     startingSize: 5,
     startingColors: 4,
     backgroundColour: "#154511",

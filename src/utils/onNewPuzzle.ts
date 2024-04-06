@@ -184,6 +184,7 @@ export const onNewPuzzle = ({
       const worldData = worlds[worldNumber];
       if (!worldData) {
         triggerPopup("You've completed all the worlds!", "green");
+        localStorage.setItem("worldNumberReached", "1");
         setGameMode(GameMode.endless);
         setUnlockedStageTypes(allStageEffects);
         const { circles, wallTiles, specialTiles, stageEffects } =
@@ -203,6 +204,8 @@ export const onNewPuzzle = ({
       setSize(worldData.startingSize);
       setColourCount(worldData.startingColors);
       setLevelNumber(levelNumber + 1);
+
+      localStorage.setItem("worldNumberReached", newWorld.toString());
 
       const { circles, wallTiles, specialTiles, stageEffects } = generatePuzzle(
         worldData.startingSize,
