@@ -60,6 +60,8 @@ export const handleMouseEnter = ({
 
   if (!prevKey) return;
 
+  let paintchangeNewColor = "";
+
   // If on a magic box, calculate the new key
   const onMagicBox = specialTiles.some(
     (s) =>
@@ -396,14 +398,15 @@ export const handleMouseEnter = ({
               s.tileType === "painter-box-vertical")
         );
 
-        const newColor = currentColor === "white" ? painterBox?.color : "white";
+        paintchangeNewColor =
+          currentColor === "white" ? painterBox?.color || "tomato" : "white";
 
         newPath[key] = {
           up: false,
           down: false,
           left: false,
           right: false,
-          color: newColor || "tomato",
+          color: paintchangeNewColor || "tomato",
         };
         newPath[prevKey] = newPath[prevKey] || {
           up: false,
@@ -544,11 +547,13 @@ export const handleMouseEnter = ({
     }
 
     // If the key is a special tile, and it's a warp, set the location of the other warp to be this color
-    const specialTileData = specialTiles.find((s) => s.x === x && s.y === y);
+    const specialTileData = specialTiles.find(
+      (s) => s.x === keyX && s.y === keyY
+    );
     if (specialTileData && specialTileData.tileType === "warp") {
       console.log("warp");
       const otherWarp = specialTiles.find(
-        (s) => (s.x !== x || s.y !== y) && s.tileType === "warp"
+        (s) => (s.x !== keyX || s.y !== keyY) && s.tileType === "warp"
       );
       console.log("otherWarp", otherWarp);
       if (otherWarp) {
@@ -559,7 +564,7 @@ export const handleMouseEnter = ({
             down: false,
             left: false,
             right: false,
-            color: currentColor || "tomato",
+            color: paintchangeNewColor || currentColor || "tomato",
           },
         }));
         stopDrawing({ setDrawing });
@@ -572,11 +577,15 @@ export const handleMouseEnter = ({
       playSFX("SFX/magic-box.wav");
     }
 
-    if (
-      specialTileData &&
-      (specialTileData.tileType === "painter-box-horizontal" ||
-        specialTileData.tileType === "painter-box-vertical")
-    ) {
+    const painterBoxData = specialTiles.find(
+      (s) =>
+        s.x === x &&
+        s.y === y &&
+        (s.tileType === "painter-box-horizontal" ||
+          s.tileType === "painter-box-vertical")
+    );
+
+    if (painterBoxData) {
       stopDrawing({ setDrawing });
       playSFX("SFX/painter-box.wav");
     }
