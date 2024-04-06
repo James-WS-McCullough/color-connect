@@ -69,7 +69,13 @@ export const invalidMoveCheck = ({
         s.x === parseInt(x) &&
         s.y === parseInt(y) &&
         s.tileType === "colour-specific" &&
-        s.color !== currentColor
+        s.color !== currentColor &&
+        !(
+          (activeSpecialTile?.tileType === "painter-box-vertical" ||
+            activeSpecialTile?.tileType === "painter-box-horizontal") &&
+          s.color === activeSpecialTile?.color &&
+          currentColor === "white"
+        )
     )
   ) {
     return true;
