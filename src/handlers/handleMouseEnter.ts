@@ -386,7 +386,7 @@ export const handleMouseEnter = ({
               s.tileType === "painter-box-vertical")
         )
       ) {
-        console.log("painter box - line 384");
+        console.log("painter box");
         // If the color is white, set the currentColor to the paint box special tile color
         // Otherwise, set currentColor to white
 
@@ -400,6 +400,10 @@ export const handleMouseEnter = ({
 
         paintchangeNewColor =
           currentColor === "white" ? painterBox?.color || "tomato" : "white";
+
+        if (currentColor !== painterBox?.color) {
+          paintchangeNewColor = currentColor || "tomato";
+        }
 
         newPath[key] = {
           up: false,
@@ -478,7 +482,7 @@ export const handleMouseEnter = ({
         [circleData?.color || "tomato"]: true,
       }));
       stopDrawing({ setDrawing });
-      if (stageEffects.includes("dark") && currentColor == "yellow") {
+      if (stageEffects.includes("dark") && currentColor === "yellow") {
         playSFX("SFX/light2.wav");
         stageEffects.splice(stageEffects.indexOf("dark"), 1, "light");
       }
@@ -489,7 +493,7 @@ export const handleMouseEnter = ({
               s.tileType === "rotating-vertical-only") &&
             !path[`${s.x},${s.y}`]
         ) &&
-        currentColor == "orange"
+        currentColor === "orange"
       ) {
         console.log("rotating tiles");
         playSFX("SFX/tile-rotate.wav");

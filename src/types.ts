@@ -177,7 +177,7 @@ export const worlds = [
     backgroundColour: "#C19245",
   },
   {
-    effects: ["warp"],
+    effects: ["warp", "painter-box"],
     startingSize: 4,
     startingColors: 3,
     backgroundColour: "#E043DD",
@@ -201,7 +201,7 @@ export const worlds = [
     backgroundColour: "#9900C3",
   },
   {
-    effects: ["warp", "direction-spesific-tiles"],
+    effects: ["warp", "direction-spesific-tiles", "painter-box"],
     startingSize: 5,
     startingColors: 4,
     backgroundColour: "#8C4BEC",
@@ -231,7 +231,7 @@ export const worlds = [
     backgroundColour: "#2783D8",
   },
   {
-    effects: ["warp", "magic-box", "arrow-tiles"],
+    effects: ["warp", "magic-box", "painter-box", "arrow-tiles"],
     startingSize: 6,
     startingColors: 6,
     backgroundColour: "#9900C3",
