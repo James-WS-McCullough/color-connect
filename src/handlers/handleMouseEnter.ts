@@ -401,7 +401,7 @@ export const handleMouseEnter = ({
         paintchangeNewColor =
           currentColor === "white" ? painterBox?.color || "tomato" : "white";
 
-        if (currentColor !== painterBox?.color) {
+        if (currentColor !== painterBox?.color || "white") {
           paintchangeNewColor = currentColor || "tomato";
         }
 
