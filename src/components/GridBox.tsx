@@ -1,8 +1,9 @@
-import { Box, HStack, Image, VStack } from "@chakra-ui/react";
+import { Box, HStack, Icon, Image, VStack } from "@chakra-ui/react";
 import Circle from "./Circle";
 import { GridBoxPath, SpecialTile, colors } from "../types";
 import { useEffect, useState } from "react";
 import { escape } from "querystring";
+import { MagicBox } from "../images/magicBox";
 
 type GridBoxProps = {
   color?: string;
@@ -271,13 +272,15 @@ const GridBox: React.FC<GridBoxProps> = ({
         specialTile?.tileType === "magic-box-up-right" ||
         specialTile?.tileType === "magic-box-up-down") && (
         // A magic box image inside the grid box
-        <Image
-          src="MagicBox.png"
-          w="100%"
-          h="100%"
-          position="absolute"
-          zIndex="0"
-        />
+        // <Image
+        //   src="MagicBox.png"
+        //   w="100%"
+        //   h="100%"
+        //   position="absolute"
+        //   zIndex="0"
+        // />
+        // <Icon as={MagicBox} w="100%" h="100%" position="absolute" zIndex="0" />
+        <MagicBox />
       )}
       {specialTile?.tileType === "summer-switch" && (
         // A switch image inside the grid box
