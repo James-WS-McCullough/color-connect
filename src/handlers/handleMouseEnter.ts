@@ -398,10 +398,11 @@ export const handleMouseEnter = ({
               s.tileType === "painter-box-vertical")
         );
 
-        paintchangeNewColor =
-          currentColor === "white" ? painterBox?.color || "tomato" : "white";
-
-        if (currentColor !== painterBox?.color || "white") {
+        if (currentColor === "white") {
+          paintchangeNewColor = painterBox?.color || "tomato";
+        } else if (currentColor === painterBox?.color) {
+          paintchangeNewColor = "white";
+        } else {
           paintchangeNewColor = currentColor || "tomato";
         }
 
