@@ -4,6 +4,12 @@ import { GridBoxPath, SpecialTile, colors } from "../types";
 import { useEffect, useState } from "react";
 import { escape } from "querystring";
 import { MagicBox } from "../images/magicBox";
+import { ArrowTile } from "../images/arrowTile";
+import { WarpTile } from "../images/warpTile";
+import { LeafCover } from "../images/leafCover";
+import { SummerAutumnSwitch } from "../images/summerAutumnSwitch";
+import { PainterBox } from "../images/painterBox";
+import { Bomb } from "../images/bomb";
 
 type GridBoxProps = {
   color?: string;
@@ -94,15 +100,7 @@ const GridBox: React.FC<GridBoxProps> = ({
       )}
       {specialTile?.tileType === "warp" && (
         // The image is under the other coloured boxes
-        <Image
-          src="warpPoint.png"
-          w="70%"
-          h="70%"
-          position="absolute"
-          // The image is under the other coloured boxes
-          zIndex="0"
-          animation="spin 5s linear infinite"
-        />
+        <WarpTile />
       )}
       {(specialTile?.tileType === "lock" ||
         specialTile?.tileType === "unlocking") && (
@@ -117,45 +115,10 @@ const GridBox: React.FC<GridBoxProps> = ({
           }
         />
       )}
-      {specialTile?.tileType === "arrow-up" && (
-        <Image
-          src="arrowTiles.png"
-          w="100%"
-          h="100%"
-          position="absolute"
-          zIndex="0"
-        />
-      )}
-      {specialTile?.tileType === "arrow-down" && (
-        <Image
-          src="arrowTiles.png"
-          w="100%"
-          h="100%"
-          position="absolute"
-          transform="rotate(180deg)"
-          zIndex="0"
-        />
-      )}
-      {specialTile?.tileType === "arrow-left" && (
-        <Image
-          src="arrowTiles.png"
-          w="100%"
-          h="100%"
-          position="absolute"
-          transform="rotate(270deg)"
-          zIndex="0"
-        />
-      )}
-      {specialTile?.tileType === "arrow-right" && (
-        <Image
-          src="arrowTiles.png"
-          w="100%"
-          h="100%"
-          position="absolute"
-          transform="rotate(90deg)"
-          zIndex="0"
-        />
-      )}
+      {specialTile?.tileType === "arrow-up" && <ArrowTile rotation={0} />}
+      {specialTile?.tileType === "arrow-down" && <ArrowTile rotation={180} />}
+      {specialTile?.tileType === "arrow-left" && <ArrowTile rotation={270} />}
+      {specialTile?.tileType === "arrow-right" && <ArrowTile rotation={90} />}
       {specialTile?.tileType === "colour-specific" && (
         // A diamond inside the grid box with the colour of the specialTile.color
         <Box
@@ -232,17 +195,11 @@ const GridBox: React.FC<GridBoxProps> = ({
       {specialTile?.tileType === "bomb" && (
         // A bomb image inside the grid box
         <Box w="100%" h="100%" position="absolute" zIndex="2">
-          <Image
-            src="Bomb.png"
-            w="70%"
-            h="70%"
-            position="absolute"
-            zIndex="3"
-            top="50%"
-            left="50%"
-            transform="translateY(-50%) translateX(-50%)"
+          <Bomb
+            text={bombTimer ? bombTimer.toString() : "-"}
+            color={color || "tomato"}
           />
-          <Box
+          {/* <Box
             position="absolute"
             w="70%"
             h="70%"
@@ -265,82 +222,42 @@ const GridBox: React.FC<GridBoxProps> = ({
             }}
           >
             {bombTimer ? bombTimer : "-"}
-          </Box>
+          </Box> */}
         </Box>
       )}
       {(specialTile?.tileType === "magic-box-up-left" ||
         specialTile?.tileType === "magic-box-up-right" ||
         specialTile?.tileType === "magic-box-up-down") && (
         // A magic box image inside the grid box
-        // <Image
-        //   src="MagicBox.png"
-        //   w="100%"
-        //   h="100%"
-        //   position="absolute"
-        //   zIndex="0"
-        // />
-        // <Icon as={MagicBox} w="100%" h="100%" position="absolute" zIndex="0" />
         <MagicBox />
       )}
       {specialTile?.tileType === "summer-switch" && (
         // A switch image inside the grid box
-        <Image
-          src="summmerSwitch.png"
-          w="100%"
-          h="100%"
-          position="absolute"
-          zIndex="0"
-        />
+        <SummerAutumnSwitch />
       )}
 
       {stageEffects &&
         stageEffects.includes("summer") &&
         color &&
-        !!(colors.indexOf(color) % 2) && (
-          // the leafCoverSumer image inside the grid box
-          <Image
-            src="leafCoverSummer.png"
-            w="100%"
-            h="100%"
-            position="absolute"
-            zIndex="2"
-          />
-        )}
+        !!(colors.indexOf(color) % 2) && <LeafCover type="summer" />}
 
       {stageEffects &&
         stageEffects.includes("autumn") &&
         color &&
-        !(colors.indexOf(color) % 2) && (
-          // the leafCoverSumer image inside the grid box
-          <Image
-            src="leafCoverAutumn.png"
-            w="100%"
-            h="100%"
-            position="absolute"
-            zIndex="2"
-          />
-        )}
+        !(colors.indexOf(color) % 2) && <LeafCover type="autumn" />}
 
       {specialTile?.tileType === "painter-box-horizontal" && (
         // A painter box image inside the grid box
-        <Image
-          src="painterBoxHorizontal.png"
-          w="100%"
-          h="100%"
-          position="absolute"
-          zIndex="0"
-          backgroundColor={specialTile?.color || "tomato"}
+        <PainterBox
+          direction="horizontal"
+          color={specialTile?.color || "tomato"}
         />
       )}
       {specialTile?.tileType === "painter-box-vertical" && (
         // A painter box image inside the grid box
-        <Image
-          src="painterBoxVertical.png"
-          w="100%"
-          h="100%"
-          position="absolute"
-          zIndex="0"
-          backgroundColor={specialTile?.color || "tomato"}
+        <PainterBox
+          direction="vertical"
+          color={specialTile?.color || "tomato"}
         />
       )}
 

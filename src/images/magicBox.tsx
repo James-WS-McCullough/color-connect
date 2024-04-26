@@ -1,15 +1,11 @@
 import { Box } from "@chakra-ui/react";
 
-type ImageIconProps = {
-  width?: string;
-};
-
-export const MagicBox = ({ width }: ImageIconProps) => (
+export const MagicBox = () => (
   <Box w="100%" h="100%" position="absolute">
     <svg
       width="100%"
       height="100%"
-      viewBox="0 0 999 999"
+      viewBox="0 0 1000 1000"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -20,7 +16,7 @@ export const MagicBox = ({ width }: ImageIconProps) => (
         d="M 0 1000 L 0 604 L 56 604 C 86.927872 604 112 557.4375 112 500 C 112 442.562561 86.927872 396 56 396 L 0 396 L 0 0 L 396 0 L 396 56 C 396 86.927917 442.562408 112 500 112 C 557.437561 112 604 86.927917 604 56 L 604 0 L 1000 0 L 1000 396 L 944 396 C 913.072266 396 888 442.562622 888 500 C 888 557.437378 913.072266 604 944 604 L 1000 604 L 1000 1000 L 604 1000 L 604 944 C 604 913.072083 557.4375 888 500 888 C 442.562469 888 396 913.072083 396 944 L 396 1000 L 0 1000 Z"
       />
       <mask
-        id="mask1"
+        id="magicboxmask1"
         maskUnits="userSpaceOnUse"
         maskContentUnits="userSpaceOnUse"
         mask-type="alpha"
@@ -33,7 +29,7 @@ export const MagicBox = ({ width }: ImageIconProps) => (
           d="M 0 1000 L 0 604 L 56 604 C 86.927872 604 112 557.4375 112 500 C 112 442.562561 86.927872 396 56 396 L 0 396 L 0 0 L 396 0 L 396 56 C 396 86.927917 442.562408 112 500 112 C 557.437561 112 604 86.927917 604 56 L 604 0 L 1000 0 L 1000 396 L 944 396 C 913.072266 396 888 442.562622 888 500 C 888 557.437378 913.072266 604 944 604 L 1000 604 L 1000 1000 L 604 1000 L 604 944 C 604 913.072083 557.4375 888 500 888 C 442.562469 888 396 913.072083 396 944 L 396 1000 L 0 1000 Z"
         />
       </mask>
-      <g id="Group" mask="url(#mask1)">
+      <g id="Group" mask="url(#magicboxmask1)">
         <g id="g1">
           <path
             id="Star"
