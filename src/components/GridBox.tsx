@@ -10,6 +10,9 @@ import { LeafCover } from "../images/leafCover";
 import { SummerAutumnSwitch } from "../images/summerAutumnSwitch";
 import { PainterBox } from "../images/painterBox";
 import { Bomb } from "../images/bomb";
+import { Zorbie } from "../images/zorbie";
+import { RotatingWall } from "../images/rotatingWall";
+import { ZorbieSign } from "../images/zorbieSign";
 
 type GridBoxProps = {
   color?: string;
@@ -22,7 +25,17 @@ type GridBoxProps = {
   specialTile?: SpecialTile;
   stageEffects?: string[];
   bombTimer?: number;
-  onSpecialClick?: () => void;
+  onSpecialClick?: ({
+    tileType,
+    x,
+    y,
+    color,
+  }: {
+    tileType: string;
+    x: number;
+    y: number;
+    color?: string;
+  }) => void;
 };
 
 const GridBox: React.FC<GridBoxProps> = ({
@@ -46,6 +59,16 @@ const GridBox: React.FC<GridBoxProps> = ({
     } else if (specialTile?.tileType === "rotating-horizontal-only") {
       setRotateClass("rotate-vertical-to-horizontal");
     }
+
+    if (specialTile?.tileType === "zorbie-sign-up") {
+      setRotateClass("rotate-up-to-right");
+    } else if (specialTile?.tileType === "zorbie-sign-right") {
+      setRotateClass("rotate-right-to-down");
+    } else if (specialTile?.tileType === "zorbie-sign-down") {
+      setRotateClass("rotate-down-to-left");
+    } else if (specialTile?.tileType === "zorbie-sign-left") {
+      setRotateClass("rotate-left-to-up");
+    }
   }, [specialTile?.tileType]);
   let backgroundColor = "black";
   if (isWallTile) {
@@ -65,6 +88,12 @@ const GridBox: React.FC<GridBoxProps> = ({
   } else if (path.color) {
     backgroundColor = "#303030";
   }
+
+  const isZorbie =
+    specialTile?.tileType?.includes("zorbie") &&
+    !specialTile?.tileType?.includes("zorbie-start") &&
+    !specialTile?.tileType?.includes("zorbie-end");
+
   return (
     <Box
       w="100%"
@@ -77,8 +106,16 @@ const GridBox: React.FC<GridBoxProps> = ({
       position="relative"
       onMouseDown={(e) => {
         e.preventDefault();
-        if (specialTile?.tileType === "summer-switch") {
-          onSpecialClick && onSpecialClick();
+        if (
+          specialTile?.tileType === "summer-switch" ||
+          specialTile?.tileType.includes("zorbie")
+        ) {
+          onSpecialClick &&
+            onSpecialClick({
+              ...specialTile,
+              x,
+              y,
+            });
         } else {
           onMouseDown();
         }
@@ -89,7 +126,7 @@ const GridBox: React.FC<GridBoxProps> = ({
       }}
       onMouseEnter={onMouseEnter}
     >
-      {color && (
+      {color && !isZorbie && (
         <Circle
           color={
             stageEffects && stageEffects.includes("dark") && color != "yellow"
@@ -158,14 +195,15 @@ const GridBox: React.FC<GridBoxProps> = ({
       {(specialTile?.tileType === "rotating-vertical-only" ||
         specialTile?.tileType === "rotating-horizontal-only") && (
         // rotating box image inside the grid box
-        <Image
+        <Box
           className={`${rotateClass} active`} // Apply dynamic class
-          src="rotatingWall.png"
           w="100%"
           h="100%"
           position="absolute"
           zIndex="1"
-        />
+        >
+          <RotatingWall />
+        </Box>
       )}
       {specialTile?.tileType === "horizontal-only" && (
         // Gray walls either side of the grid box
@@ -199,30 +237,6 @@ const GridBox: React.FC<GridBoxProps> = ({
             text={bombTimer ? bombTimer.toString() : "-"}
             color={color || "tomato"}
           />
-          {/* <Box
-            position="absolute"
-            w="70%"
-            h="70%"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            zIndex="4"
-            textColor="white"
-            fontWeight="bold"
-            top="55%"
-            left="50%"
-            transform="translateY(-50%) translateX(-50%)"
-            onMouseDown={(e) => {
-              e.preventDefault();
-              onMouseDown();
-            }}
-            onTouchStart={(e) => {
-              e.preventDefault();
-              onMouseDown();
-            }}
-          >
-            {bombTimer ? bombTimer : "-"}
-          </Box> */}
         </Box>
       )}
       {(specialTile?.tileType === "magic-box-up-left" ||
@@ -230,6 +244,94 @@ const GridBox: React.FC<GridBoxProps> = ({
         specialTile?.tileType === "magic-box-up-down") && (
         // A magic box image inside the grid box
         <MagicBox />
+      )}
+      {specialTile?.tileType === "zorbie-up" && (
+        // A zorbie image inside the grid box
+        <Zorbie
+          type="up"
+          color={
+            stageEffects &&
+            stageEffects.includes("dark") &&
+            specialTile?.color != "yellow"
+              ? "gray"
+              : specialTile?.color || "tomato"
+          }
+        />
+      )}
+      {specialTile?.tileType === "zorbie-down" && (
+        // A zorbie image inside the grid box
+        <Zorbie
+          type="down"
+          color={
+            stageEffects &&
+            stageEffects.includes("dark") &&
+            specialTile?.color != "yellow"
+              ? "gray"
+              : specialTile?.color || "tomato"
+          }
+        />
+      )}
+      {specialTile?.tileType === "zorbie-left" && (
+        // A zorbie image inside the grid box
+        <Zorbie
+          type="left"
+          color={
+            stageEffects &&
+            stageEffects.includes("dark") &&
+            specialTile?.color != "yellow"
+              ? "gray"
+              : specialTile?.color || "tomato"
+          }
+        />
+      )}
+      {specialTile?.tileType === "zorbie-right" && (
+        // A zorbie image inside the grid box
+        <Zorbie
+          type="right"
+          color={
+            stageEffects &&
+            stageEffects.includes("dark") &&
+            specialTile?.color != "yellow"
+              ? "gray"
+              : specialTile?.color || "tomato"
+          }
+        />
+      )}
+      {specialTile?.tileType === "zorbie-happy" && (
+        // A zorbie image inside the grid box
+        <Zorbie
+          type="happy"
+          color={
+            stageEffects &&
+            stageEffects.includes("dark") &&
+            specialTile?.color != "yellow"
+              ? "gray"
+              : specialTile?.color || "tomato"
+          }
+        />
+      )}
+      {(specialTile?.tileType === "zorbie-sign-up" ||
+        specialTile?.tileType === "zorbie-sign-down" ||
+        specialTile?.tileType === "zorbie-sign-left" ||
+        specialTile?.tileType === "zorbie-sign-right") && (
+        // rotating box image inside the grid box
+        <Box
+          w="100%"
+          h="100%"
+          position="absolute"
+          zIndex="0"
+          className={`${rotateClass} active`}
+        >
+          <ZorbieSign
+            color={
+              stageEffects &&
+              stageEffects.includes("dark") &&
+              specialTile?.color != "yellow"
+                ? "gray"
+                : specialTile?.color || "tomato"
+            }
+          />
+        </Box>
       )}
       {specialTile?.tileType === "summer-switch" && (
         // A switch image inside the grid box

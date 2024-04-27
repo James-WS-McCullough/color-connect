@@ -54,6 +54,7 @@ const Grid: React.FC<GridProps> = ({
   const [drawing, setDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState<string | null>(null);
   const [prevBox, setPrevBox] = useState<{ x: number; y: number } | null>(null);
+  const [zorbieOnMove, setZorbieOnMove] = useState(false);
 
   // console log drawing updates
   useEffect(() => {
@@ -131,6 +132,520 @@ const Grid: React.FC<GridProps> = ({
     }
   }, [bombTimer]);
 
+  // useEffect to move zorbie every 1 second in the direction it is facing. If it reaches a zorbie-sign, it will change direction. If it hits a wall, the edge of the grid or another line, it will reset to the start.
+  useEffect(() => {
+    if (!isHelpModalOpen) {
+      if (zorbieOnMove) {
+        const interval = setInterval(() => {
+          const zorbieStart = specialTiles.find((s) =>
+            s.tileType.includes("zorbie-start")
+          );
+          const zorbieIndex = specialTiles.findIndex(
+            (s) =>
+              s.tileType === "zorbie-up" ||
+              s.tileType === "zorbie-left" ||
+              s.tileType === "zorbie-down" ||
+              s.tileType === "zorbie-right"
+          );
+          const zorbie = specialTiles[zorbieIndex];
+          if (!zorbie) {
+            return;
+          }
+          let nextX = zorbie.x;
+          let nextY = zorbie.y;
+          let nextTileType = zorbie.tileType;
+          let zorbieReset = false;
+          let hasSFX = false;
+
+          if (zorbie.tileType === "zorbie-up") {
+            nextY = zorbie.y - 1;
+          } else if (zorbie.tileType === "zorbie-left") {
+            nextX = zorbie.x - 1;
+          } else if (zorbie.tileType === "zorbie-down") {
+            nextY = zorbie.y + 1;
+          } else if (zorbie.tileType === "zorbie-right") {
+            nextX = zorbie.x + 1;
+          }
+
+          if (nextX < 0 || nextX >= size || nextY < 0 || nextY >= size) {
+            zorbieReset = true;
+          }
+
+          if (wallTiles.some((w) => w.x === nextX && w.y === nextY)) {
+            zorbieReset = true;
+          }
+
+          if (path[`${nextX},${nextY}`]) {
+            zorbieReset = true;
+          }
+
+          // If the next move contains an endpoint not matching the zorbie color, reset zorbie
+          if (
+            circles.some(
+              (c) => c.x === nextX && c.y === nextY && c.color !== zorbie.color
+            )
+          ) {
+            zorbieReset = true;
+          }
+
+          // If the next move contains a special tile type lock, reset zorbie
+          if (
+            specialTiles.some(
+              (s) => s.x === nextX && s.y === nextY && s.tileType === "lock"
+            )
+          ) {
+            zorbieReset = true;
+          }
+
+          // If the next move contains a special tile type rotating-tiles, reset zorbie if not in the right alignment
+          if (
+            specialTiles.some(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("rotating")
+            )
+          ) {
+            const rotatingTile = specialTiles.find(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("rotating")
+            );
+            if (rotatingTile) {
+              if (
+                (zorbie.tileType === "zorbie-up" &&
+                  !rotatingTile.tileType.includes("vertical-only")) ||
+                (zorbie.tileType === "zorbie-down" &&
+                  !rotatingTile.tileType.includes("vertical-only")) ||
+                (zorbie.tileType === "zorbie-left" &&
+                  !rotatingTile.tileType.includes("horizontal-only")) ||
+                (zorbie.tileType === "zorbie-right" &&
+                  !rotatingTile.tileType.includes("horizontal-only"))
+              ) {
+                zorbieReset = true;
+              }
+            }
+          }
+
+          let pathFromTileType = "";
+          if (zorbie.tileType === "zorbie-up") {
+            pathFromTileType = "down";
+          } else if (zorbie.tileType === "zorbie-down") {
+            pathFromTileType = "up";
+          } else if (zorbie.tileType === "zorbie-left") {
+            pathFromTileType = "right";
+          } else if (zorbie.tileType === "zorbie-right") {
+            pathFromTileType = "left";
+          }
+
+          // If the next move contains a magic box, follow magic box rules
+          if (
+            specialTiles.some(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("magic-box")
+            )
+          ) {
+            const magicBox = specialTiles.find(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("magic-box")
+            );
+            if (magicBox) {
+              hasSFX = true;
+              playSFX("SFX/magic-box.wav");
+              const sfxString =
+                "SFX/zorbie_surprise_" +
+                Math.floor(Math.random() * 9 + 1)
+                  .toString()
+                  .padStart(2, "0") +
+                ".mp3";
+              playSFX(sfxString);
+              if (magicBox.tileType === "magic-box-up-left") {
+                if (zorbie.tileType === "zorbie-down") {
+                  nextX = zorbie.x - 1;
+                  nextY = zorbie.y + 1;
+                  pathFromTileType = "right";
+                } else if (zorbie.tileType === "zorbie-right") {
+                  nextX = zorbie.x + 1;
+                  nextY = zorbie.y - 1;
+                  pathFromTileType = "down";
+                } else if (zorbie.tileType === "zorbie-left") {
+                  nextX = zorbie.x - 1;
+                  nextY = zorbie.y + 1;
+                  pathFromTileType = "up";
+                } else if (zorbie.tileType === "zorbie-up") {
+                  nextX = zorbie.x + 1;
+                  nextY = zorbie.y - 1;
+                  pathFromTileType = "left";
+                }
+              }
+              if (magicBox.tileType === "magic-box-up-right") {
+                if (zorbie.tileType === "zorbie-down") {
+                  nextX = zorbie.x + 1;
+                  nextY = zorbie.y + 1;
+                  pathFromTileType = "left";
+                } else if (zorbie.tileType === "zorbie-left") {
+                  nextX = zorbie.x - 1;
+                  nextY = zorbie.y - 1;
+                  pathFromTileType = "down";
+                } else if (zorbie.tileType === "zorbie-right") {
+                  nextX = zorbie.x + 1;
+                  nextY = zorbie.y + 1;
+                  pathFromTileType = "up";
+                } else if (zorbie.tileType === "zorbie-up") {
+                  nextX = zorbie.x - 1;
+                  nextY = zorbie.y - 1;
+                  pathFromTileType = "right";
+                }
+              }
+              if (magicBox.tileType === "magic-box-up-down") {
+                if (zorbie.tileType === "zorbie-down") {
+                  nextY = zorbie.y + 2;
+                } else if (zorbie.tileType === "zorbie-up") {
+                  nextY = zorbie.y - 2;
+                } else if (zorbie.tileType === "zorbie-left") {
+                  nextX = zorbie.x - 2;
+                } else if (zorbie.tileType === "zorbie-right") {
+                  nextX = zorbie.x + 2;
+                }
+              }
+            }
+          }
+
+          let nextColor = zorbie.color;
+
+          // If the next tile includes a painter box, apply the painter box effect
+          if (
+            specialTiles.some(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("painter-box")
+            )
+          ) {
+            const painterBox = specialTiles.find(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("painter-box")
+            );
+            if (painterBox) {
+              if (painterBox.tileType === "painter-box-vertical") {
+                if (zorbie.tileType === "zorbie-up") {
+                  nextY = zorbie.y - 2;
+                } else if (zorbie.tileType === "zorbie-down") {
+                  nextY = zorbie.y + 2;
+                }
+              }
+              if (painterBox.tileType === "painter-box-horizontal") {
+                if (zorbie.tileType === "zorbie-left") {
+                  nextX = zorbie.x - 2;
+                } else if (zorbie.tileType === "zorbie-right") {
+                  nextX = zorbie.x + 2;
+                }
+              }
+
+              if (nextColor === "white") {
+                nextColor = zorbieStart?.color || "tomato";
+              } else {
+                nextColor = "white";
+              }
+              hasSFX = true;
+              playSFX("SFX/painter-box.wav");
+              const sfxString =
+                "SFX/zorbie_surprise_" +
+                Math.floor(Math.random() * 9 + 1)
+                  .toString()
+                  .padStart(2, "0") +
+                ".mp3";
+              playSFX(sfxString);
+            }
+          }
+
+          // If the next move contains an endpoint matching the zorbie color, complete the path
+          if (
+            circles.some(
+              (c) =>
+                c.x === nextX &&
+                c.y === nextY &&
+                c.color === (zorbieStart?.color || zorbie.color)
+            ) &&
+            !specialTiles.some(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("zorbie-start")
+            )
+          ) {
+            setCompletedPaths((prevCompletedPaths) => {
+              return {
+                ...prevCompletedPaths,
+                [zorbie.color || "tomato"]: true,
+              };
+            });
+            hasSFX = true;
+            const sfxString =
+              "SFX/zorbie_happy_" +
+              Math.floor(Math.random() * 12 + 1)
+                .toString()
+                .padStart(2, "0") +
+              ".mp3";
+            playSFX(sfxString);
+
+            if (stageEffects.includes("dark") && zorbie.color === "yellow") {
+              playSFX("SFX/light2.wav");
+              stageEffects.splice(stageEffects.indexOf("dark"), 1, "light");
+            }
+
+            if (
+              specialTiles.some((s) => s.tileType === "lock") &&
+              zorbie.color === "green"
+            ) {
+              // Set all lock objects from specialTiles to 'unlocking'
+              setPuzzle((prevPuzzle) => ({
+                ...prevPuzzle,
+                specialTiles: prevPuzzle.specialTiles.map((s) => {
+                  if (s.tileType === "lock") {
+                    return { ...s, tileType: "unlocking" };
+                  }
+                  return s;
+                }),
+              }));
+
+              playSFX("SFX/lock1.wav");
+
+              // Set timeout to remove all 'unlocking' locks
+              setTimeout(() => {
+                setPuzzle((prevPuzzle) => ({
+                  ...prevPuzzle,
+                  specialTiles: prevPuzzle.specialTiles.filter(
+                    (s) => s.tileType !== "unlocking"
+                  ),
+                }));
+              }, 1000);
+            }
+
+            setZorbieOnMove(false);
+            clearInterval(interval);
+            nextTileType = "zorbie-happy";
+          }
+
+          const nextTile = specialTiles.find(
+            (s) => s.x === nextX && s.y === nextY
+          );
+
+          if (nextTile) {
+            if (nextTile.tileType.includes("zorbie-sign")) {
+              if (nextTile.tileType === "zorbie-sign-up") {
+                nextTileType = "zorbie-up";
+              }
+              if (nextTile.tileType === "zorbie-sign-left") {
+                nextTileType = "zorbie-left";
+              }
+              if (nextTile.tileType === "zorbie-sign-down") {
+                nextTileType = "zorbie-down";
+              }
+              if (nextTile.tileType === "zorbie-sign-right") {
+                nextTileType = "zorbie-right";
+              }
+            }
+          }
+
+          if (zorbieReset) {
+            nextX = zorbieStart?.x || 0;
+            nextY = zorbieStart?.y || 0;
+            nextTileType = `zorbie-${zorbieStart?.tileType.split("-")[2]}`;
+            nextColor = zorbieStart?.color || "tomato";
+            setZorbieOnMove(false);
+            clearInterval(interval);
+            playSFX("SFX/bomb-boom.wav");
+            const sfxString =
+              "SFX/zorbie_sad_" +
+              Math.floor(Math.random() * 6 + 1)
+                .toString()
+                .padStart(2, "0") +
+              ".mp3";
+            playSFX(sfxString);
+            hasSFX = true;
+          }
+
+          setPuzzle((prevPuzzle) => {
+            return {
+              ...prevPuzzle,
+              specialTiles: prevPuzzle.specialTiles.map((tile, index) => {
+                if (index === zorbieIndex) {
+                  return {
+                    ...tile,
+                    x: nextX,
+                    y: nextY,
+                    tileType: nextTileType,
+                    color: nextColor,
+                  };
+                }
+                return tile;
+              }),
+            };
+          });
+
+          if (!hasSFX) {
+            const sfxString =
+              "SFX/zorbie_walk_" +
+              Math.floor(Math.random() * 17 + 1)
+                .toString()
+                .padStart(2, "0") +
+              ".mp3";
+            playSFX(sfxString);
+          }
+
+          // if zorbieReset is false, add next move to path
+          if (!zorbieReset) {
+            setPath((prevPath) => {
+              return {
+                ...prevPath,
+                [`${zorbie.x},${zorbie.y}`]: {
+                  ...prevPath[`${zorbie.x},${zorbie.y}`],
+                  color: zorbie.color || "tomato",
+                  [zorbie.tileType.split("-")[1]]: true,
+                },
+                [`${nextX},${nextY}`]: {
+                  ...prevPath[`${nextX},${nextY}`],
+                  color: nextColor || "tomato",
+                  [pathFromTileType]: true,
+                },
+              };
+            });
+          }
+
+          // If zorbie is reset, clear the path for the zorbie color
+          if (zorbieReset) {
+            const sfxString =
+              "SFX/zorbie_sad_" +
+              Math.floor(Math.random() * 6 + 1)
+                .toString()
+                .padStart(2, "0") +
+              ".mp3";
+            playSFX(sfxString);
+            setPath((prevPath) => {
+              const newPath = { ...prevPath };
+              Object.keys(newPath).forEach((key) => {
+                if (newPath[key].color === zorbie.color) {
+                  delete newPath[key];
+                }
+              });
+              return newPath;
+            });
+
+            // If there is a painterbox that matches the zorbie color, reset clear the path for white too
+            if (
+              specialTiles.some(
+                (s) =>
+                  s.tileType.includes("painter-box") &&
+                  s.color === zorbieStart?.color
+              )
+            ) {
+              setPath((prevPath) => {
+                const newPath = { ...prevPath };
+                Object.keys(newPath).forEach((key) => {
+                  if (
+                    newPath[key].color === "white" ||
+                    newPath[key].color === zorbieStart?.color
+                  ) {
+                    delete newPath[key];
+                  }
+                });
+                return newPath;
+              });
+            }
+          }
+        }, 500);
+        return () => clearInterval(interval);
+      }
+    }
+  }, [specialTiles, zorbieOnMove, stageEffects, isHelpModalOpen]);
+
+  const resetZorbie = () => {
+    const sfxString =
+      "SFX/zorbie_surprise_" +
+      Math.floor(Math.random() * 9 + 1)
+        .toString()
+        .padStart(2, "0") +
+      ".mp3";
+    playSFX(sfxString);
+    const zorbieStart = specialTiles.find((s) =>
+      s.tileType.includes("zorbie-start")
+    );
+    if (!zorbieStart) {
+      return;
+    }
+    if (stageEffects.includes("light") && zorbieStart?.color === "yellow") {
+      playSFX("SFX/light1.wav");
+      stageEffects.splice(stageEffects.indexOf("light"), 1, "dark");
+    }
+    setCompletedPaths((prevCompletedPaths) => {
+      return {
+        ...prevCompletedPaths,
+        [zorbieStart.color || "tomato"]: false,
+      };
+    });
+    setPuzzle((prevPuzzle) => {
+      return {
+        ...prevPuzzle,
+        specialTiles: prevPuzzle.specialTiles.map((tile, index) => {
+          if (
+            tile.tileType.includes("zorbie") &&
+            !tile.tileType.includes("zorbie-sign") &&
+            !tile.tileType.includes("zorbie-start") &&
+            !tile.tileType.includes("zorbie-end")
+          ) {
+            return {
+              ...tile,
+              x: zorbieStart.x,
+              y: zorbieStart.y,
+              tileType: `zorbie-${zorbieStart.tileType.split("-")[2]}`,
+              color: zorbieStart.color,
+            };
+          }
+          return tile;
+        }),
+      };
+    });
+
+    setPath((prevPath) => {
+      const newPath = { ...prevPath };
+      Object.keys(newPath).forEach((key) => {
+        if (newPath[key].color === zorbieStart.color) {
+          delete newPath[key];
+        }
+      });
+      return newPath;
+    });
+
+    // If there is a painterbox that matches the zorbie color, reset clear the path for white too
+    if (
+      specialTiles.some(
+        (s) =>
+          s.tileType.includes("painter-box") && s.color === zorbieStart?.color
+      )
+    ) {
+      setPath((prevPath) => {
+        const newPath = { ...prevPath };
+        Object.keys(newPath).forEach((key) => {
+          if (
+            newPath[key].color === "white" ||
+            newPath[key].color === zorbieStart?.color
+          ) {
+            delete newPath[key];
+          }
+        });
+        return newPath;
+      });
+    }
+  };
+
   useEffect(() => {
     const handleMouseUp = () => {
       stopDrawing({ setDrawing });
@@ -159,28 +674,93 @@ const Grid: React.FC<GridProps> = ({
   }, []);
 
   // On special click to handle replace summer stage effect with autumn and autumn with summer
-  const handleSpecialClick = () => {
+  const handleSpecialClick = ({
+    tileType,
+    x,
+    y,
+    color,
+  }: {
+    tileType: string;
+    x: number;
+    y: number;
+    color?: string;
+  }) => {
     // If puzzle doesn't have summer or autumn stage effects, return
-    if (!stageEffects.includes("summer") && !stageEffects.includes("autumn")) {
+    if (
+      tileType == "summer-switch" &&
+      (stageEffects.includes("summer") || stageEffects.includes("autumn"))
+    ) {
+      playSFX("SFX/leaves.wav");
+
+      setPuzzle((prevPuzzle) => {
+        return {
+          ...prevPuzzle,
+          stageEffects: prevPuzzle.stageEffects.map((effect) => {
+            if (effect === "summer") {
+              return "autumn";
+            } else if (effect === "autumn") {
+              return "summer";
+            } else {
+              return effect;
+            }
+          }),
+        };
+      });
       return;
     }
 
-    playSFX("SFX/leaves.wav");
+    if (tileType === "zorbie-happy") {
+      resetZorbie();
+      return;
+    }
 
-    setPuzzle((prevPuzzle) => {
-      return {
-        ...prevPuzzle,
-        stageEffects: prevPuzzle.stageEffects.map((effect) => {
-          if (effect === "summer") {
-            return "autumn";
-          } else if (effect === "autumn") {
-            return "summer";
-          } else {
-            return effect;
-          }
-        }),
-      };
-    });
+    if (tileType?.includes("zorbie-sign")) {
+      playSFX("SFX/zorbie-sign-rotate.mp3");
+
+      let nextTileType = "";
+
+      if (tileType === "zorbie-sign-up") {
+        nextTileType = "zorbie-sign-right";
+      } else if (tileType === "zorbie-sign-right") {
+        nextTileType = "zorbie-sign-down";
+      } else if (tileType === "zorbie-sign-down") {
+        nextTileType = "zorbie-sign-left";
+      } else if (tileType === "zorbie-sign-left") {
+        nextTileType = "zorbie-sign-up";
+      }
+
+      setPuzzle((prevPuzzle) => {
+        return {
+          ...prevPuzzle,
+          specialTiles: prevPuzzle.specialTiles.map((tile) => {
+            if (tile.x === x && tile.y === y) {
+              return {
+                ...tile,
+                tileType: nextTileType,
+              };
+            }
+            return tile;
+          }),
+        };
+      });
+      return;
+    }
+
+    if (
+      tileType?.includes("zorbie") &&
+      !zorbieOnMove &&
+      !specialTiles.some((s) => s.tileType === "zorbie-happy")
+    ) {
+      const sfxString =
+        "SFX/zorbie_happy_" +
+        Math.floor(Math.random() * 12 + 1)
+          .toString()
+          .padStart(2, "0") +
+        ".mp3";
+      playSFX(sfxString);
+      setZorbieOnMove(true);
+      return;
+    }
   };
 
   return (

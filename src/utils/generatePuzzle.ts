@@ -1,4 +1,4 @@
-import { dir } from "console";
+import { dir, warn } from "console";
 import {
   ColourPoint,
   Grid,
@@ -34,13 +34,18 @@ const isValidPuzzle = (
     return false;
   }
 
-  // - Have no colour endpoints on the same tile as a special tiles aside from bombs
-  const specialTilePoints = specialTiles
-    .filter((specialTile) => specialTile.tileType !== "bomb")
-    .map(({ x, y }) => `${x},${y}`);
-  const specialTileSet = new Set(specialTilePoints);
-  for (const { x, y, color } of puzzle) {
-    if (specialTileSet.has(`${x},${y}`)) {
+  // - Have no colour endpoints on the same tile as a special tiles aside from bombs and zorbie things
+  const filteredSpecialTiles = specialTiles.filter(
+    (specialTile) =>
+      specialTile.tileType !== "bomb" &&
+      !specialTile.tileType.includes("zorbie")
+  );
+  for (const { x, y } of puzzle) {
+    if (
+      filteredSpecialTiles.some(
+        (specialTile) => specialTile.x === x && specialTile.y === y
+      )
+    ) {
       return false;
     }
   }
@@ -69,6 +74,7 @@ export function generatePuzzle(
     generateCount++;
     if (generateCount > 1000) {
       console.log("Failed to generate a valid puzzle after 1000 attempts");
+      console.warn("Failed to generate a valid puzzle after 1000 attempts");
       break;
     }
   } while (!isValidPuzzle(circles, gridSize, specialTiles));
@@ -737,6 +743,175 @@ function generateOnePuzzle(
         ...endpoints[color].map(({ x, y }) => ({ x, y, tileType: "bomb" }))
       );
     });
+  }
+
+  // If the stageTypes includes "zorbie"
+  if (stageTypes && stageTypes.includes("zorbie")) {
+    // Make a list of valid colours, excluding orange.
+    let validColors = colors.filter((color) => color !== "orange");
+    // Colours that contain bombs can't be valid
+    validColors = validColors.filter(
+      (color) =>
+        !specialTiles.some(
+          (specialTile) =>
+            specialTile.tileType === "bomb" &&
+            specialTile.x === endpoints[color][0].x &&
+            specialTile.y === endpoints[color][0].y
+        )
+    );
+    // Colours that contain warp can't be valid
+    validColors = validColors.filter(
+      (color) =>
+        !specialTiles.some(
+          (specialTile) =>
+            specialTile.tileType === "warp" &&
+            grid[specialTile.y][specialTile.x] === color
+        )
+    );
+
+    // Colours that contain arrows can't be valid
+    validColors = validColors.filter(
+      (color) =>
+        !specialTiles.some(
+          (specialTile) =>
+            specialTile.tileType.includes("arrow") &&
+            grid[specialTile.y][specialTile.x] === color
+        )
+    );
+
+    if (validColors.length > 0) {
+      // Choose 1 colour in the puzzle
+      const color = validColors[Math.floor(Math.random() * validColors.length)];
+      // Find a random endpoint of that colour
+      const endpoint = endpoints[color][Math.floor(Math.random() * 2)];
+      // Check which direction the solution colour path takes from that endpoint
+      const direction = directions.find(({ x, y }) => {
+        const newX = endpoint.x + x;
+        const newY = endpoint.y + y;
+        return (
+          newX >= 0 &&
+          newX < gridSize &&
+          newY >= 0 &&
+          newY < gridSize &&
+          grid[newY][newX] === color
+        );
+      }) || { x: 0, y: 0 };
+
+      let directionString;
+      if (direction.x === 0 && direction.y === -1) {
+        directionString = "up";
+      } else if (direction.x === 1 && direction.y === 0) {
+        directionString = "right";
+      } else if (direction.x === 0 && direction.y === 1) {
+        directionString = "down";
+      } else if (direction.x === -1 && direction.y === 0) {
+        directionString = "left";
+      }
+
+      // Add the zorbie facing that direction to specialTiles
+      if (direction) {
+        specialTiles.push({
+          x: endpoint.x,
+          y: endpoint.y,
+          tileType: `zorbie-${directionString}`,
+          color: color,
+        });
+        specialTiles.push({
+          x: endpoint.x,
+          y: endpoint.y,
+          tileType: `zorbie-start-${directionString}`,
+          color: color,
+        });
+      }
+
+      // Add a zorbie-end to the other endpoint
+      const otherEndpoint = endpoints[color].find(
+        (point) => point.x !== endpoint.x || point.y !== endpoint.y
+      );
+
+      if (otherEndpoint) {
+        specialTiles.push({
+          x: otherEndpoint.x,
+          y: otherEndpoint.y,
+          tileType: `zorbie-end`,
+          color: color,
+        });
+      }
+
+      // for tiles of that color, for each bend, where a coloured tile has 2 not opposite tiles, and not an endpoint, add a zorbie-sign
+      const cornerTiles = [] as Point[];
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          if (
+            grid[y][x] === color &&
+            !endpoints[color].some((point) => point.x === x && point.y === y)
+          ) {
+            // Check to see if the tile is stright (has 2 opposite neighbors of the same colour)
+            let isStraight = false;
+            const directionPairs = [
+              [
+                { x: 0, y: -1 },
+                { x: 0, y: 1 },
+              ],
+              [
+                { x: 1, y: 0 },
+                { x: -1, y: 0 },
+              ],
+            ];
+            for (const [direction1, direction2] of directionPairs) {
+              const newX1 = x + direction1.x;
+              const newY1 = y + direction1.y;
+              const newX2 = x + direction2.x;
+              const newY2 = y + direction2.y;
+              if (
+                newX1 >= 0 &&
+                newX1 < gridSize &&
+                newY1 >= 0 &&
+                newY1 < gridSize &&
+                newX2 >= 0 &&
+                newX2 < gridSize &&
+                newY2 >= 0 &&
+                newY2 < gridSize &&
+                grid[newY1][newX1] === color &&
+                grid[newY2][newX2] === color
+              ) {
+                isStraight = true;
+              }
+            }
+            if (!isStraight) {
+              cornerTiles.push({ x, y });
+            }
+          }
+        }
+      }
+
+      // Add a zorbie-sign of a random direction to each corner
+      cornerTiles.forEach(({ x, y }) => {
+        const direction = directions[Math.floor(Math.random() * 4)];
+        let directionString;
+        if (direction.x === 0 && direction.y === -1) {
+          directionString = "up";
+        } else if (direction.x === 1 && direction.y === 0) {
+          directionString = "right";
+        } else if (direction.x === 0 && direction.y === 1) {
+          directionString = "down";
+        } else if (direction.x === -1 && direction.y === 0) {
+          directionString = "left";
+        }
+
+        // clear special tiles already on the corner
+        specialTiles = specialTiles.filter(
+          (specialTile) => specialTile.x !== x || specialTile.y !== y
+        );
+
+        specialTiles.push({
+          x,
+          y,
+          tileType: `zorbie-sign-${directionString}`,
+          color: color,
+        });
+      });
+    }
   }
 
   // If the stageTypes includes "dark, rainy, snow", add them to stageEffects

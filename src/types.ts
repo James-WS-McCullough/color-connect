@@ -38,6 +38,7 @@ export const allStageEffects = [
   "rotating-tiles",
   "summer",
   "painter-box",
+  "zorbie",
 ];
 
 export const colors = [
@@ -122,34 +123,40 @@ export const unlockableStageTypes = [
     color: "black",
   },
   {
-    level: 40,
+    level: 35,
     effect: "bomb",
     popupText: "Tick Tock!",
     color: "red",
   },
   {
-    level: 50,
+    level: 40,
     effect: "magic-box",
     popupText: "Magic Box!",
     color: "purple",
   },
   {
-    level: 60,
+    level: 45,
     effect: "rotating-tiles",
     popupText: "Rotating Tiles!",
     color: "orange",
   },
   {
-    level: 70,
+    level: 50,
     effect: "summer",
     popupText: "It's Summer!",
     color: "lime",
   },
   {
-    level: 80,
+    level: 55,
     effect: "painter-box",
     popupText: "Get Painted!",
     color: "cyan",
+  },
+  {
+    level: 60,
+    effect: "zorbie",
+    popupText: "Zorbies Arrive!",
+    color: "magenta",
   },
 ];
 

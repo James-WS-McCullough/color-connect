@@ -25,6 +25,29 @@ code {
   transform: rotate(0deg);
 }
 
+/* .rotate-up-to-right,
+.rotate-right-to-down,
+.rotate-down-to-left,
+.rotate-left-to-up {
+  transition: transform 1.06s cubic-bezier(0.2, 0, 0.5, 1.55);
+} */
+
+.rotate-up-to-right.active {
+  transform: rotate(0deg);
+}
+
+.rotate-right-to-down.active {
+  transform: rotate(90deg);
+}
+
+.rotate-down-to-left.active {
+  transform: rotate(180deg);
+}
+
+.rotate-left-to-up.active {
+  transform: rotate(270deg);
+}
+
 @keyframes spin-away {
   from {
     transform: rotate(0deg) scale(1);
@@ -38,4 +61,26 @@ code {
 
 .lock-disappear {
   animation: spin-away 1s ease forwards;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0;
+  }
+  99% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blink {
+  animation: blink 3s infinite;
 }
