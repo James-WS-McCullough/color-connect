@@ -1,6 +1,8 @@
 import { Box, HStack, Image, VStack } from "@chakra-ui/react";
 import Circle from "./Circle";
 import { GridBoxPath, SpecialTile } from "../types";
+import { Zorbie } from "../images/zorbie";
+import { ZorbieSign } from "../images/zorbieSign";
 
 type MockGridBoxProps = {
   color?: string;
@@ -278,6 +280,41 @@ const MockGridBox: React.FC<MockGridBoxProps> = ({
           position="absolute"
           zIndex="0"
           backgroundColor={specialTile?.color || "tomato"}
+        />
+      )}
+      {specialTile?.tileType === "zorbie-up" && (
+        // A zorbie image inside the grid box
+        <Zorbie type="up" color={specialTile?.color || "tomato"} />
+      )}
+      {specialTile?.tileType === "zorbie-down" && (
+        // A zorbie image inside the grid box
+        <Zorbie type="down" color={specialTile?.color || "tomato"} />
+      )}
+      {specialTile?.tileType === "zorbie-left" && (
+        // A zorbie image inside the grid box
+        <Zorbie type="left" color={specialTile?.color || "tomato"} />
+      )}
+      {specialTile?.tileType === "zorbie-right" && (
+        // A zorbie image inside the grid box
+        <Zorbie type="right" color={specialTile?.color || "tomato"} />
+      )}
+      {(specialTile?.tileType === "zorbie-sign-up" ||
+        specialTile?.tileType === "zorbie-sign-down" ||
+        specialTile?.tileType === "zorbie-sign-left" ||
+        specialTile?.tileType === "zorbie-sign-right") && (
+        // rotating box image inside the grid box
+
+        <ZorbieSign
+          color={specialTile?.color || "tomato"}
+          rotateClass={
+            specialTile?.tileType === "zorbie-sign-up"
+              ? "rotate(0deg)"
+              : specialTile?.tileType === "zorbie-sign-down"
+              ? "rotate(180deg)"
+              : specialTile?.tileType === "zorbie-sign-left"
+              ? "rotate(270deg)"
+              : "rotate(90deg)"
+          }
         />
       )}
 

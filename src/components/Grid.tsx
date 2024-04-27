@@ -167,67 +167,6 @@ const Grid: React.FC<GridProps> = ({
             nextX = zorbie.x + 1;
           }
 
-          if (nextX < 0 || nextX >= size || nextY < 0 || nextY >= size) {
-            zorbieReset = true;
-          }
-
-          if (wallTiles.some((w) => w.x === nextX && w.y === nextY)) {
-            zorbieReset = true;
-          }
-
-          if (path[`${nextX},${nextY}`]) {
-            zorbieReset = true;
-          }
-
-          // If the next move contains an endpoint not matching the zorbie color, reset zorbie
-          if (
-            circles.some(
-              (c) => c.x === nextX && c.y === nextY && c.color !== zorbie.color
-            )
-          ) {
-            zorbieReset = true;
-          }
-
-          // If the next move contains a special tile type lock, reset zorbie
-          if (
-            specialTiles.some(
-              (s) => s.x === nextX && s.y === nextY && s.tileType === "lock"
-            )
-          ) {
-            zorbieReset = true;
-          }
-
-          // If the next move contains a special tile type rotating-tiles, reset zorbie if not in the right alignment
-          if (
-            specialTiles.some(
-              (s) =>
-                s.x === nextX &&
-                s.y === nextY &&
-                s.tileType.includes("rotating")
-            )
-          ) {
-            const rotatingTile = specialTiles.find(
-              (s) =>
-                s.x === nextX &&
-                s.y === nextY &&
-                s.tileType.includes("rotating")
-            );
-            if (rotatingTile) {
-              if (
-                (zorbie.tileType === "zorbie-up" &&
-                  !rotatingTile.tileType.includes("vertical-only")) ||
-                (zorbie.tileType === "zorbie-down" &&
-                  !rotatingTile.tileType.includes("vertical-only")) ||
-                (zorbie.tileType === "zorbie-left" &&
-                  !rotatingTile.tileType.includes("horizontal-only")) ||
-                (zorbie.tileType === "zorbie-right" &&
-                  !rotatingTile.tileType.includes("horizontal-only"))
-              ) {
-                zorbieReset = true;
-              }
-            }
-          }
-
           let pathFromTileType = "";
           if (zorbie.tileType === "zorbie-up") {
             pathFromTileType = "down";
@@ -363,6 +302,89 @@ const Grid: React.FC<GridProps> = ({
                   .padStart(2, "0") +
                 ".mp3";
               playSFX(sfxString);
+            }
+          }
+
+          if (nextX < 0 || nextX >= size || nextY < 0 || nextY >= size) {
+            zorbieReset = true;
+          }
+
+          if (wallTiles.some((w) => w.x === nextX && w.y === nextY)) {
+            zorbieReset = true;
+          }
+
+          if (path[`${nextX},${nextY}`]) {
+            zorbieReset = true;
+          }
+
+          // If the next move contains an endpoint not matching the zorbie color, reset zorbie
+          if (
+            circles.some(
+              (c) => c.x === nextX && c.y === nextY && c.color !== zorbie.color
+            )
+          ) {
+            zorbieReset = true;
+          }
+
+          // If the next move contains a special tile type lock, reset zorbie
+          if (
+            specialTiles.some(
+              (s) => s.x === nextX && s.y === nextY && s.tileType === "lock"
+            )
+          ) {
+            zorbieReset = true;
+          }
+
+          // If the next move contains a special tile type color-specific-tiles, reset zorbie if not in the right color
+          if (
+            specialTiles.some(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("colour-specific")
+            )
+          ) {
+            const colorSpecificTile = specialTiles.find(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("colour-specific")
+            );
+            if (colorSpecificTile) {
+              if (colorSpecificTile.color !== zorbie.color) {
+                zorbieReset = true;
+              }
+            }
+          }
+
+          // If the next move contains a special tile type rotating-tiles, reset zorbie if not in the right alignment
+          if (
+            specialTiles.some(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("rotating")
+            )
+          ) {
+            const rotatingTile = specialTiles.find(
+              (s) =>
+                s.x === nextX &&
+                s.y === nextY &&
+                s.tileType.includes("rotating")
+            );
+            if (rotatingTile) {
+              if (
+                (zorbie.tileType === "zorbie-up" &&
+                  !rotatingTile.tileType.includes("vertical-only")) ||
+                (zorbie.tileType === "zorbie-down" &&
+                  !rotatingTile.tileType.includes("vertical-only")) ||
+                (zorbie.tileType === "zorbie-left" &&
+                  !rotatingTile.tileType.includes("horizontal-only")) ||
+                (zorbie.tileType === "zorbie-right" &&
+                  !rotatingTile.tileType.includes("horizontal-only"))
+              ) {
+                zorbieReset = true;
+              }
             }
           }
 
@@ -873,7 +895,9 @@ const Grid: React.FC<GridProps> = ({
               })
             }
             isWallTile={wallTiles.some((w) => w.x === col && w.y === row)}
-            specialTile={specialTiles.find((s) => s.x === col && s.y === row)}
+            specialTiles={specialTiles.filter(
+              (s) => s.x === col && s.y === row
+            )}
             onSpecialClick={handleSpecialClick}
           />
         );

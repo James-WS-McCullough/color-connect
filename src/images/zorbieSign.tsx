@@ -2,10 +2,17 @@ import { Box } from "@chakra-ui/react";
 
 type ZorbieSignProps = {
   color: string;
+  rotateClass: string;
 };
 
-export const ZorbieSign = ({ color }: ZorbieSignProps) => (
-  <Box w="100%" h="100%" position="absolute">
+export const ZorbieSign = ({ color, rotateClass }: ZorbieSignProps) => (
+  <Box
+    w="100%"
+    h="100%"
+    position="absolute"
+    className={`${rotateClass} active`}
+    zIndex="0"
+  >
     <svg
       width="100%"
       height="100%"

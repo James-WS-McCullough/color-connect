@@ -822,6 +822,75 @@ const HelpModal: React.FC<HelpModalProps> = ({
       );
     }
 
+    if (unlockedStageTypes.includes("zorbie")) {
+      elementsArray.push(
+        <VStack>
+          <Text>
+            Zorbies are here to help! Direct them by rotating the arrows on the
+            floor to help them connect the dots! When you're ready, click on
+            them to set them walking!
+          </Text>
+          <HStack height="100px" width="400px" spacing="0">
+            <MockGridBox
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+              specialTile={{
+                tileType: "zorbie-right",
+                x: 0,
+                y: 0,
+                color: "red",
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "zorbie-sign-right",
+                x: 0,
+                y: 0,
+                color: "red",
+              }}
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              specialTile={{
+                tileType: "zorbie-sign-right",
+                x: 0,
+                y: 0,
+                color: "red",
+              }}
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+            <MockGridBox
+              color="red"
+              path={{
+                color: "",
+                left: false,
+                right: false,
+                up: false,
+                down: false,
+              }}
+            />
+          </HStack>
+        </VStack>
+      );
+    }
+
     elementsArray.push(<Text>How many levels can you beat? Have fun!</Text>);
 
     return elementsArray;

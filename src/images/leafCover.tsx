@@ -5,7 +5,7 @@ type LeafCoverType = {
 };
 
 export const LeafCover = ({ type }: LeafCoverType) => (
-  <Box w="100%" h="100%" position="absolute" zIndex="2">
+  <Box w="100%" h="100%" position="absolute" zIndex="5">
     {type === "autumn" && (
       <svg
         width="100%"

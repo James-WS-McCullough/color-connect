@@ -22,7 +22,7 @@ type GridBoxProps = {
   onMouseDown: () => void;
   onMouseEnter: () => void;
   isWallTile: boolean;
-  specialTile?: SpecialTile;
+  specialTiles?: SpecialTile[];
   stageEffects?: string[];
   bombTimer?: number;
   onSpecialClick?: ({
@@ -46,7 +46,7 @@ const GridBox: React.FC<GridBoxProps> = ({
   onMouseDown,
   onMouseEnter,
   isWallTile,
-  specialTile,
+  specialTiles,
   stageEffects,
   bombTimer,
   onSpecialClick,
@@ -54,22 +54,22 @@ const GridBox: React.FC<GridBoxProps> = ({
   const [rotateClass, setRotateClass] = useState("");
 
   useEffect(() => {
-    if (specialTile?.tileType === "rotating-vertical-only") {
+    if (specialTiles?.[0]?.tileType === "rotating-vertical-only") {
       setRotateClass("rotate-horizontal-to-vertical");
-    } else if (specialTile?.tileType === "rotating-horizontal-only") {
+    } else if (specialTiles?.[0]?.tileType === "rotating-horizontal-only") {
       setRotateClass("rotate-vertical-to-horizontal");
     }
 
-    if (specialTile?.tileType === "zorbie-sign-up") {
+    if (specialTiles?.[0]?.tileType === "zorbie-sign-up") {
       setRotateClass("rotate-up-to-right");
-    } else if (specialTile?.tileType === "zorbie-sign-right") {
+    } else if (specialTiles?.[0]?.tileType === "zorbie-sign-right") {
       setRotateClass("rotate-right-to-down");
-    } else if (specialTile?.tileType === "zorbie-sign-down") {
+    } else if (specialTiles?.[0]?.tileType === "zorbie-sign-down") {
       setRotateClass("rotate-down-to-left");
-    } else if (specialTile?.tileType === "zorbie-sign-left") {
+    } else if (specialTiles?.[0]?.tileType === "zorbie-sign-left") {
       setRotateClass("rotate-left-to-up");
     }
-  }, [specialTile?.tileType]);
+  }, [specialTiles?.[0]?.tileType]);
   let backgroundColor = "black";
   if (isWallTile) {
     backgroundColor = "gray";
@@ -90,9 +90,9 @@ const GridBox: React.FC<GridBoxProps> = ({
   }
 
   const isZorbie =
-    specialTile?.tileType?.includes("zorbie") &&
-    !specialTile?.tileType?.includes("zorbie-start") &&
-    !specialTile?.tileType?.includes("zorbie-end");
+    specialTiles?.[0]?.tileType?.includes("zorbie") &&
+    !specialTiles?.[0]?.tileType?.includes("zorbie-start") &&
+    !specialTiles?.[0]?.tileType?.includes("zorbie-end");
 
   return (
     <Box
@@ -107,12 +107,12 @@ const GridBox: React.FC<GridBoxProps> = ({
       onMouseDown={(e) => {
         e.preventDefault();
         if (
-          specialTile?.tileType === "summer-switch" ||
-          specialTile?.tileType.includes("zorbie")
+          specialTiles?.[0]?.tileType === "summer-switch" ||
+          specialTiles?.[0]?.tileType.includes("zorbie")
         ) {
           onSpecialClick &&
             onSpecialClick({
-              ...specialTile,
+              ...specialTiles?.[0],
               x,
               y,
             });
@@ -135,12 +135,13 @@ const GridBox: React.FC<GridBoxProps> = ({
           }
         />
       )}
-      {specialTile?.tileType === "warp" && (
-        // The image is under the other coloured boxes
+      {specialTiles?.some((tile: SpecialTile) => tile.tileType === "warp") && (
         <WarpTile />
       )}
-      {(specialTile?.tileType === "lock" ||
-        specialTile?.tileType === "unlocking") && (
+      {(specialTiles?.some((tile: SpecialTile) => tile.tileType === "lock") ||
+        specialTiles?.some(
+          (tile: SpecialTile) => tile.tileType === "unlocking"
+        )) && (
         <Image
           src="lockbox.png"
           w="100%"
@@ -148,52 +149,70 @@ const GridBox: React.FC<GridBoxProps> = ({
           position="absolute"
           zIndex="0"
           className={
-            specialTile?.tileType === "unlocking" ? "lock-disappear" : ""
+            specialTiles?.some(
+              (tile: SpecialTile) => tile.tileType === "unlocking"
+            )
+              ? "lock-disappear"
+              : ""
           }
         />
       )}
-      {specialTile?.tileType === "arrow-up" && <ArrowTile rotation={0} />}
-      {specialTile?.tileType === "arrow-down" && <ArrowTile rotation={180} />}
-      {specialTile?.tileType === "arrow-left" && <ArrowTile rotation={270} />}
-      {specialTile?.tileType === "arrow-right" && <ArrowTile rotation={90} />}
-      {specialTile?.tileType === "colour-specific" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "arrow-up"
+      ) && <ArrowTile rotation={0} />}
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "arrow-down"
+      ) && <ArrowTile rotation={180} />}
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "arrow-left"
+      ) && <ArrowTile rotation={270} />}
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "arrow-right"
+      ) && <ArrowTile rotation={90} />}
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "colour-specific"
+      ) && (
         // A diamond inside the grid box with the colour of the specialTile.color
         <Box
           position="absolute"
           w="40%"
           h="40%"
           transform="rotate(45deg)"
-          backgroundColor={specialTile?.color || "tomato"}
+          backgroundColor={specialTiles?.[0]?.color || "tomato"}
           zIndex="1"
         />
       )}
-      {specialTile?.tileType === "vertical-only" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "vertical-only"
+      ) && (
         // Gray walls either side of the grid box
         <HStack
           justifyContent="space-between"
           height="100%"
           width="100%"
           position="absolute"
-          zIndex="0"
         >
           <Box
             w="40%"
             h="100%"
             backgroundColor={"gray"}
             opacity={1}
-            zIndex="1"
+            zIndex="0"
           />
           <Box
             w="40%"
             h="100%"
             backgroundColor={"gray"}
             opacity={1}
-            zIndex="1"
+            zIndex="0"
           />
         </HStack>
       )}
-      {(specialTile?.tileType === "rotating-vertical-only" ||
-        specialTile?.tileType === "rotating-horizontal-only") && (
+      {specialTiles?.some(
+        (tile: SpecialTile) =>
+          tile.tileType === "rotating-vertical-only" ||
+          tile.tileType === "rotating-horizontal-only"
+      ) && (
         // rotating box image inside the grid box
         <Box
           className={`${rotateClass} active`} // Apply dynamic class
@@ -205,32 +224,33 @@ const GridBox: React.FC<GridBoxProps> = ({
           <RotatingWall />
         </Box>
       )}
-      {specialTile?.tileType === "horizontal-only" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "horizontal-only"
+      ) && (
         // Gray walls either side of the grid box
         <VStack
           justifyContent="space-between"
           height="100%"
           width="100%"
           position="absolute"
-          zIndex="0"
         >
           <Box
             w="100%"
             h="40%"
             backgroundColor={"gray"}
             opacity={1}
-            zIndex="1"
+            zIndex="0"
           />
           <Box
             w="100%"
             h="40%"
             backgroundColor={"gray"}
             opacity={1}
-            zIndex="1"
+            zIndex="0s"
           />
         </VStack>
       )}
-      {specialTile?.tileType === "bomb" && (
+      {specialTiles?.some((tile: SpecialTile) => tile.tileType === "bomb") && (
         // A bomb image inside the grid box
         <Box w="100%" h="100%" position="absolute" zIndex="2">
           <Bomb
@@ -239,130 +259,141 @@ const GridBox: React.FC<GridBoxProps> = ({
           />
         </Box>
       )}
-      {(specialTile?.tileType === "magic-box-up-left" ||
-        specialTile?.tileType === "magic-box-up-right" ||
-        specialTile?.tileType === "magic-box-up-down") && (
+      {specialTiles?.some(
+        (tile: SpecialTile) =>
+          tile.tileType === "magic-box-up-left" ||
+          tile.tileType === "magic-box-up-right" ||
+          tile.tileType === "magic-box-up-down"
+      ) && (
         // A magic box image inside the grid box
         <MagicBox />
       )}
-      {specialTile?.tileType === "zorbie-up" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "zorbie-up"
+      ) && (
         // A zorbie image inside the grid box
         <Zorbie
           type="up"
           color={
             stageEffects &&
             stageEffects.includes("dark") &&
-            specialTile?.color != "yellow"
+            specialTiles?.[0]?.color != "yellow"
               ? "gray"
-              : specialTile?.color || "tomato"
+              : specialTiles?.[0]?.color || "tomato"
           }
         />
       )}
-      {specialTile?.tileType === "zorbie-down" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "zorbie-down"
+      ) && (
         // A zorbie image inside the grid box
         <Zorbie
           type="down"
           color={
             stageEffects &&
             stageEffects.includes("dark") &&
-            specialTile?.color != "yellow"
+            specialTiles?.[0]?.color != "yellow"
               ? "gray"
-              : specialTile?.color || "tomato"
+              : specialTiles?.[0]?.color || "tomato"
           }
         />
       )}
-      {specialTile?.tileType === "zorbie-left" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "zorbie-left"
+      ) && (
         // A zorbie image inside the grid box
         <Zorbie
           type="left"
           color={
             stageEffects &&
             stageEffects.includes("dark") &&
-            specialTile?.color != "yellow"
+            specialTiles?.[0]?.color != "yellow"
               ? "gray"
-              : specialTile?.color || "tomato"
+              : specialTiles?.[0]?.color || "tomato"
           }
         />
       )}
-      {specialTile?.tileType === "zorbie-right" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "zorbie-right"
+      ) && (
         // A zorbie image inside the grid box
         <Zorbie
           type="right"
           color={
             stageEffects &&
             stageEffects.includes("dark") &&
-            specialTile?.color != "yellow"
+            specialTiles?.[0]?.color != "yellow"
               ? "gray"
-              : specialTile?.color || "tomato"
+              : specialTiles?.[0]?.color || "tomato"
           }
         />
       )}
-      {specialTile?.tileType === "zorbie-happy" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "zorbie-happy"
+      ) && (
         // A zorbie image inside the grid box
         <Zorbie
           type="happy"
           color={
             stageEffects &&
             stageEffects.includes("dark") &&
-            specialTile?.color != "yellow"
+            specialTiles?.[0]?.color != "yellow"
               ? "gray"
-              : specialTile?.color || "tomato"
+              : specialTiles?.[0]?.color || "tomato"
           }
         />
       )}
-      {(specialTile?.tileType === "zorbie-sign-up" ||
-        specialTile?.tileType === "zorbie-sign-down" ||
-        specialTile?.tileType === "zorbie-sign-left" ||
-        specialTile?.tileType === "zorbie-sign-right") && (
+      {specialTiles?.some(
+        (tile: SpecialTile) =>
+          tile.tileType === "zorbie-sign-up" ||
+          tile.tileType === "zorbie-sign-down" ||
+          tile.tileType === "zorbie-sign-left" ||
+          tile.tileType === "zorbie-sign-right"
+      ) && (
         // rotating box image inside the grid box
-        <Box
-          w="100%"
-          h="100%"
-          position="absolute"
-          zIndex="0"
-          className={`${rotateClass} active`}
-        >
-          <ZorbieSign
-            color={
-              stageEffects &&
-              stageEffects.includes("dark") &&
-              specialTile?.color != "yellow"
-                ? "gray"
-                : specialTile?.color || "tomato"
-            }
-          />
-        </Box>
+        <ZorbieSign
+          rotateClass={rotateClass}
+          color={
+            stageEffects &&
+            stageEffects.includes("dark") &&
+            specialTiles?.[0]?.color != "yellow"
+              ? "gray"
+              : specialTiles?.[0]?.color || "tomato"
+          }
+        />
       )}
-      {specialTile?.tileType === "summer-switch" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "summer-switch"
+      ) && (
         // A switch image inside the grid box
         <SummerAutumnSwitch />
       )}
-
       {stageEffects &&
         stageEffects.includes("summer") &&
         color &&
         !!(colors.indexOf(color) % 2) && <LeafCover type="summer" />}
-
       {stageEffects &&
         stageEffects.includes("autumn") &&
         color &&
         !(colors.indexOf(color) % 2) && <LeafCover type="autumn" />}
-
-      {specialTile?.tileType === "painter-box-horizontal" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "painter-box-horizontal"
+      ) && (
         // A painter box image inside the grid box
         <PainterBox
           direction="horizontal"
-          color={specialTile?.color || "tomato"}
+          color={specialTiles?.[0]?.color || "tomato"}
         />
       )}
-      {specialTile?.tileType === "painter-box-vertical" && (
+      {specialTiles?.some(
+        (tile: SpecialTile) => tile.tileType === "painter-box-vertical"
+      ) && (
         // A painter box image inside the grid box
         <PainterBox
           direction="vertical"
-          color={specialTile?.color || "tomato"}
+          color={specialTiles?.[0]?.color || "tomato"}
         />
       )}
-
       <VStack spacing="0" width="100%" height="100%">
         <Box
           w="20%"
