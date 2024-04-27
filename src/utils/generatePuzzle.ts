@@ -793,7 +793,7 @@ function generateOnePuzzle(
           newX < gridSize &&
           newY >= 0 &&
           newY < gridSize &&
-          grid[newY][newX] === color
+          (grid[newY][newX] === color || grid[newY][newX] === "N/A")
         );
       }) || { x: 0, y: 0 };
 

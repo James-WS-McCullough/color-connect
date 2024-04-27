@@ -731,8 +731,12 @@ const Grid: React.FC<GridProps> = ({
       return;
     }
 
-    if (tileType === "zorbie-happy") {
+    if (
+      tileType === "zorbie-happy" ||
+      (tileType === "zarbie-end" && zorbieOnMove)
+    ) {
       resetZorbie();
+      setZorbieOnMove(false);
       return;
     }
 
