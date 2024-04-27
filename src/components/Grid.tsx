@@ -320,7 +320,11 @@ const Grid: React.FC<GridProps> = ({
           // If the next move contains an endpoint not matching the zorbie color, reset zorbie
           if (
             circles.some(
-              (c) => c.x === nextX && c.y === nextY && c.color !== zorbie.color
+              (c) =>
+                c.x === nextX &&
+                c.y === nextY &&
+                c.color !== zorbie.color &&
+                zorbie.color !== "white"
             )
           ) {
             zorbieReset = true;
